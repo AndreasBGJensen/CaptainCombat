@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace ECS {
 
+
     public class Domain {
 
         // Id generators
