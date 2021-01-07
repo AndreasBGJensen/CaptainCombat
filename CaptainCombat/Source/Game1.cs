@@ -32,7 +32,7 @@ namespace CaptainCombat
 
             // Create test entities
             var entity = new Entity(domain);
-            entity.AddComponent<Transform>();
+            entity.AddComponent<Transform>().Rotation = 90;
             entity.AddComponent<Sprite>(Assets.Textures.SHIP, 100, 100);
 
             domain.Clean();
