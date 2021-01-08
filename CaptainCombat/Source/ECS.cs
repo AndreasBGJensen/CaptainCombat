@@ -21,10 +21,10 @@ namespace ECS {
         private readonly List<Entity> entitiesToAdd = new List<Entity>();
 
 
-        private readonly Dictionary<uint, Entity> registeredEntities = new Dictionary<uint, Entity>();
+        private readonly Dictionary<GlobalId, Entity> registeredEntities = new Dictionary<GlobalId, Entity>();
 
         // Mapping of component ids to components
-        private readonly Dictionary<uint, Component> components = new Dictionary<uint, Component>();
+        private readonly Dictionary<GlobalId, Component> components = new Dictionary<GlobalId, Component>();
 
         public delegate void EntityCallback(Entity e);
 
@@ -81,41 +81,54 @@ namespace ECS {
             // Clean entities
             List<Entity> entitiesToRemove = new List<Entity>();
             foreach (var entity in entities) {
-                bool shouldBeRemoved = entity.clean();
+                bool shouldBeRemoved = entity.Clean();
                 if (shouldBeRemoved)
                     entitiesToRemove.Add(entity);
             }
 
             // Remove entities
             foreach (var entity in entitiesToRemove) {
-                entityIdGenerator.Release(entity.Id);
+                entityIdGenerator.Release(entity.Id.objectId);
                 entities.Remove(entity);
             }
 
         }
 
 
-        private uint registerComponent<C>(C component) where C : Component {
-            uint id = componentIdGenerator.Get();
+        private GlobalId registerComponent<C>(C component, GlobalId id) where C : Component {
+            if (components.ContainsKey(id))
+                throw new ArgumentException("Component already exists with given ID");
             components[id] = component;
-
             return id;
+        }
+
+
+        private GlobalId registerComponent<C>(C component) where C : Component {
+            // TODO: Get local client here
+            return registerComponent(component, new GlobalId(component.ClientId, componentIdGenerator.Get()));
         }
 
 
         private void unregisterComponent(Component component) {
-            componentIdGenerator.Release(component.Id);
+            componentIdGenerator.Release(component.Id.objectId);
             components.Remove(component.Id);
         }
 
 
-        private uint registerEntity(Entity entity) {
+        private GlobalId registerEntity(Entity entity, GlobalId id) {
+            if (registeredEntities.ContainsKey(id))
+                throw new ArgumentException("Entity already exists with given ID");
             entitiesToAdd.Add(entity);
-
-            uint id = entityIdGenerator.Get();
             registeredEntities.Add(id, entity);
             return id;
         }
+
+
+        private GlobalId registerEntity(Entity entity) {
+            return registerEntity(entity, new GlobalId(entity.ClientId, entityIdGenerator.Get()));
+        }
+
+        // TODO: Delete entity
 
 
 
@@ -124,7 +137,10 @@ namespace ECS {
         public class Entity {
 
             public Domain Domain { get; }
-            public uint Id { get; }
+            public GlobalId Id { get; }
+
+            public uint ClientId { get; }
+
             public bool Deleted { get; private set; }
 
             private bool shouldBeDeleted = false;
@@ -141,8 +157,12 @@ namespace ECS {
             /// Construct a new Entity within the given Domain
             /// </summary>
             /// <param name="domain"></param>
-            public Entity(Domain domain) {
+            public Entity(Domain domain, uint clientId = 0) {
                 Domain = domain;
+
+                // TODO: Set local client id if clientId == 0
+                ClientId = clientId == 0 ? 0 : clientId;
+
                 Id = domain.registerEntity(this);
             }
 
@@ -218,7 +238,7 @@ namespace ECS {
             /// Not recommend to call this function manually (Domain calls it
             /// when its cleaned.
             /// </summary>
-            public bool clean() {
+            public bool Clean() {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
                 if (shouldBeDeleted) {
@@ -241,22 +261,39 @@ namespace ECS {
         }
 
 
+        public void MakeGlobal() {
+            foreach (var pair in components) {
+                pair.Value.Local = false;
+            }
+        }
+
+        public void MakeLocal() {
+            foreach( var pair in components ) {
+                pair.Value.Local = true;
+            }
+        }
+
+
         // ========================================================================================================================================================= 
 
         public abstract class Component {
 
             public Entity Entity { get; }
             public Domain Domain { get; }
-            public uint Id { get; }
+            public GlobalId Id { get; }
+
+            public uint ClientId { get => Id.clientId; }
+            public bool Local { get; set; }
 
             // This flag is set to true, if it the component has been "finalized" in the domain
             // Should only be set by the domain
             public bool Matchable { get; set; } = false;
 
-            public Component(Entity entity) {
+            public Component(Entity entity, bool local = false) {
                 Entity = entity;
                 Domain = entity.Domain;
                 Id = Domain.registerComponent(this);
+                Local = local;
             }
 
         }
