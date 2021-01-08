@@ -4,6 +4,7 @@ using System.Dynamic;
 
 namespace ECS {
 
+
     public class Domain {
 
         // Id generators
@@ -36,7 +37,7 @@ namespace ECS {
                 // Check if entity matches the component type pattern
                 bool match = true;
                 foreach (var type in componentTypes) {
-                    var component = entity.GetMethod(type);
+                    var component = entity.GetComponent(type);
                     if (component == null || !component.Matchable) {
                         match = false;
                         break;
@@ -193,7 +194,7 @@ namespace ECS {
             /// <typeparam name="C">Type of the Component to retrieve</typeparam>
             public C GetComponent<C>() where C : Component {
                 // Convert to Type object and forward to other method
-                return (C)GetMethod(typeof(C));
+                return (C)GetComponent(typeof(C));
             }
 
 
@@ -201,14 +202,11 @@ namespace ECS {
             /// Retrieve the Component of the given Type, or null if the
             /// Entity does not have the given Component
             /// </summary>
-            public Component GetMethod(Type type) {
+            public Component GetComponent(Type type) {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
-                try {
+                if (components.ContainsKey(type))
                     return components[type];
-                }
-                catch (KeyNotFoundException) {
-                    return null;
-                }
+                return null;
             }
 
 
@@ -260,7 +258,7 @@ namespace ECS {
 
             // This flag is set to true, if it the component has been "finalized" in the domain
             // Should only be set by the domain
-            public bool Matchable { get; set; }
+            public bool Matchable { get; set; } = false;
 
             public Component(Entity entity) {
                 Entity = entity;
