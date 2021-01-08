@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Dynamic;
 
 namespace ECS {
 
@@ -11,7 +11,7 @@ namespace ECS {
         private readonly IdGenerator componentIdGenerator = new IdGenerator();
 
         // List of entities registered and finalized in this domain
-        private readonly List<Entity> entities = new List<Entity>();
+        public readonly List<Entity> entities = new List<Entity>();
 
         // List of entities that has been registered, but not finalized yet
         // They will be finalized (added to entities list), when domain is
@@ -89,6 +89,22 @@ namespace ECS {
 
         }
 
+        
+        public List<Component> getAllComponents()
+        {
+            List<Component> allComponents = new List<Component>();
+
+            foreach(Entity entity in entities)
+            {
+                foreach (Component component in entity.newComponents)
+                {
+                    allComponents.Add(component); 
+                }
+            }
+
+            return allComponents; 
+        }
+
 
         private uint registerComponent<C>(C component) where C : Component {
             uint id = componentIdGenerator.getId();
@@ -123,7 +139,7 @@ namespace ECS {
             private Dictionary<Type, Component> components = new Dictionary<Type, Component>();
 
             // List of components that were added since last clean
-            private readonly List<Component> newComponents = new List<Component>();
+            public readonly List<Component> newComponents = new List<Component>();
 
             private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
 
@@ -251,6 +267,8 @@ namespace ECS {
                 Domain = entity.Domain;
                 Id = Domain.registerComponent(this);
             }
+
+            public abstract Object getData(); 
 
         }
 

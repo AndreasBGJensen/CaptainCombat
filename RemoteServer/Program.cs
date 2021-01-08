@@ -11,7 +11,7 @@ namespace RemoteServer
 {
     class Program
     {
-        
+        /*
         static void Main(string[] args)
         {
             string uri = "tcp://127.0.0.1:123/space?CONN";
@@ -25,8 +25,8 @@ namespace RemoteServer
 
             Console.WriteLine(message[0] + ":" + message[1]);
         }
-       
-        /*
+        */
+        
         static void Main(string[] args)
         {
             string uri = "tcp://127.0.0.1:5000?CONN";
@@ -47,6 +47,6 @@ namespace RemoteServer
             serializationThread.Start();
 
         }
-        */
+       
     }
 }

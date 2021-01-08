@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 using static ECS.Domain;
 
@@ -13,19 +14,12 @@ namespace PirateCombatTemp {
             this.s = s;
         }
 
-    }
-
-
-
-
-
-    class TestComponent2 : Component {
-
-        public string s;
-
-        public TestComponent2(Entity e) : base(e) {
-
+        public override object getData()
+        {
+            var obj = new { a = "aaa", b = "bbb" };
+            return obj; 
         }
-
     }
+
+
 }
