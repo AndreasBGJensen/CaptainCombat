@@ -223,6 +223,16 @@ namespace ECS {
 
 
             /// <summary>
+            /// Construct a new Entity within the given Domain
+            /// </summary>
+            /// <param name="domain"></param>
+            public Entity(Domain domain, GlobalId id) {
+                Domain = domain;
+                Id = domain.registerEntity(this, id);
+            }
+
+
+            /// <summary>
             /// Construct a new Component of the given Type, and bind it to the Entity.
             /// Only one Component of each type can be bound to an Entity
             /// The new Component will not partake in Entity matching in the Domain,
@@ -354,11 +364,6 @@ namespace ECS {
             public abstract Object getData(); 
 
         }
-
-
-        // ========================================================================================================================================================= 
-
-   
 
     }
 }
