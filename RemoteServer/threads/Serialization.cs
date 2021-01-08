@@ -110,7 +110,7 @@ namespace RemoteServer.threads
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
             var data_string = JsonConvert.SerializeObject(data.Parent);
-
+           
             ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
             Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
