@@ -116,7 +116,7 @@ namespace RemoteServer.threads
             var dataObject = new JObject();
             dataObject.Add("data", data);
 
-            var data_string = JsonConvert.SerializeObject(dataObject);
+            var data_string = JsonConvert.SerializeObject(data);
 
 
             ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));

@@ -85,7 +85,7 @@ namespace ECS {
                 Console.WriteLine(data);
                 if (Connection.Instance.User_id == (int)data[1])
                 {
-                    //continue; 
+                    continue; 
                 }
 
                 Console.WriteLine("Dont run");
@@ -116,7 +116,7 @@ namespace ECS {
                 }
                 else
                 {
-                    Console.WriteLine("Component not found");
+                    
                 }
             }
           
