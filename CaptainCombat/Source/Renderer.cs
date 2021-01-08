@@ -48,10 +48,10 @@ namespace CaptainCombat.Source {
                        Color.White,
 
                        // Rotation (radians)
-                       (float)(transform.Rotation * Math.PI / 180), // Rotation
+                       (float)((transform.Rotation+ sprite.Texture.Rotation) * Math.PI / 180), // Rotation
 
                        // Origin offset (relative to MG Texture)
-                       new Vector2(texture.Width / 2.0f, texture.Width / 2.0f),
+                       new Vector2(texture.Width / 2.0f, texture.Height / 2.0f),
 
                        SpriteEffects.None,
                        1

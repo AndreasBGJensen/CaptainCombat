@@ -21,6 +21,9 @@ namespace ECS {
         // cleaned
         private readonly List<Entity> entitiesToAdd = new List<Entity>();
 
+
+        private readonly Dictionary<uint, Entity> registeredEntities = new Dictionary<uint, Entity>();
+
         // Mapping of component ids to components
         private readonly Dictionary<uint, Component> components = new Dictionary<uint, Component>();
 
@@ -123,7 +126,7 @@ namespace ECS {
 
             // Remove entities
             foreach (var entity in entitiesToRemove) {
-                entityIdGenerator.releaseId(entity.Id);
+                entityIdGenerator.Release(entity.Id);
                 entities.Remove(entity);
             }
 
@@ -147,21 +150,25 @@ namespace ECS {
 
 
         private uint registerComponent<C>(C component) where C : Component {
-            uint id = componentIdGenerator.getId();
+            uint id = componentIdGenerator.Get();
             components[id] = component;
 
             return id;
         }
 
+
         private void unregisterComponent(Component component) {
-            componentIdGenerator.releaseId(component.Id);
+            componentIdGenerator.Release(component.Id);
             components.Remove(component.Id);
         }
 
 
         private uint registerEntity(Entity entity) {
             entitiesToAdd.Add(entity);
-            return entityIdGenerator.getId();
+
+            uint id = entityIdGenerator.Get();
+            registeredEntities.Add(id, entity);
+            return id;
         }
 
 
@@ -184,6 +191,7 @@ namespace ECS {
             public readonly List<Component> newComponents = new List<Component>();
 
             private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
+
 
             /// <summary>
             /// Construct a new Entity within the given Domain
@@ -316,25 +324,7 @@ namespace ECS {
 
         // ========================================================================================================================================================= 
 
-        private class IdGenerator {
-            // 0 is "unknown" id
-            private uint nextId = 1;
-
-            // List of ids that has been generated, but freed again
-            private Queue<uint> readyIds = new Queue<uint>();
-
-
-            public uint getId() {
-                if (readyIds.Count > 0)
-                    return readyIds.Dequeue();
-                return nextId++;
-            }
-
-            public void releaseId(uint id) {
-                readyIds.Enqueue(id);
-            }
-
-        }
+   
 
     }
 }

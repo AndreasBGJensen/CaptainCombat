@@ -1,8 +1,4 @@
-﻿
-
-
-using CaptainCombat.Source;
-using static ECS.Domain;
+﻿using static ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
 
@@ -19,6 +15,7 @@ namespace CaptainCombat.Source.Components {
             Width = width;
             Height = height;
         }
+       
 
         public override object getData()
         {
