@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+//This name space is not in use and is to be deleted
 namespace RemoteServer.DTO
 {
+
     class ComponentDTO
     {
         public string comp = "name";
