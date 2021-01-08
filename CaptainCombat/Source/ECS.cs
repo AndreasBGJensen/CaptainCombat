@@ -1,4 +1,5 @@
 ﻿using CaptainCombat.singletons;
+using CaptainCombat.Source.Utility;
 using dotSpace.Interfaces.Space;
 using System;
 using System.Collections.Generic;
@@ -83,27 +84,20 @@ namespace ECS {
                 }
 
                 Entity current = null;
-                foreach (Entity entity in entitiesToAdd)
-                {
-                    if (entity.Id == (int)data[3] && entity.Client_id == (int)data[1])
-                    {
-                        current = entity;
-                    }
-                }
+                /*
+                var obj = new { ObjectId = (uint)data[3]) , ClientId = Connection.Instance.User_id };
 
-                foreach (Entity entity in entities)
+                if (registeredEntities.ContainsKey(obj)
                 {
-                    if(entity.Id == (int)data[3] && entity.Client_id == (int)data[1])
-                    {
-                        current = entity; 
-                    }
+                    current = registeredEntities[obj]
                 }
+                else
+                {
+                current = new Entity(this, Connection.Instance.User_id);
 
-                if(current == null)
-                {
-                    current = new Entity(this, Connection.Instance.User_id);
                 }
-                
+                */
+
 
             }
         }
