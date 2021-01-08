@@ -6,6 +6,7 @@ using RemoteServer.singletons;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using RemoteServer.TestData;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace RemoteServer.threads
 {
@@ -102,15 +103,22 @@ namespace RemoteServer.threads
             Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 
-        private void UpdatorJToken(string stringComponentUpdate, Newtonsoft.Json.Linq.JToken serarchParam)
+        private void UpdatorJToken(string stringComponentUpdate, JToken serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
+
+
             var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data.Parent);
-           
+
+            var dataObject = new JObject();
+            dataObject.Add("data", data);
+
+            var data_string = JsonConvert.SerializeObject(dataObject);
+
+
             ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
             Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
