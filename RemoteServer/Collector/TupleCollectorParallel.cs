@@ -1,4 +1,5 @@
 ﻿using dotSpace.Interfaces.Space;
+using dotSpace.Objects.Space;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,19 +13,22 @@ namespace RemoteServer.Collector
     class TupleCollectorParallel : CollectorClass, ICollector
     {
         private string searchString = "components"; //Default
+        private SequentialSpace mySpace;
 
-        public TupleCollectorParallel(string searchString)
+        public TupleCollectorParallel(string searchString, SequentialSpace space)
         {
+            mySpace = space;
             this.searchString = searchString;
-            if (space.QueryP("lock") == null)
+           if (mySpace.QueryP("lock") == null)
             {
-                space.Put("lock");
+                mySpace.Put("lock");
             }
         }
 
         public void Collect()
         {
-            IEnumerable<ITuple> results = space.GetAll(searchString, typeof(string));
+            
+            IEnumerable<ITuple> results = mySpace.GetAll(searchString, typeof(string));
             results.AsParallel().ForAll(item =>
             {
                 try
@@ -59,10 +63,10 @@ namespace RemoteServer.Collector
             var data_string = JsonConvert.SerializeObject(data.Parent);
 
             //Updating Tuple
-            space.Get("lock");
-            ITuple result = space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
-            space.Put("lock");
+            mySpace.Get("lock");
+            ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            mySpace.Put("lock");
         }
 
         private void UpdatorJToken(string stringComponentUpdate, Newtonsoft.Json.Linq.JToken serarchParam)
@@ -76,17 +80,17 @@ namespace RemoteServer.Collector
 
 
             //Updating Tuple
-            space.Get("lock");
-            ITuple result = space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
-            space.Put("lock");
+            mySpace.Get("lock");
+            ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            mySpace.Put("lock");
         }
 
 
 
         private void TestPrintQueryAll()
         {
-            IEnumerable<ITuple> results = space.QueryAll("components", typeof(string));
+            IEnumerable<ITuple> results = mySpace.QueryAll("components", typeof(string));
             foreach (ITuple tuple in results)
             {
                 Console.WriteLine(tuple[1]);
@@ -96,7 +100,7 @@ namespace RemoteServer.Collector
         private void PrintUpdateComponents()
         {
             Console.WriteLine("Printing test components");
-            IEnumerable<ITuple> results3 = space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+            IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
             foreach (ITuple tuple in results3)
             {
                 Console.WriteLine(tuple);

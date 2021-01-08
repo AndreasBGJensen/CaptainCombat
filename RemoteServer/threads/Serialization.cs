@@ -12,31 +12,129 @@ using Newtonsoft.Json;
 using RemoteServer.TestData;
 using static RemoteServer.TestData.TestComponentClasse;
 using RemoteServer.Collector;
+using System.Diagnostics;
 
 namespace RemoteServer.threads
 {
    class Serialization
     {
+        TestComponentClasse test = new TestComponentClasse();
         CollectorClass collector = new CollectorClass();
+        Stopwatch sw = new Stopwatch(); // For performance testing
         public void RunProtocol()
         {
-            collector.InitCollector(Connection.Instance.Space, new TupleCollectorParallel("components"));
+            collector.SetSpace(Connection.Instance.Space);
+            collector.SetCollector(new TupleCollectorParallel("components",Connection.Instance.Space));
 
-           while (true)
-             {
+           //while (true)
+             //{
             try
                 {
 
-               collector.BeginCollect();
-                //Collector();
-                PrintUpdateComponents();
+
+                
+                
+
+
+                for (int i = 0; i<1000; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
                 }
-                catch (Exception e)
+
+
+
+
+
+                // ...
+
+
+                Console.WriteLine("Sequentila Testing");
+
+
+                sw.Start();
+                //collector.BeginCollect();
+                Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Sequential Elapsed={0}", sw.Elapsed.Milliseconds);
+
+
+                Console.WriteLine("Parallel Testing");
+                for (int i = 0; i < 1000; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+
+                sw.Start();
+                collector.BeginCollect();
+                //Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Parallel Elapsed={0}", sw.Elapsed.Milliseconds);
+
+                Console.WriteLine("");
+                Console.WriteLine("RUNNING 100 instances");
+                Console.WriteLine("");
+                for (int i = 0; i < 100; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+                sw.Start();
+                collector.BeginCollect();
+                //Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Parallel Elapsed={0}", sw.Elapsed.Milliseconds);
+
+                for (int i = 0; i < 1000; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+
+
+
+
+
+                // ...
+
+
+                Console.WriteLine("Sequentila Testing");
+
+
+                sw.Start();
+                //collector.BeginCollect();
+                Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Sequential Elapsed={0}", sw.Elapsed.Milliseconds);
+
+            }
+            catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.StackTrace);
                 }
-            }
+            //}
         }
 
 
@@ -51,7 +149,7 @@ namespace RemoteServer.threads
                     //Check if a component consist of a single JSON or if it consist of a multiple components
                     //If multiple components are uploaded it will be a JsonArray and the operation below will throw a Invalid Cast Exception and JsonArray will be unpaced in the catch block.
                     var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)x[1]);
-                    Console.WriteLine(test1.Count);
+                    //Console.WriteLine(test1.Count);
                     UpdatorJObject((string)x[1], test1);
 
                     }

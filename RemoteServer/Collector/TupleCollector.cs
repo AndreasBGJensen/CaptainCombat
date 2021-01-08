@@ -1,4 +1,5 @@
 ﻿using dotSpace.Interfaces.Space;
+using dotSpace.Objects.Space;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,13 +13,19 @@ namespace RemoteServer.Collector
      class TupleCollector : CollectorClass, ICollector
     {
         private string searchString = "components";//Default
+        private SequentialSpace mySpace;
+
+        public TupleCollector(SequentialSpace space)
+        {
+            mySpace = space;
+        }
 
         void ICollector.Collect()
         {
          
 
         //Collecting components
-        IEnumerable<ITuple> results = space.GetAll(searchString, typeof(string));
+        IEnumerable<ITuple> results = mySpace.GetAll(searchString, typeof(string));
                 foreach (Tuple x in results)
                 {
                     try
@@ -41,29 +48,6 @@ namespace RemoteServer.Collector
 
                 }
 
-
-                //Running updates in parallel - Currently this wont work because we get multiple updates
-                /* results.AsParallel().ForAll(item =>
-                      {
-                          try {
-                              //Check if a component consist of a single JSON or if it consist of a multiple components
-                              Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)item[1]);
-                              jarray.AsParallel().ForAll(jToken =>
-                              {
-                                  UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
-                              });
-                          }
-                          catch(InvalidCastException e)
-                          {
-                                   //Er det Json stringen for componenten som skal uddateres?
-                                   //Eller skal den indeholde en component?
-
-                                   var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)item[1]);
-                                   UpdatorJObject((string)item[1], test1);
-                          }
-                      });*/
-
-            
         }
         private void UpdatorJObject(string stringComponentUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
         {
@@ -73,9 +57,9 @@ namespace RemoteServer.Collector
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
             var data_string = JsonConvert.SerializeObject(data.Parent);
-            ITuple result = space.GetP(comp, client_id, component_id, entity_id, typeof(string));
+            ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
 
-            space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 
         private void UpdatorJToken(string stringComponentUpdate, Newtonsoft.Json.Linq.JToken serarchParam)
@@ -87,17 +71,17 @@ namespace RemoteServer.Collector
             var data = serarchParam.SelectToken("data");
             var data_string = JsonConvert.SerializeObject(data.Parent);
 
-            ITuple result = space.GetP(comp, client_id, component_id, entity_id, typeof(string));
+            ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
 
 
-            space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 
 
 
         private void TestPrintQueryAll()
         {
-            IEnumerable<ITuple> results = space.QueryAll("components", typeof(string));
+            IEnumerable<ITuple> results = mySpace.QueryAll("components", typeof(string));
             foreach (ITuple tuple in results)
             {
                 Console.WriteLine(tuple[1]);
@@ -107,7 +91,7 @@ namespace RemoteServer.Collector
         private void PrintUpdateComponents()
         {
             Console.WriteLine("Printing test components");
-            IEnumerable<ITuple> results3 = space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+            IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
             foreach (ITuple tuple in results3)
             {
                 Console.WriteLine(tuple);
