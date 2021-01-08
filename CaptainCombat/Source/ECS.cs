@@ -1,6 +1,8 @@
 ﻿using CaptainCombat.singletons;
 using CaptainCombat.Source.Utility;
 using dotSpace.Interfaces.Space;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -74,32 +76,49 @@ namespace ECS {
 
         public void update(IEnumerable<ITuple> gameData)
         {
+            Console.WriteLine("Run update");
             // ITuple data format (string)comp, (int)client_id, (int)component_id, (int)entity_id, (string)data);
-
+            
             foreach (ITuple data in gameData)
             {
+                Console.WriteLine("Test");
+                Console.WriteLine(data);
                 if (Connection.Instance.User_id == (int)data[1])
                 {
-                    continue; 
+                    //continue; 
                 }
 
-                Entity current = null;
-                /*
-                var obj = new { ObjectId = (uint)data[3]) , ClientId = Connection.Instance.User_id };
+                Console.WriteLine("Dont run");
 
-                if (registeredEntities.ContainsKey(obj)
+                Entity current_entity = null;
+               
+                GlobalId global_entity_id = new GlobalId((uint)data[1], (uint)data[3]); 
+
+                if (registeredEntities.ContainsKey(global_entity_id))
                 {
-                    current = registeredEntities[obj]
+                    Console.WriteLine("Entity found");
+                    current_entity = registeredEntities[global_entity_id]; 
                 }
                 else
                 {
-                current = new Entity(this, Connection.Instance.User_id);
-
+                    Console.WriteLine("Entity not found");
+                    current_entity = new Entity(this, (uint)Connection.Instance.User_id); 
                 }
-                */
 
+                GlobalId global_compotent_id = new GlobalId((uint)data[1], (uint)data[2]);
+                Component current_compotent = null;
 
+                if (components.ContainsKey(global_compotent_id))
+                {
+                    current_compotent = components[global_compotent_id];
+                    current_compotent.update((JObject)JsonConvert.DeserializeObject((string)data[4]));
+                }
+                else
+                {
+                    
+                }
             }
+          
         }
 
         public void Clean() {
@@ -344,8 +363,9 @@ namespace ECS {
                 Local = local;
             }
 
-            public abstract Object getData(); 
+            public abstract Object getData();
 
+            public abstract void update(JObject json);
         }
 
 

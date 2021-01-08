@@ -18,6 +18,15 @@ namespace CaptainCombat.states
     {
         public Game()
         {
+        }
+
+        public object JsonSerializer { get; private set; }
+
+        public override void Run(){
+
+            Domain domain = new Domain();
+            DomainState.Instance.Domain = domain;
+
             Upload upload = new Upload();
             Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
             uploadThread.Start();
@@ -27,35 +36,22 @@ namespace CaptainCombat.states
             downloadThread.Start();
 
             RunGameLoop();
-
         }
 
-        public object JsonSerializer { get; private set; }
-
-        public override void Handle1()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Handle2()
-        {
-            throw new NotImplementedException();
-        }
 
         private void RunGameLoop()
         {
-            Domain domain = new Domain();
-            DomainState.Instance.Domain = domain; 
-            Entity player = new Entity(domain, Connection.Instance.User_id);
+            
+            Entity player = new Entity(DomainState.Instance.Domain, (uint)Connection.Instance.User_id);
             player.AddComponent<Transform>();
-            domain.Clean(); 
+
+            DomainState.Instance.Domain.Clean(); 
 
             JsonBuilder builder = new JsonBuilder(); 
-           
             while (true)
             {
                 Console.WriteLine("Game running");
-                DomainState.Instance.Upload = builder.createJsonString(domain); 
+                DomainState.Instance.Upload = builder.createJsonString(); 
                 Thread.Sleep(2000);
             }
         }

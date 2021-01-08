@@ -19,7 +19,7 @@ namespace CaptainCombat
         [STAThread]
         static void Main(string[] args)
         {
-            new Context(new Connect());
+            Context context = new Context(new Connect());
         }
 
     }

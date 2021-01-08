@@ -1,4 +1,5 @@
 ﻿
+using Newtonsoft.Json.Linq;
 using static ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
@@ -42,6 +43,12 @@ namespace CaptainCombat.Source.Components {
         public override object getData()
         {
             throw new System.NotImplementedException();
+        }
+
+        public override void update(JObject json)
+        {
+            throw new System.NotImplementedException();
+
         }
     }
 

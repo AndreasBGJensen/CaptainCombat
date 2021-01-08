@@ -13,9 +13,12 @@ namespace CaptainCombat.states
     class Connect : State
     {
         public Connect()
+        {}
+
+        public override void Run()
         {
             Console.WriteLine("Start GameClient");
-            
+
             try
             {
                 string uri = "tcp://127.0.0.1:5000/space?CONN";
@@ -30,14 +33,5 @@ namespace CaptainCombat.states
             }
         }
 
-        public override void Handle1()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Handle2()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

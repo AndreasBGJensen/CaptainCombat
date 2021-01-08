@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -19,6 +20,14 @@ namespace CaptainCombat.game
         {
             var obj = new { x = this.x, y = this.y };
             return obj;
+        }
+
+        public override void update(JObject json)
+        {
+            //this.x = (int)json.SelectToken("x")+1;
+            //this.y = (int)json.SelectToken("y")+1;
+            this.x += 1;
+            this.y += 1;
         }
     }
 }

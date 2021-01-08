@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CaptainCombat.Source.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,5 @@ namespace CaptainCombat.game
             this.data = data; 
         }
 
-       
     }
 }

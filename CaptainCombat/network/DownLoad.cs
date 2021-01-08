@@ -19,19 +19,30 @@ namespace CaptainCombat.network
         }
         public void RunProtocol()
         {
+            
             while (true)
             {
-                while (true)
+                try
                 {
                     Console.WriteLine("DownLoading");
                     //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-
                     IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
-                    DomainState.Instance.Domain.update(gameData); 
+                    /*
+                    foreach (ITuple data in gameData)
+                    {
+                        Console.WriteLine(data);
+
+                    }
+                    */
+                    DomainState.Instance.Domain.update(gameData);
                     Console.WriteLine("Done");
-                    Thread.Sleep(5000);
+                }catch(Exception e)
+                {
+
                 }
+                Thread.Sleep(5000);
             }
+           
         }
     }
 }
