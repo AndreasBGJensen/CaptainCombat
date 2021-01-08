@@ -12,7 +12,7 @@ namespace CaptainCombat.Source {
         }
 
         public override void Load() {
-            MGTexture = Game1.Game.Content.Load<Texture2D>(Url);
+            MGTexture = GameController.Game.Content.Load<Texture2D>(Url);
         }
 
     }

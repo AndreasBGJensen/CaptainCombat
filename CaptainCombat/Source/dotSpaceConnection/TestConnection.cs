@@ -12,16 +12,13 @@ namespace CaptainCombat.dotSpaceConnection
 
         public void Init()
         {
-            try
-            {
+            try {
                 string uri = "tcp://127.0.0.1:123/space?CONN";
                 RemoteSpace space = new RemoteSpace(uri);
 
                 space.Put("Hello", "World");
 
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Console.WriteLine(e.Message);
             }
 
