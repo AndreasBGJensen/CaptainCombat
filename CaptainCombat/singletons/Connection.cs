@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using dotSpace.Objects.Network;
-using dotSpace.Objects.Space;
-using Tuple = dotSpace.Objects.Space.Tuple;
-
+﻿using dotSpace.Objects.Network;
 
 namespace CaptainCombat.singletons
 {
@@ -15,6 +7,8 @@ namespace CaptainCombat.singletons
         private static readonly Connection instance = new Connection();
         private RemoteSpace space = null;
         private string user = null;
+     
+        // TODO: Change this to uint
         private int user_id; 
 
 

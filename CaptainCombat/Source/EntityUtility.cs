@@ -13,14 +13,14 @@ namespace CaptainCombat.Source {
         public static Entity CreateRock(Domain domain, double x, double y, double scale = 0, double rotation = 0) {
             var entity = new Entity(domain);
 
-            var transform = entity.AddComponent<Transform>();
+            var transform = entity.AddComponent(new Transform());
             transform.X = x;
             transform.Y = y;
             transform.ScaleX = scale;
             transform.ScaleY = scale;
             transform.Rotation = rotation;
 
-            var sprite = entity.AddComponent<Sprite>(Assets.Textures.ROCK, 100, 100);
+            entity.AddComponent(new Sprite(Assets.Textures.ROCK, 100, 100));
 
             return entity;            
         }

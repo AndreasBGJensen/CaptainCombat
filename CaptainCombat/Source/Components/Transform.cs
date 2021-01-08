@@ -34,11 +34,6 @@ namespace CaptainCombat.Source.Components {
                 }
             }
         }
-        
-        public Transform(Entity entity) : base(entity) {}
-
-
-
 
         public override object getData()
         {

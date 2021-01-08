@@ -170,9 +170,8 @@ namespace ECS {
         }
 
 
-        private GlobalId registerComponent<C>(C component) where C : Component {
-            // TODO: Get local client here
-            return registerComponent(component, new GlobalId(component.ClientId, componentIdGenerator.Get()));
+        private GlobalId registerComponent<C>(C component, uint clientId) where C : Component {
+            return registerComponent(component, new GlobalId(clientId, componentIdGenerator.Get()));
         }
 
         
@@ -191,8 +190,8 @@ namespace ECS {
         }
 
 
-        private GlobalId registerEntity(Entity entity) {
-            return registerEntity(entity, new GlobalId(entity.ClientId, entityIdGenerator.Get()));
+        private GlobalId registerEntity(Entity entity, uint clientId) {
+            return registerEntity(entity, new GlobalId(clientId, entityIdGenerator.Get()));
         }
 
         // TODO: Delete entity
@@ -206,7 +205,7 @@ namespace ECS {
             public Domain Domain { get; }
             public GlobalId Id { get; }
 
-            public uint ClientId { get; }
+            public uint ClientId { get => Id.clientId; }
 
             public bool Deleted { get; private set; }
 
@@ -227,10 +226,19 @@ namespace ECS {
             public Entity(Domain domain, uint clientId = 0) {
                 Domain = domain;
 
-                // TODO: Set local client id if clientId == 0
-                ClientId = clientId == 0 ? 0 : clientId;
+                // Get local client id if clientId is set to 0
+                clientId = clientId == 0 ? (uint) Connection.Instance.User_id : clientId;
+                Id = domain.registerEntity(this, clientId);
+            }
 
-                Id = domain.registerEntity(this);
+
+            /// <summary>
+            /// Construct a new Entity within the given Domain
+            /// </summary>
+            /// <param name="domain"></param>
+            public Entity(Domain domain, GlobalId id) {
+                Domain = domain;
+                Id = domain.registerEntity(this, id);
             }
 
 
@@ -243,7 +251,7 @@ namespace ECS {
             /// <typeparam name="C">Class which inherits the Component class</typeparam>
             /// <param name="constructionArguments">List of arguments for constructor (excluding the first Entity argument)</param>
             /// <returns>The newly construct Component</returns>
-            public C AddComponent<C>(params object[] constructionArguments) where C : Component {
+            public C AddComponent<C>(C component) where C : Component {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
                 Type type = typeof(C);
@@ -251,14 +259,7 @@ namespace ECS {
                 if (components.ContainsKey(type))
                     throw new InvalidOperationException($"Entity already has component {type.Name}");
 
-                // Combine passed args with Entity arguments
-                object[] args = new object[constructionArguments.Length + 1];
-                args[0] = this; // Set Entity as first parameter
-                for (int i = 0; i < constructionArguments.Length; i++)
-                    args[i + 1] = constructionArguments[i];
-
-                // Create Component instance
-                C component = (C)Activator.CreateInstance(typeof(C), args);
+                component.Entity = this;
 
                 newComponents.Add(component);
                 components.Add(type, component);
@@ -345,33 +346,50 @@ namespace ECS {
 
         public abstract class Component {
 
-            public Entity Entity { get; }
-            public Domain Domain { get; }
+            private Entity entity = null;
+            public Entity Entity { 
+                get => entity;
+                set {
+                    if (entity != null)
+                        throw new ArgumentException("Component already been assigned a component");
+                    
+                    // Connect component with Entity and its Domain
+                    entity = value;
+                    Domain = entity.Domain;
+
+                    // Register component in the Domain
+                    if (Id != GlobalId.NULL) {
+                        if (entity.ClientId != Id.clientId)
+                            throw new ArgumentException("Component's client ID does not match with the Entity's client id");
+                        Domain.registerComponent(this, Id);
+                    }
+                    else {
+                        Domain.registerComponent(this, entity.ClientId);
+                    }
+                }
+            }
+
+            public Domain Domain { get; private set; }
+
             public GlobalId Id { get; }
 
             public uint ClientId { get => Id.clientId; }
+
+            /// <summary>
+            /// True if this Component should be synchronized with other clients, or false
+            /// if it should only exist locally
+            /// </summary>
             public bool Local { get; set; }
 
             // This flag is set to true, if it the component has been "finalized" in the domain
             // Should only be set by the domain
             public bool Matchable { get; set; } = false;
-
-            public Component(Entity entity, bool local = false) {
-                Entity = entity;
-                Domain = entity.Domain;
-                Id = Domain.registerComponent(this);
-                Local = local;
-            }
+          
 
             public abstract Object getData();
 
             public abstract void update(JObject json);
         }
-
-
-        // ========================================================================================================================================================= 
-
-   
 
     }
 }

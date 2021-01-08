@@ -5,6 +5,8 @@ namespace CaptainCombat.Source.Utility {
 
     public struct GlobalId {
 
+        public static readonly GlobalId NULL = new GlobalId(0, 0);
+
         public uint clientId;
         public uint objectId;
 

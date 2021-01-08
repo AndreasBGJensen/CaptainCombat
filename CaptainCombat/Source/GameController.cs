@@ -49,10 +49,10 @@ namespace CaptainCombat
             // Create ship
             {
                 ship = new Entity(domain);
-                ship.AddComponent<Transform>();
-                ship.AddComponent<Sprite>(Assets.Textures.SHIP, 66, 113);
+                ship.AddComponent(new Transform());
+                ship.AddComponent(new Sprite(Assets.Textures.SHIP, 66, 113));
                 
-                var move = ship.AddComponent<Move>();
+                var move = ship.AddComponent(new Move());
                 move.Resistance = 0.25;
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
