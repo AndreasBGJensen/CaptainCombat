@@ -3,6 +3,7 @@
 using CaptainCombat.Source.Components;
 using CaptainCombat.Source.Utility;
 using ECS;
+using Microsoft.Xna.Framework;
 
 namespace CaptainCombat.Source {
 
@@ -19,7 +20,6 @@ namespace CaptainCombat.Source {
                 var transform = entity.GetComponent<Transform>();
                 var move = entity.GetComponent<Move>();
 
-
                 // Update rotation velocity
                 move.RotationVelocity *= 1.0f - (float)(move.RotationResistance * deltaTime);
                 move.RotationVelocity += move.RotationAcceleration * (float)deltaTime;
@@ -28,9 +28,13 @@ namespace CaptainCombat.Source {
                 transform.Rotation += move.RotationVelocity * deltaTime;
 
                 // Update velocity
-                move.Velocity *= 1.0f - (float)(move.Resistance * deltaTime);
-                move.Velocity += move.Acceleration * (float)deltaTime;
-
+                double resistance = 1.0 - move.Resistance * deltaTime;
+                move.Velocity = new Vector2( move.Velocity.X, move.Velocity.Y );
+                move.Velocity = new Vector2(
+                    (float)(move.Velocity.X + move.Acceleration.X * deltaTime),
+                    (float)(move.Velocity.Y + move.Acceleration.Y * deltaTime)
+                    );
+                
                 // Update position
                 var finalVelocity = move.ForwardVelocity ? move.Velocity.WithDirection((float)transform.Rotation) : move.Velocity;
                 transform.X += finalVelocity.X * deltaTime;

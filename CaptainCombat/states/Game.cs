@@ -42,20 +42,18 @@ namespace CaptainCombat.states
             throw new NotImplementedException();
         }
 
-        private void RunGameLoop()
-        {
+        private void RunGameLoop() {
             Domain domain = new Domain();
-            DomainState.Instance.Domain = domain; 
+            DomainState.Instance.Domain = domain;
             Entity player = new Entity(domain, Connection.Instance.User_id);
-            player.AddComponent<Transform>();
-            domain.Clean(); 
+            player.AddComponent(new Transform());
+            domain.Clean();
 
-            JsonBuilder builder = new JsonBuilder(); 
-           
-            while (true)
-            {
+            JsonBuilder builder = new JsonBuilder();
+
+            while (true) {
                 Console.WriteLine("Game running");
-                DomainState.Instance.Upload = builder.createJsonString(domain); 
+                DomainState.Instance.Upload = builder.createJsonString(domain);
                 Thread.Sleep(2000);
             }
         }

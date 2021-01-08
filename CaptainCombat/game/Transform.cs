@@ -13,7 +13,6 @@ namespace CaptainCombat.game
         int x = 4;
         int y = 4;
 
-        public Transform(Entity entity): base(entity) {}
 
         public override Object getData()
         {

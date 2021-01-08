@@ -10,7 +10,7 @@ namespace CaptainCombat.Source.Components {
 
         public Texture Texture { get => Asset.GetAsset<Texture>(TextureTag); }
 
-        public Sprite(Entity entity, Texture texture, double width, double height) : base(entity) {
+        public Sprite(Texture texture, double width, double height) {
             TextureTag = texture.Tag;
             Width = width;
             Height = height;

@@ -7,8 +7,6 @@ namespace CaptainCombat.Source.Components {
 
     public class Move : Component {
 
-
-
         public Vector2 Velocity { get; set; } = new Vector2(0, 0);
 
         public Vector2 Acceleration { get; set; } = new Vector2(0, 0);
@@ -27,12 +25,9 @@ namespace CaptainCombat.Source.Components {
 
         public double RotationResistance { get; set; }
 
-        public Move(Entity entity) : base(entity) {
-            
+        public override object getData() {
+            throw new System.NotImplementedException();
         }
-
-
-
     }
 
 }

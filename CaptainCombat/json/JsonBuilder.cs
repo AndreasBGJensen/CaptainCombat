@@ -12,37 +12,37 @@ using static ECS.Domain;
 
 namespace CaptainCombat.json
 {
-    class JsonBuilder
-    {
+    //class JsonBuilder
+    //{
         
-        public string createJsonString(Domain domain)
-        {
-            List<DataObject> data = new List<DataObject>();
+    //    public string createJsonString(Domain domain)
+    //    {
+    //        List<DataObject> data = new List<DataObject>();
 
-            foreach (Component component in domain.getAllComponents())
-            {
-                data.Add(new DataObject(component.GetType().Name, Connection.Instance.User_id, (int)component.Id, (int)component.Entity.Id, component.getData())); 
-                /*
-                Console.WriteLine("comp: " + component.GetType().Name);
-                Console.WriteLine("client_id: " + Connection.Instance.User);
-                Console.WriteLine("component_id: " + component.Id);
-                Console.WriteLine("entity_id: " + component.Entity.Id);
-                Console.WriteLine(" data:"+component.getData());
-                */
-            }
+    //        foreach (Component component in domain.getAllComponents())
+    //        {
+    //            data.Add(new DataObject(component.GetType().Name, Connection.Instance.User_id, (uint)component.Id, (uint)component.Entity.Id, component.getData())); 
+    //            /*
+    //            Console.WriteLine("comp: " + component.GetType().Name);
+    //            Console.WriteLine("client_id: " + Connection.Instance.User);
+    //            Console.WriteLine("component_id: " + component.Id);
+    //            Console.WriteLine("entity_id: " + component.Entity.Id);
+    //            Console.WriteLine(" data:"+component.getData());
+    //            */
+    //        }
 
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-            //Console.WriteLine(json); 
+    //        string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+    //        //Console.WriteLine(json); 
 
-            // Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
-            //Console.WriteLine(jarray);
+    //        // Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
+    //        //Console.WriteLine(jarray);
 
-            //var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(json);
-            //Console.WriteLine(test1); 
+    //        //var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(json);
+    //        //Console.WriteLine(test1); 
 
 
-            return json;
-        }
+    //        return json;
+    //    }
 
-    }
+    //}
 }

@@ -27,7 +27,7 @@ namespace CaptainCombat.network
                     //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
 
                     IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
-                    DomainState.Instance.Domain.update(gameData); 
+                    //DomainState.Instance.Domain.update(gameData); 
                     Console.WriteLine("Done");
                     Thread.Sleep(5000);
                 }

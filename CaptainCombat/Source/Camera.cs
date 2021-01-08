@@ -25,7 +25,7 @@ namespace CaptainCombat.Source {
 
         public Camera(Domain domain) {
             entity = new Entity(domain);
-            transform = entity.AddComponent<Transform>();
+            transform = entity.AddComponent(new Transform());
         }
 
 
