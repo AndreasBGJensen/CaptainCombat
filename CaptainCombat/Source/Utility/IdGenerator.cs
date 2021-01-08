@@ -3,6 +3,41 @@
 
 namespace CaptainCombat.Source.Utility {
 
+    public struct GlobalId {
+
+        public uint clientId;
+        public uint objectId;
+
+        public GlobalId(uint clientId, uint objectId) {
+            this.clientId = clientId;
+            this.objectId = objectId;
+        }
+
+        public static bool operator ==(GlobalId id1, GlobalId id2) {
+            if ((object)id1 == null)
+                return (object)id2 == null;
+            return id1.Equals(id2);
+        }
+
+        public static bool operator !=(GlobalId id1, GlobalId id2) {
+            return !(id1 == id2);
+        }
+
+        public override bool Equals(object obj) {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            var id2 = (GlobalId)obj;
+            return (clientId == id2.clientId && objectId == id2.objectId);
+        }
+
+        public override int GetHashCode() {
+            return clientId.GetHashCode() ^ objectId.GetHashCode();
+        }
+
+    }
+
+
     public class IdGenerator {
 
         // 0 is reserved for unknown id
