@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using dotSpace.Interfaces.Space;
-using dotSpace.Objects.Network;
-using dotSpace.Objects.Space;
 using RemoteServer.singletons;
 using Tuple = dotSpace.Objects.Space.Tuple;
-using Newtonsoft.Json;
 using RemoteServer.TestData;
-using static RemoteServer.TestData.TestComponentClasse;
+using Newtonsoft.Json;
 
 namespace RemoteServer.threads
 {
-   class Serialization
+    class Serialization
     {
         
         TestComponentClasse testComponentClass = new TestComponentClasse();
@@ -25,21 +20,8 @@ namespace RemoteServer.threads
              {
             try
             {       
-
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomJsonArray3());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomJsonArray2());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-
-
                 Collector();
-                PrintUpdateComponents();
+                //PrintUpdateComponents();
             }
                 catch (Exception e)
                 {
@@ -61,6 +43,8 @@ namespace RemoteServer.threads
                     //Check if a component consist of a single JSON or if it consist of a multiple components
                     var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)x[1]);
                     Console.WriteLine(test1.Count);
+                    Console.WriteLine(test1);
+
                     UpdatorJObject((string)x[1], test1);
 
                     }
@@ -69,6 +53,7 @@ namespace RemoteServer.threads
                         Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
                         foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
                         {
+                        Console.WriteLine(jToken); 
                             UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
                         };
                     }
@@ -127,8 +112,6 @@ namespace RemoteServer.threads
             var data_string = JsonConvert.SerializeObject(data.Parent);
 
             ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-
-
             Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 

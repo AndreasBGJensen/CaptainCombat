@@ -8,8 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-
+using ECS;
+using static ECS.Domain;
+using CaptainCombat.json;
 
 namespace CaptainCombat.states
 {
@@ -43,16 +44,25 @@ namespace CaptainCombat.states
 
         private void RunGameLoop()
         {
-            int index = 0;
+            Domain domain = new Domain();
+            DomainState.Instance.Domain = domain; 
+            Entity player = new Entity(domain, Connection.Instance.User_id);
+            player.AddComponent<Transform>();
+            domain.Clean(); 
+
+            JsonBuilder builder = new JsonBuilder(); 
+           
             while (true)
             {
                 Console.WriteLine("Game running");
-                index++;
-                DataObject data = new DataObject(Connection.Instance.User + ": " + index.ToString());
-                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-                DomainState.Instance.Upload = jsonString;
+                DomainState.Instance.Upload = builder.createJsonString(domain); 
                 Thread.Sleep(2000);
             }
+        }
+
+        private object Transform()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -39,6 +39,10 @@ namespace CaptainCombat.Source.Components {
 
 
 
+        public override object getData()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
 }

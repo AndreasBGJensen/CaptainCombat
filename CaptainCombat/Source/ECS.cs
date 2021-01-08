@@ -1,7 +1,8 @@
-﻿using CaptainCombat.Source.Utility;
+﻿using CaptainCombat.singletons;
+using dotSpace.Interfaces.Space;
 using System;
 using System.Collections.Generic;
-
+using System.Dynamic;
 
 namespace ECS {
 
@@ -13,7 +14,7 @@ namespace ECS {
         private readonly IdGenerator componentIdGenerator = new IdGenerator();
 
         // List of entities registered and finalized in this domain
-        private readonly List<Entity> entities = new List<Entity>();
+        public readonly List<Entity> entities = new List<Entity>();
 
         // List of entities that has been registered, but not finalized yet
         // They will be finalized (added to entities list), when domain is
@@ -70,6 +71,43 @@ namespace ECS {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3), typeof(C4) }, callback);
         }
 
+        public void update(IEnumerable<ITuple> gameData)
+        {
+            // ITuple data format (string)comp, (int)client_id, (int)component_id, (int)entity_id, (string)data);
+
+            foreach (ITuple data in gameData)
+            {
+                if (Connection.Instance.User_id == (int)data[1])
+                {
+                    continue; 
+                }
+
+                Entity current = null;
+                foreach (Entity entity in entitiesToAdd)
+                {
+                    if (entity.Id == (int)data[3] && entity.Client_id == (int)data[1])
+                    {
+                        current = entity;
+                    }
+                }
+
+                foreach (Entity entity in entities)
+                {
+                    if(entity.Id == (int)data[3] && entity.Client_id == (int)data[1])
+                    {
+                        current = entity; 
+                    }
+                }
+
+                if(current == null)
+                {
+                    current = new Entity(this, Connection.Instance.User_id);
+                }
+                
+
+            }
+        }
+
         public void Clean() {
 
             // Add new entities
@@ -94,6 +132,22 @@ namespace ECS {
 
         }
 
+        
+        public List<Component> getAllComponents()
+        {
+            List<Component> allComponents = new List<Component>();
+
+            foreach(Entity entity in entities)
+            {
+                foreach (Component component in entity.newComponents)
+                {
+                    allComponents.Add(component); 
+                }
+            }
+
+            return allComponents; 
+        }
+
 
         private GlobalId registerComponent<C>(C component, GlobalId id) where C : Component {
             if (components.ContainsKey(id))
@@ -108,7 +162,7 @@ namespace ECS {
             return registerComponent(component, new GlobalId(component.ClientId, componentIdGenerator.Get()));
         }
 
-
+        1
         private void unregisterComponent(Component component) {
             componentIdGenerator.Release(component.Id.objectId);
             components.Remove(component.Id);
@@ -148,7 +202,7 @@ namespace ECS {
             private Dictionary<Type, Component> components = new Dictionary<Type, Component>();
 
             // List of components that were added since last clean
-            private readonly List<Component> newComponents = new List<Component>();
+            public readonly List<Component> newComponents = new List<Component>();
 
             private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
 
@@ -164,6 +218,7 @@ namespace ECS {
                 ClientId = clientId == 0 ? 0 : clientId;
 
                 Id = domain.registerEntity(this);
+                Client_id = client_id; 
             }
 
 
@@ -295,6 +350,8 @@ namespace ECS {
                 Id = Domain.registerComponent(this);
                 Local = local;
             }
+
+            public abstract Object getData(); 
 
         }
 

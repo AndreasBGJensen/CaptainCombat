@@ -33,11 +33,13 @@ namespace CaptainCombat.states
            
             Console.Write("\nEnter username: ");
             string username = Console.ReadLine();
-            space.Put("user", username);
+            int user_id = users.Count()+1;
+            space.Put("user", username, user_id);
 
-            Tuple results = (Tuple)space.Get("connected", username, typeof(string));
+            Tuple results = (Tuple)space.Get("connected", user_id, typeof(string));
             Console.WriteLine(results[2]);
             Connection.Instance.User = username;
+            Connection.Instance.User_id = user_id;
 
             this._context.TransitionTo(new Game());
         }

@@ -11,7 +11,7 @@ namespace RemoteServer
 {
     class Program
     {
-        
+        /*
         static void Main(string[] args)
         {
             Serialization serializationProtocol = new Serialization();
@@ -28,8 +28,8 @@ namespace RemoteServer
             //Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
             serializationProtocol.RunProtocol();
         }
-       
-        /*
+        */
+        
         static void Main(string[] args)
         {
             string uri = "tcp://127.0.0.1:5000?CONN";
