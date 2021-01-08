@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 //This name space is not implemented yet
 namespace RemoteServer.Collector
 {
-    interface Interface1
+    interface ICollector
     {
+        void Collect();
     }
 }

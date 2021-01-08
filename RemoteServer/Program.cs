@@ -22,8 +22,6 @@ namespace RemoteServer
             SequentialSpace space = new SequentialSpace();
             repository.AddSpace("space", space);
 
-
-
             Connection.Instance.Space = space;
             //Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
             serializationProtocol.RunProtocol();

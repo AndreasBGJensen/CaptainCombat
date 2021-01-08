@@ -11,36 +11,26 @@ using Tuple = dotSpace.Objects.Space.Tuple;
 using Newtonsoft.Json;
 using RemoteServer.TestData;
 using static RemoteServer.TestData.TestComponentClasse;
+using RemoteServer.Collector;
 
 namespace RemoteServer.threads
 {
    class Serialization
     {
-        
-        TestComponentClasse testComponentClass = new TestComponentClasse();
+        CollectorClass collector = new CollectorClass();
         public void RunProtocol()
         {
+            collector.InitCollector(Connection.Instance.Space, new TupleCollectorParallel("components"));
 
            while (true)
              {
             try
-            {       
+                {
 
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomJsonArray3());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomJsonArray2());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-                Connection.Instance.Space.Put("components", testComponentClass.GetRandomString());
-
-
-                Collector();
+               collector.BeginCollect();
+                //Collector();
                 PrintUpdateComponents();
-            }
+                }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
@@ -59,6 +49,7 @@ namespace RemoteServer.threads
                 {
                     try { 
                     //Check if a component consist of a single JSON or if it consist of a multiple components
+                    //If multiple components are uploaded it will be a JsonArray and the operation below will throw a Invalid Cast Exception and JsonArray will be unpaced in the catch block.
                     var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)x[1]);
                     Console.WriteLine(test1.Count);
                     UpdatorJObject((string)x[1], test1);
@@ -89,22 +80,17 @@ namespace RemoteServer.threads
                          }
                          catch(InvalidCastException e)
                          {
-
-
                                   //Er det Json stringen for componenten som skal uddateres?
                                   //Eller skal den indeholde en component?
 
                                   var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)item[1]);
                                   UpdatorJObject((string)item[1], test1);
-
                          }
                      });*/
 
-
-
             } 
 
-        private void UpdatorJObject(string componentToUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
+        private void UpdatorJObject(string stringComponentUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");

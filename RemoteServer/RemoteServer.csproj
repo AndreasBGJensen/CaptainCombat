@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collector\CollectorClass.cs" />
+    <Compile Include="Collector\TupleCollectorParallel.cs" />
+    <Compile Include="Collector\TupleCollector.cs" />
     <Compile Include="Collector\ICollector.cs" />
     <Compile Include="DTO\ComponentDTO.cs" />
     <Compile Include="Program.cs" />
