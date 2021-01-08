@@ -158,9 +158,8 @@ namespace ECS {
         }
 
 
-        private GlobalId registerComponent<C>(C component) where C : Component {
-            // TODO: Get local client here
-            return registerComponent(component, new GlobalId(component.ClientId, componentIdGenerator.Get()));
+        private GlobalId registerComponent<C>(C component, uint clientId) where C : Component {
+            return registerComponent(component, new GlobalId(clientId, componentIdGenerator.Get()));
         }
 
         
@@ -179,8 +178,8 @@ namespace ECS {
         }
 
 
-        private GlobalId registerEntity(Entity entity) {
-            return registerEntity(entity, new GlobalId(entity.ClientId, entityIdGenerator.Get()));
+        private GlobalId registerEntity(Entity entity, uint clientId) {
+            return registerEntity(entity, new GlobalId(clientId, entityIdGenerator.Get()));
         }
 
         // TODO: Delete entity
@@ -194,7 +193,7 @@ namespace ECS {
             public Domain Domain { get; }
             public GlobalId Id { get; }
 
-            public uint ClientId { get; }
+            public uint ClientId { get => Id.clientId; }
 
             public bool Deleted { get; private set; }
 
@@ -215,10 +214,9 @@ namespace ECS {
             public Entity(Domain domain, uint clientId = 0) {
                 Domain = domain;
 
-                // TODO: Set local client id if clientId == 0
-                ClientId = clientId == 0 ? 0 : clientId;
-
-                Id = domain.registerEntity(this);
+                // Get local client id if clientId is set to 0
+                clientId = clientId == 0 ? (uint) Connection.Instance.User_id : clientId;
+                Id = domain.registerEntity(this, clientId);
             }
 
 
@@ -357,7 +355,7 @@ namespace ECS {
             public Component(Entity entity, bool local = false) {
                 Entity = entity;
                 Domain = entity.Domain;
-                Id = Domain.registerComponent(this);
+                Id = Domain.registerComponent(this, entity.ClientId);
                 Local = local;
             }
 

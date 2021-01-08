@@ -15,6 +15,8 @@ namespace CaptainCombat.singletons
         private static readonly Connection instance = new Connection();
         private RemoteSpace space = null;
         private string user = null;
+     
+        // TODO: Change this to uint
         private int user_id; 
 
 
