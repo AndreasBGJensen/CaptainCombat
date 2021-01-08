@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CaptainCombat.singletons;
+using dotSpace.Interfaces.Space;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 
@@ -64,6 +66,43 @@ namespace ECS {
 
         public void ForMatchingEntities<C1, C2, C3, C4>(EntityCallback callback) where C1 : Component where C2 : Component where C3 : Component where C4 : Component {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3), typeof(C4) }, callback);
+        }
+
+        public void update(IEnumerable<ITuple> gameData)
+        {
+            // ITuple data format (string)comp, (int)client_id, (int)component_id, (int)entity_id, (string)data);
+
+            foreach (ITuple data in gameData)
+            {
+                if (Connection.Instance.User_id == (int)data[1])
+                {
+                    continue; 
+                }
+
+                Entity current = null;
+                foreach (Entity entity in entitiesToAdd)
+                {
+                    if (entity.Id == (int)data[3] && entity.Client_id == (int)data[1])
+                    {
+                        current = entity;
+                    }
+                }
+
+                foreach (Entity entity in entities)
+                {
+                    if(entity.Id == (int)data[3] && entity.Client_id == (int)data[1])
+                    {
+                        current = entity; 
+                    }
+                }
+
+                if(current == null)
+                {
+                    current = new Entity(this, Connection.Instance.User_id);
+                }
+                
+
+            }
         }
 
         public void Clean() {
@@ -133,7 +172,9 @@ namespace ECS {
 
             public Domain Domain { get; }
             public uint Id { get; }
-            public bool Deleted { get; private set; }
+
+            public int Client_id { get; }
+        public bool Deleted { get; private set; }
 
             private bool shouldBeDeleted = false;
 
@@ -148,9 +189,11 @@ namespace ECS {
             /// Construct a new Entity within the given Domain
             /// </summary>
             /// <param name="domain"></param>
-            public Entity(Domain domain) {
+            public Entity(Domain domain, int client_id)
+            {
                 Domain = domain;
                 Id = domain.registerEntity(this);
+                Client_id = client_id; 
             }
 
 

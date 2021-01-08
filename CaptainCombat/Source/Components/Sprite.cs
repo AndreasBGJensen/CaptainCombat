@@ -20,11 +20,10 @@ namespace CaptainCombat.Source.Components {
             Height = height;
         }
 
-
-
-
-        
-        
+        public override object getData()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
 }

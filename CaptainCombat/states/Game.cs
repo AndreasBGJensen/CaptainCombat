@@ -45,7 +45,8 @@ namespace CaptainCombat.states
         private void RunGameLoop()
         {
             Domain domain = new Domain();
-            Entity player = new Entity(domain);
+            DomainState.Instance.Domain = domain; 
+            Entity player = new Entity(domain, Connection.Instance.User_id);
             player.AddComponent<Transform>();
             domain.Clean(); 
 

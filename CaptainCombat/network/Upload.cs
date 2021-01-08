@@ -26,7 +26,7 @@ namespace CaptainCombat.network
                     Console.WriteLine("Uploading");
                     if (DomainState.Instance.Upload != null)
                     {
-                        Connection.Instance.Space.Put("global", Connection.Instance.User, DomainState.Instance.Upload);
+                        Connection.Instance.Space.Put("components", DomainState.Instance.Upload);
                     }
                     Thread.Sleep(5000);
                 }

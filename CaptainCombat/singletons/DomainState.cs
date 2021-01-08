@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace CaptainCombat.singletons
     public sealed class DomainState
     {
         private static readonly DomainState instance = new DomainState();
+        private Domain domain = null; 
         private string upload = null;
         private string download = null;
 
@@ -25,5 +27,7 @@ namespace CaptainCombat.singletons
 
         public string Upload { get => upload; set => upload = value; }
         public string Download { get => download; set => download = value; }
+
+        public Domain Domain { get => domain; set => domain = value; }
     }
 }

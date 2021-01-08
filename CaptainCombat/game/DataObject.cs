@@ -9,14 +9,14 @@ namespace CaptainCombat.game
 {
     class DataObject
     {
-        string comp; 
-        string client_id;
-        int component_id;
-        int entity_id;
-        object data; 
+        public string comp;
+        public int client_id;
+        public int component_id;
+        public int entity_id;
+        public object data; 
         
 
-        public DataObject(string comp, string client_id, int component_id, int entity_id, Object data)
+        public DataObject(string comp, int client_id, int component_id, int entity_id, Object data)
         {
             this.comp = comp;
             this.client_id = client_id;

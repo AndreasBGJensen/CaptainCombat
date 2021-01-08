@@ -1,6 +1,7 @@
 ﻿using CaptainCombat.game;
 using CaptainCombat.singletons;
 using ECS;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace CaptainCombat.json
 
             foreach (Component component in domain.getAllComponents())
             {
-                data.Add(new DataObject(component.GetType().Name, Connection.Instance.User, (int)component.Id, (int)component.Entity.Id, component.getData())); 
+                data.Add(new DataObject(component.GetType().Name, Connection.Instance.User_id, (int)component.Id, (int)component.Entity.Id, component.getData())); 
                 /*
                 Console.WriteLine("comp: " + component.GetType().Name);
                 Console.WriteLine("client_id: " + Connection.Instance.User);
@@ -29,7 +30,18 @@ namespace CaptainCombat.json
                 Console.WriteLine(" data:"+component.getData());
                 */
             }
-                return Newtonsoft.Json.JsonConvert.SerializeObject(data);
+
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            //Console.WriteLine(json); 
+
+            // Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
+            //Console.WriteLine(jarray);
+
+            //var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(json);
+            //Console.WriteLine(test1); 
+
+
+            return json;
         }
 
     }
