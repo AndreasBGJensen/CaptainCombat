@@ -1,0 +1,184 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+
+namespace RemoteServer.TestData
+{
+    public class TestData
+    {
+
+        public string randomJsonString = @"{
+			'comp': 'Transform',
+			'client_id': 0,
+			'component_id': 13,
+			'entity_id': 24,
+			'data': {
+				'x': 12,
+				'y': 12
+			}
+            }";
+        public string randomJsonString2 = @"{
+			'comp': 'Move',
+			'client_id': 0,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 12,
+				'y': 12
+			}
+            }";
+
+        public string randomJsonArray2 = @"[{
+			'comp': 'Move',
+			'client_id': 0,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 12,
+				'y': 12
+			}
+            },
+{'comp': 'Draw',
+			'client_id': 0,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 12,
+				'y': 12
+			}}]";
+
+
+        public string randomJsonArray3 = @"[{
+			'comp': 'Move',
+			'client_id': 0,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 1200,
+				'y': 1200
+			}
+            },
+{'comp': 'Draw',
+			'client_id': 0,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 1000,
+				'y': 100000
+			}}]";
+
+        public string randomJsonString3 = @"{'comp':'name','client_id':0,'component_id':13,'entity_id':24,'data':[{'x':10,'y':12},{'Note':Bla,bla,'y':12}}";
+
+        public TestComponentClasse GetTestData()
+        {
+
+            return new TestComponentClasse();
+        }
+
+        public string GetTestJsonString()
+        {
+            var jsonString =  new TestComponentClasse();
+            return jsonString.GetJsonString();
+        }
+
+        
+
+
+    }
+
+    public class TestComponentClasse : TestData { 
+        public string comp = "name";
+        public int client_id = 0;
+        public int component_id = 13;
+        public int entity_id = 24;
+        public Data data = null;
+        
+        
+
+        public TestComponentClasse()
+        {
+            //data = Data.GetInstance();
+            data = Data.GetInstance();
+        }
+
+        public TestComponentClasse(string comp, int client_id, int component_id, int entity_id)
+        {
+            this.comp = comp;
+            this.client_id = client_id;
+            this.component_id = component_id;
+            this.entity_id = entity_id;
+            data = Data.GetInstance();
+            //data = @"{'x': '10', 'y': '12'}";
+        }
+
+        public string GetRandomString()
+        {
+            return randomJsonString;
+        }
+
+        public string GetRandomString2()
+        {
+            return randomJsonString2;
+        }
+
+        public string GetRandomJsonArray2()
+        {
+            return randomJsonArray2;
+        }
+
+        public string GetRandomJsonArray3()
+        {
+            return randomJsonArray3;
+        }
+
+        public class Data
+        {
+            public int x=10;
+            public int y = 12;
+
+
+
+            Data() { }
+            
+
+            public static Data GetInstance()
+            {
+                return new Data();
+            }
+        }
+        
+        public string GetJsonString()
+        {
+            
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public TestComponentClasse GetClassObject(string JsonString)
+        {
+            TestComponentClasse deserializedProduct = JsonConvert.DeserializeObject<TestComponentClasse>(JsonString);
+
+            return deserializedProduct;
+        }
+
+
+        public class TestComponentClasse2
+        {
+            public string comp = "name";
+            public int client_id = 0;
+            public int component_id = 13;
+            public int entity_id = 24;
+            public string data;
+            //puvlic string data = 
+
+            public TestComponentClasse2()
+            {
+                
+            }
+           
+            
+        }
+    }
+}

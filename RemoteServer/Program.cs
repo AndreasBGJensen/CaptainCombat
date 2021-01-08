@@ -14,6 +14,7 @@ namespace RemoteServer
         
         static void Main(string[] args)
         {
+            Serialization serializationProtocol = new Serialization();
             string uri = "tcp://127.0.0.1:123/space?CONN";
 
             SpaceRepository repository = new SpaceRepository();
@@ -21,9 +22,11 @@ namespace RemoteServer
             SequentialSpace space = new SequentialSpace();
             repository.AddSpace("space", space);
 
-            ITuple message = space.Get(typeof(string), typeof(string));
 
-            Console.WriteLine(message[0] + ":" + message[1]);
+
+            Connection.Instance.Space = space;
+            //Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
+            serializationProtocol.RunProtocol();
         }
        
         /*
@@ -48,5 +51,6 @@ namespace RemoteServer
 
         }
         */
+        
     }
 }
