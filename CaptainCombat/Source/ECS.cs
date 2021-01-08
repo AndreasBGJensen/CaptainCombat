@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CaptainCombat.Source.Utility;
+using System;
 using System.Collections.Generic;
 
 
@@ -84,7 +85,7 @@ namespace ECS {
 
             // Remove entities
             foreach (var entity in entitiesToRemove) {
-                entityIdGenerator.releaseId(entity.Id);
+                entityIdGenerator.Release(entity.Id);
                 entities.Remove(entity);
             }
 
@@ -92,21 +93,21 @@ namespace ECS {
 
 
         private uint registerComponent<C>(C component) where C : Component {
-            uint id = componentIdGenerator.getId();
+            uint id = componentIdGenerator.Get();
             components[id] = component;
 
             return id;
         }
 
         private void unregisterComponent(Component component) {
-            componentIdGenerator.releaseId(component.Id);
+            componentIdGenerator.Release(component.Id);
             components.Remove(component.Id);
         }
 
 
         private uint registerEntity(Entity entity) {
             entitiesToAdd.Add(entity);
-            return entityIdGenerator.getId();
+            return entityIdGenerator.Get();
         }
 
 
@@ -255,25 +256,7 @@ namespace ECS {
 
         // ========================================================================================================================================================= 
 
-        private class IdGenerator {
-            // 0 is "unknown" id
-            private uint nextId = 1;
-
-            // List of ids that has been generated, but freed again
-            private Queue<uint> readyIds = new Queue<uint>();
-
-
-            public uint getId() {
-                if (readyIds.Count > 0)
-                    return readyIds.Dequeue();
-                return nextId++;
-            }
-
-            public void releaseId(uint id) {
-                readyIds.Enqueue(id);
-            }
-
-        }
+   
 
     }
 }

@@ -2,12 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace CaptainCombat.Source {
-    
-    public static class Utility {
-        // General utility methods...
-    }
-
+namespace CaptainCombat.Source.Utility {
 
     public static class VectorUtility {
 
