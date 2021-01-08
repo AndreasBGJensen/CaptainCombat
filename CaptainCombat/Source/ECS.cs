@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Dynamic;
+using System.Reflection;
 
 namespace ECS {
 
@@ -81,18 +83,22 @@ namespace ECS {
             
             foreach (ITuple data in gameData)
             {
+                var client_id = (uint)(int)data[1];
+                var component_id = (uint)(int)data[2];
+                var entity_id = (uint)(int)data[3];
+
                 Console.WriteLine("Test");
                 Console.WriteLine(data);
-                if (Connection.Instance.User_id == (int)data[1])
+                if (Connection.Instance.User_id == client_id)
                 {
-                    continue; 
+                    //continue; 
                 }
 
                 Console.WriteLine("Dont run");
 
                 Entity current_entity = null;
                
-                GlobalId global_entity_id = new GlobalId((uint)(int)data[1], (uint)(int)data[3]); 
+                GlobalId global_entity_id = new GlobalId(client_id, entity_id); 
 
                 if (registeredEntities.ContainsKey(global_entity_id))
                 {
@@ -105,21 +111,31 @@ namespace ECS {
                     current_entity = new Entity(this, (uint)Connection.Instance.User_id); 
                 }
 
-                GlobalId global_compotent_id = new GlobalId((uint)(int)data[1], (uint)(int)data[2]);
+                GlobalId global_compotent_id = new GlobalId(client_id, component_id);
                 Component current_compotent = null;
 
                 if (components.ContainsKey(global_compotent_id))
                 {
                     Console.WriteLine("Component found");
                     current_compotent = components[global_compotent_id];
-                    current_compotent.update((JObject)JsonConvert.DeserializeObject((string)data[4]));
                 }
                 else
                 {
-                    
+                    // Create new component
+                    var componentTypeIdentifier = (string)data[0];
+                    current_compotent = Component.CreateComponent(componentTypeIdentifier);
+
+                    current_compotent.Id = global_compotent_id;
+
+                    // TODO: Not sure if this actually works (GetType() may return Component instead of child class)
+                    current_entity.AddComponent(current_compotent, current_compotent.GetType());
                 }
+
+                // Update Component data to new data
+                var componentJsonData = (string)data[4];
+                current_compotent.update((JObject)JsonConvert.DeserializeObject(componentJsonData));
             }
-          
+
         }
 
         public void Clean() {
@@ -195,8 +211,6 @@ namespace ECS {
             return registerEntity(entity, new GlobalId(clientId, entityIdGenerator.Get()));
         }
 
-        // TODO: Delete entity
-
 
 
         // ========================================================================================================================================================= 
@@ -253,9 +267,13 @@ namespace ECS {
             /// <param name="constructionArguments">List of arguments for constructor (excluding the first Entity argument)</param>
             /// <returns>The newly construct Component</returns>
             public C AddComponent<C>(C component) where C : Component {
-                if (Deleted) throw new InvalidOperationException("Entity has been deleted");
+                AddComponent(component, typeof(C));
+                return component;
+            }
 
-                Type type = typeof(C);
+
+            public Component AddComponent(Component component, Type type) {
+                if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
                 if (components.ContainsKey(type))
                     throw new InvalidOperationException($"Entity already has component {type.Name}");
@@ -347,32 +365,42 @@ namespace ECS {
 
         public abstract class Component {
 
+
+
             private Entity entity = null;
             public Entity Entity { 
                 get => entity;
                 set {
                     if (entity != null)
-                        throw new ArgumentException("Component already been assigned a component");
+                        throw new ArgumentException("Component already been assigned to an Entity");
                     
                     // Connect component with Entity and its Domain
                     entity = value;
                     Domain = entity.Domain;
 
                     // Register component in the Domain
-                    if (Id != GlobalId.NULL) {
+                    if (id != GlobalId.NULL) {
                         if (entity.ClientId != Id.clientId)
                             throw new ArgumentException("Component's client ID does not match with the Entity's client id");
                         Domain.registerComponent(this, Id);
                     }
                     else {
-                        Id = Domain.registerComponent(this, entity.ClientId);
+                        id = Domain.registerComponent(this, entity.ClientId);
                     }
                 }
             }
 
             public Domain Domain { get; private set; }
 
-            public GlobalId Id { get; private set; }
+            private GlobalId id;
+            public GlobalId Id {
+                get => id;
+                set {
+                    if (entity != null)
+                        throw new ArgumentException("Component already been assigned to an Entity");
+                    id = value;
+                }
+            }
 
             public uint ClientId { get => Id.clientId; }
 
@@ -385,11 +413,49 @@ namespace ECS {
             // This flag is set to true, if it the component has been "finalized" in the domain
             // Should only be set by the domain
             public bool Matchable { get; set; } = false;
+
+
+            public Component() {}
           
 
             public abstract Object getData();
 
             public abstract void update(JObject json);
+
+
+
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            // Setup type mapping (mapping of some identifier to Component child classes)
+
+            private static readonly Dictionary<string, Type> typeMap = new Dictionary<string, Type>();
+
+            // Constructs a new Component of the type identified by the
+            // given identifier
+            public static Component CreateComponent(string identifier) {
+                if (!typeMap.ContainsKey(identifier))
+                    throw new ArgumentException($"Component type with identifier '{identifier}' does not exist");
+                return (Component)Activator.CreateInstance(typeMap[identifier]);
+            }
+
+            // Analyze which classes inherit from Component, and
+            // add them to the 'typeMap' with their full name as
+            // an identifier
+            static Component() {
+                foreach (var type in Assembly.GetAssembly(typeof(Component)).GetTypes()) {
+                    if (type.IsSubclassOf(typeof(Component))) {
+                        var identifier = type.FullName;
+                        if (type.GetConstructor(Type.EmptyTypes) == null)
+                            throw new Exception($"Component type '{type.FullName}' does not have a constructor with no parameters");
+                        if (typeMap.ContainsKey(identifier))
+                            throw new DuplicateNameException($"Component type '{identifier}' has already been registered");
+                        typeMap.Add(identifier, type);
+                    }
+                }
+            }
+
+            public string GetTypeIdentifier() {
+                return GetType().FullName;
+            }
         }
 
     }

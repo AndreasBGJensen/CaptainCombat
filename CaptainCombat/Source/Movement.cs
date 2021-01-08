@@ -29,7 +29,7 @@ namespace CaptainCombat.Source {
 
                 // Update velocity
                 double resistance = 1.0 - move.Resistance * deltaTime;
-                move.Velocity = new Vector2( move.Velocity.X, move.Velocity.Y );
+                move.Velocity = new Vector2( (float)(move.Velocity.X * resistance), (float)(move.Velocity.Y * resistance) );
                 move.Velocity = new Vector2(
                     (float)(move.Velocity.X + move.Acceleration.X * deltaTime),
                     (float)(move.Velocity.Y + move.Acceleration.Y * deltaTime)

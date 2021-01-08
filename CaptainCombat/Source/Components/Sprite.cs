@@ -11,6 +11,8 @@ namespace CaptainCombat.Source.Components {
 
         public Texture Texture { get => Asset.GetAsset<Texture>(TextureTag); }
 
+        public Sprite() {}
+
         public Sprite(Texture texture, double width, double height) {
             TextureTag = texture.Tag;
             Width = width;

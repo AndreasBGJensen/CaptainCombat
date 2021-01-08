@@ -21,7 +21,13 @@ namespace CaptainCombat.json
 
             foreach (Component component in DomainState.Instance.Domain.getAllComponents())
             {
-                data.Add(new DataObject(component.GetType().Name, Connection.Instance.User_id, (int)component.Id.objectId, (int)component.Entity.Id.objectId, component.getData())); 
+                data.Add(new DataObject(
+                    component.GetTypeIdentifier(),
+                    Connection.Instance.User_id,
+                    (int)component.Id.objectId,
+                    (int)component.Entity.Id.objectId,
+                    component.getData()
+                )); 
                 /*
                 Console.WriteLine("comp: " + component.GetType().Name);
                 Console.WriteLine("client_id: " + Connection.Instance.User);
