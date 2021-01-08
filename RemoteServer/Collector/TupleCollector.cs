@@ -15,8 +15,9 @@ namespace RemoteServer.Collector
         private string searchString = "components";//Default
         private SequentialSpace mySpace;
 
-        public TupleCollector(SequentialSpace space)
+        public TupleCollector(string searchString, SequentialSpace space)
         {
+            this.searchString = searchString;
             mySpace = space;
         }
 
@@ -33,7 +34,7 @@ namespace RemoteServer.Collector
                         //Check if a component consist of a single JSON or if it consist of a multiple components
                         //If multiple components are uploaded it will be a JsonArray and the operation below will throw a Invalid Cast Exception and JsonArray will be unpaced in the catch block.
                         var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)x[1]);
-                        Console.WriteLine(test1.Count);
+                        //Console.WriteLine(test1.Count);
                         UpdatorJObject((string)x[1], test1);
 
                     }

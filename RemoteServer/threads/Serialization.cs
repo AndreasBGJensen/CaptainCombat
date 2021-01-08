@@ -24,109 +24,17 @@ namespace RemoteServer.threads
         public void RunProtocol()
         {
             collector.SetSpace(Connection.Instance.Space);
-            collector.SetCollector(new TupleCollectorParallel("components",Connection.Instance.Space));
-
-           //while (true)
-             //{
+            //collector.SetCollector(new TupleCollectorParallel("components",Connection.Instance.Space));
+            collector.SetCollector(new TupleCollector("components", Connection.Instance.Space));
+           while (true)
+           {
             try
                 {
 
-
-                
                 
 
-
-                for (int i = 0; i<1000; i++)
-                {
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                }
-
-
-
-
-
-                // ...
-
-
-                Console.WriteLine("Sequentila Testing");
-
-
-                sw.Start();
-                //collector.BeginCollect();
-                Collector();
-                //PrintUpdateComponents();
-                sw.Stop();
-                Console.WriteLine("Sequential Elapsed={0}", sw.Elapsed.Milliseconds);
-
-
-                Console.WriteLine("Parallel Testing");
-                for (int i = 0; i < 1000; i++)
-                {
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                }
-
-                sw.Start();
                 collector.BeginCollect();
-                //Collector();
-                //PrintUpdateComponents();
-                sw.Stop();
-                Console.WriteLine("Parallel Elapsed={0}", sw.Elapsed.Milliseconds);
-
-                Console.WriteLine("");
-                Console.WriteLine("RUNNING 100 instances");
-                Console.WriteLine("");
-                for (int i = 0; i < 100; i++)
-                {
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                }
-                sw.Start();
-                collector.BeginCollect();
-                //Collector();
-                //PrintUpdateComponents();
-                sw.Stop();
-                Console.WriteLine("Parallel Elapsed={0}", sw.Elapsed.Milliseconds);
-
-                for (int i = 0; i < 1000; i++)
-                {
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
-                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                    Connection.Instance.Space.Put("components", test.GetRandomString());
-                }
-
-
-
-
-
-                // ...
-
-
-                Console.WriteLine("Sequentila Testing");
-
-
-                sw.Start();
-                //collector.BeginCollect();
-                Collector();
-                //PrintUpdateComponents();
-                sw.Stop();
-                Console.WriteLine("Sequential Elapsed={0}", sw.Elapsed.Milliseconds);
+                PrintUpdateComponents();
 
             }
             catch (Exception e)
@@ -134,7 +42,7 @@ namespace RemoteServer.threads
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.StackTrace);
                 }
-            //}
+            }
         }
 
 
@@ -229,7 +137,7 @@ namespace RemoteServer.threads
 
         private void PrintUpdateComponents()
         {
-            Console.WriteLine("Printing test components");
+           // Console.WriteLine("Printing test components");
             IEnumerable<ITuple> results3 = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
             foreach (ITuple tuple in results3)
             {
