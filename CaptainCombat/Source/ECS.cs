@@ -20,6 +20,9 @@ namespace ECS {
         // cleaned
         private readonly List<Entity> entitiesToAdd = new List<Entity>();
 
+
+        private readonly Dictionary<uint, Entity> registeredEntities = new Dictionary<uint, Entity>();
+
         // Mapping of component ids to components
         private readonly Dictionary<uint, Component> components = new Dictionary<uint, Component>();
 
@@ -99,6 +102,7 @@ namespace ECS {
             return id;
         }
 
+
         private void unregisterComponent(Component component) {
             componentIdGenerator.Release(component.Id);
             components.Remove(component.Id);
@@ -107,7 +111,10 @@ namespace ECS {
 
         private uint registerEntity(Entity entity) {
             entitiesToAdd.Add(entity);
-            return entityIdGenerator.Get();
+
+            uint id = entityIdGenerator.Get();
+            registeredEntities.Add(id, entity);
+            return id;
         }
 
 
@@ -128,6 +135,7 @@ namespace ECS {
             private readonly List<Component> newComponents = new List<Component>();
 
             private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
+
 
             /// <summary>
             /// Construct a new Entity within the given Domain
