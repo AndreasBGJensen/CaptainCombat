@@ -13,6 +13,7 @@ using RemoteServer.TestData;
 using static RemoteServer.TestData.TestComponentClasse;
 using RemoteServer.Collector;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace RemoteServer.threads
 {
@@ -26,6 +27,7 @@ namespace RemoteServer.threads
             collector.SetSpace(Connection.Instance.Space);
             //collector.SetCollector(new TupleCollectorParallel("components",Connection.Instance.Space));
             collector.SetCollector(new TupleCollector("components", Connection.Instance.Space));
+            Console.WriteLine("Running...");
            while (true)
            {
             try
@@ -96,32 +98,30 @@ namespace RemoteServer.threads
 
             } 
 
-        private void UpdatorJObject(string stringComponentUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
+        private void UpdatorJObject(string stringComponentUpdate, JObject serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data.Parent);
             ITuple result = Connection.Instance.Space.GetP(comp,client_id,component_id,entity_id, typeof(string));
 
-            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data));
         }
 
-        private void UpdatorJToken(string stringComponentUpdate, Newtonsoft.Json.Linq.JToken serarchParam)
+        private void UpdatorJToken(string stringComponentUpdate, JToken serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data.Parent);
 
             ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
 
 
-            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data));
         }
 
 

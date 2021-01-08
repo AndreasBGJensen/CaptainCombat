@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tuple = dotSpace.Objects.Space.Tuple;
+using Newtonsoft.Json.Linq;
 
 namespace RemoteServer.Collector
 {
@@ -34,7 +35,7 @@ namespace RemoteServer.Collector
                 try
                 {
                     //Check if a component consist of a single JSON or if it consist of a multiple components
-                    Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)item[1]);
+                    JArray jarray = JsonConvert.DeserializeObject<JArray>((string)item[1]);
                     jarray.AsParallel().ForAll(jToken =>
                     {
                         UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
@@ -45,7 +46,7 @@ namespace RemoteServer.Collector
                     //Er det Json stringen for componenten som skal uddateres?
                     //Eller skal den indeholde en component?
 
-                    var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)item[1]);
+                    var test1 = (JObject)JsonConvert.DeserializeObject((string)item[1]);
                     UpdatorJObject((string)item[1], test1);
                 }
             });
@@ -53,36 +54,34 @@ namespace RemoteServer.Collector
 
         }
 
-        private void UpdatorJObject(string stringComponentUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
+        private void UpdatorJObject(string stringComponentUpdate, JObject serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data.Parent);
 
             //Updating Tuple
             mySpace.Get("lock");
             ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data));
             mySpace.Put("lock");
         }
 
-        private void UpdatorJToken(string stringComponentUpdate, Newtonsoft.Json.Linq.JToken serarchParam)
+        private void UpdatorJToken(string stringComponentUpdate, JToken serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data.Parent);
 
 
             //Updating Tuple
             mySpace.Get("lock");
             ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data));
             mySpace.Put("lock");
         }
 
