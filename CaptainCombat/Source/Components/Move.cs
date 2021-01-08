@@ -26,10 +26,7 @@ namespace CaptainCombat.Source.Components {
 
         public double RotationResistance { get; set; }
 
-        public override object getData() {
-            throw new System.NotImplementedException();
-        }
-
+       
         public override object getData()
         {
             throw new System.NotImplementedException();

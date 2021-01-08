@@ -92,7 +92,7 @@ namespace ECS {
 
                 Entity current_entity = null;
                
-                GlobalId global_entity_id = new GlobalId((uint)data[1], (uint)data[3]); 
+                GlobalId global_entity_id = new GlobalId((uint)(int)data[1], (uint)(int)data[3]); 
 
                 if (registeredEntities.ContainsKey(global_entity_id))
                 {
@@ -105,17 +105,18 @@ namespace ECS {
                     current_entity = new Entity(this, (uint)Connection.Instance.User_id); 
                 }
 
-                GlobalId global_compotent_id = new GlobalId((uint)data[1], (uint)data[2]);
+                GlobalId global_compotent_id = new GlobalId((uint)(int)data[1], (uint)(int)data[2]);
                 Component current_compotent = null;
 
                 if (components.ContainsKey(global_compotent_id))
                 {
+                    Console.WriteLine("Component found");
                     current_compotent = components[global_compotent_id];
                     current_compotent.update((JObject)JsonConvert.DeserializeObject((string)data[4]));
                 }
                 else
                 {
-                    
+                    Console.WriteLine("Component not found");
                 }
             }
           

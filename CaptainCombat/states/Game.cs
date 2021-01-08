@@ -43,7 +43,7 @@ namespace CaptainCombat.states
         {
             
             Entity player = new Entity(DomainState.Instance.Domain, (uint)Connection.Instance.User_id);
-            player.AddComponent<Transform>();
+            player.AddComponent(new Transform());
 
             DomainState.Instance.Domain.Clean(); 
 

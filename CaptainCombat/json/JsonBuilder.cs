@@ -12,8 +12,8 @@ using static ECS.Domain;
 
 namespace CaptainCombat.json
 {
-    //class JsonBuilder
-    //{
+    class JsonBuilder
+    {
         
         public string createJsonString()
         {
@@ -34,15 +34,15 @@ namespace CaptainCombat.json
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
             Console.WriteLine(json); 
 
-             //Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
-            //Console.WriteLine(jarray);
+             Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
+            Console.WriteLine(jarray);
 
-    //        //var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(json);
-    //        //Console.WriteLine(test1); 
+            //var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(json);
+            //Console.WriteLine(test1); 
 
 
-    //        return json;
-    //    }
+            return json;
+      }
 
-    //}
+   }
 }
