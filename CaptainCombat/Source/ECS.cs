@@ -365,14 +365,14 @@ namespace ECS {
                         Domain.registerComponent(this, Id);
                     }
                     else {
-                        Domain.registerComponent(this, entity.ClientId);
+                        Id = Domain.registerComponent(this, entity.ClientId);
                     }
                 }
             }
 
             public Domain Domain { get; private set; }
 
-            public GlobalId Id { get; }
+            public GlobalId Id { get; private set; }
 
             public uint ClientId { get => Id.clientId; }
 
