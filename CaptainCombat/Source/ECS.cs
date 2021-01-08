@@ -156,7 +156,7 @@ namespace ECS {
             return registerComponent(component, new GlobalId(component.ClientId, componentIdGenerator.Get()));
         }
 
-        1
+        
         private void unregisterComponent(Component component) {
             componentIdGenerator.Release(component.Id.objectId);
             components.Remove(component.Id);
@@ -212,7 +212,6 @@ namespace ECS {
                 ClientId = clientId == 0 ? 0 : clientId;
 
                 Id = domain.registerEntity(this);
-                Client_id = client_id; 
             }
 
 
