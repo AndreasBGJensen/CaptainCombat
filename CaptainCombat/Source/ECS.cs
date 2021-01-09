@@ -162,21 +162,20 @@ namespace ECS {
 
         }
 
-        
-        public List<Component> getAllComponents()
-        {
-            List<Component> allComponents = new List<Component>();
 
-            foreach(Entity entity in entities)
-            {
-                foreach (Component component in entity.newComponents)
-                {
-                    allComponents.Add(component); 
-                }
+        /// <summary>
+        /// Executes the given callback for all COmponents in the Domain
+        /// that belongs to the local Client, and that are matchable (meaning
+        /// that they are finalized)
+        /// </summary>
+        public void ForLocalComponents(ComponentCallback callback) {
+            foreach( var pair in components ) {
+                var component = pair.Value;
+                if (component.Matchable && component.Local)
+                    callback(component);
             }
-
-            return allComponents; 
         }
+        public delegate void ComponentCallback(Component component);
 
 
         private GlobalId registerComponent<C>(C component, GlobalId id) where C : Component {
