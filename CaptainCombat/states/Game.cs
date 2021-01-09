@@ -23,11 +23,9 @@ namespace CaptainCombat.states
         public object JsonSerializer { get; private set; }
 
         public override void Run(){
-
+            
             using (var game = new GameController())
                 game.Run();
-
-
 
             //RunGameLoop();
         }

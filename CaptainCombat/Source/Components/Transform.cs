@@ -37,13 +37,23 @@ namespace CaptainCombat.Source.Components {
 
         public override object getData()
         {
-            throw new System.NotImplementedException();
+            var obj = new {
+                X = this.X,
+                Y = this.Y,
+                ScaleX = this.ScaleX,
+                ScaleY = this.ScaleY,
+                Rotation = this.Rotation
+            };
+            return obj;
         }
 
         public override void update(JObject json)
         {
-            throw new System.NotImplementedException();
-
+            this.X = (double)json.SelectToken("X"); 
+            this.Y = (double)json.SelectToken("Y");
+            this.ScaleX = (double)json.SelectToken("ScaleX");
+            this.ScaleY = (double)json.SelectToken("ScaleY");
+            this.Rotation = (double)json.SelectToken("Rotation");
         }
     }
 

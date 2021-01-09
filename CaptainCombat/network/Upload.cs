@@ -1,4 +1,5 @@
 ﻿
+using CaptainCombat.Diagnostics;
 using CaptainCombat.singletons;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace CaptainCombat.network
 {
     class Upload
     {
+        StopWatch watch = new StopWatch("Uploading", 100);
         public Upload()
         {
 
@@ -23,12 +25,16 @@ namespace CaptainCombat.network
             {
                 while (true)
                 {
-                    Console.WriteLine("Uploading");
+                    
+                    //Console.WriteLine("Uploading");
                     if (DomainState.Instance.Upload != null)
                     {
+                        watch.Start();
                         Connection.Instance.Space.Put("components", DomainState.Instance.Upload);
+                        watch.Stop();
+                        watch.PrintTimer();
                     }
-                    Thread.Sleep(5000);
+                    
                 }
             }
         }

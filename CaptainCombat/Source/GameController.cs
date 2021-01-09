@@ -35,7 +35,7 @@ namespace CaptainCombat
         
             DomainState.Instance.Domain = domain;
 
-
+            
             Upload upload = new Upload();
             Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
             uploadThread.Start();
@@ -43,6 +43,7 @@ namespace CaptainCombat
             DownLoad download = new DownLoad();
             Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
             downloadThread.Start();
+            
         }
 
 
@@ -89,7 +90,7 @@ namespace CaptainCombat
 
         protected override void Update(GameTime gameTime) {
 
-            System.Console.WriteLine("Frame: " + gameTime.ElapsedGameTime.TotalMilliseconds);
+            //System.Console.WriteLine("Frame: " + gameTime.ElapsedGameTime.TotalMilliseconds);
 
             // Clean the Domain before each frame
             domain.Clean();

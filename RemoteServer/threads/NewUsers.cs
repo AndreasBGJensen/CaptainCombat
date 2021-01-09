@@ -12,6 +12,7 @@ namespace RemoteServer.threads
 {
     class NewUsers
     {
+        static int newId = 1; 
         public NewUsers()
         {
 
@@ -23,11 +24,12 @@ namespace RemoteServer.threads
             {
                 try
                 {
-                    Tuple result = (Tuple)Connection.Instance.Space.Get("user", typeof(string), typeof(int));
+                    Tuple result = (Tuple)Connection.Instance.Space.Get("user", typeof(string));
                     Console.WriteLine("User joined: " + result[1]);
-
+                    int client_id = newId;
+                    newId++; 
                     Connection.Instance.Space.Put("users", result[1]);
-                    Connection.Instance.Space.Put("connected", result[2], "Joined successfully");
+                    Connection.Instance.Space.Put("connected", client_id, "Joined successfully");
                 }
                 catch (Exception e)
                 {

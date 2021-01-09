@@ -30,7 +30,7 @@ namespace CaptainCombat.json
             });
 
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-            Console.WriteLine(json); 
+            //Console.WriteLine(json); 
 
             //Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
             //Console.WriteLine(jarray);
