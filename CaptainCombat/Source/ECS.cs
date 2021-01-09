@@ -164,14 +164,14 @@ namespace ECS {
 
 
         /// <summary>
-        /// Executes the given callback for all COmponents in the Domain
+        /// Executes the given callback for all Components in the Domain
         /// that belongs to the local Client, and that are matchable (meaning
         /// that they are finalized)
         /// </summary>
         public void ForLocalComponents(ComponentCallback callback) {
             foreach( var pair in components ) {
                 var component = pair.Value;
-                if (component.Matchable && component.Local)
+                if (component.Matchable && component.ShouldSynchronize && component.IsLocal )
                     callback(component);
             }
         }
@@ -349,13 +349,13 @@ namespace ECS {
 
         public void MakeGlobal() {
             foreach (var pair in components) {
-                pair.Value.Local = false;
+                pair.Value.ShouldSynchronize = false;
             }
         }
 
         public void MakeLocal() {
             foreach( var pair in components ) {
-                pair.Value.Local = true;
+                pair.Value.ShouldSynchronize = true;
             }
         }
 
@@ -403,11 +403,19 @@ namespace ECS {
 
             public uint ClientId { get => Id.clientId; }
 
+
+            /// <summary>
+            /// Whether or not this Component is owned by this local Client
+            /// </summary>
+            public bool IsLocal { get => ClientId == Connection.Instance.User_id; }
+
+
             /// <summary>
             /// True if this Component should be synchronized with other clients, or false
-            /// if it should only exist locally
+            /// if it should only exist locally.
+            /// Defaults to true
             /// </summary>
-            public bool Local { get; set; }
+            public bool ShouldSynchronize { get; set; } = true;
 
             // This flag is set to true, if it the component has been "finalized" in the domain
             // Should only be set by the domain

@@ -15,10 +15,9 @@ namespace CaptainCombat.json
     class JsonBuilder
     {
         
-        public string createJsonString()
-        {
-            List<DataObject> data = new List<DataObject>();
+        public string createJsonString() {
 
+            List<DataObject> data = new List<DataObject>();
 
             DomainState.Instance.Domain.ForLocalComponents((component) => {
                 data.Add(new DataObject(
