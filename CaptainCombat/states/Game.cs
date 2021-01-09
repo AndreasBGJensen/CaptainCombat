@@ -24,38 +24,30 @@ namespace CaptainCombat.states
 
         public override void Run(){
 
-            Domain domain = new Domain();
-            DomainState.Instance.Domain = domain;
+            using (var game = new GameController())
+                game.Run();
 
-            Upload upload = new Upload();
-            Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
-            uploadThread.Start();
 
-            DownLoad download = new DownLoad();
-            Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
-            downloadThread.Start();
 
-            RunGameLoop();
+            //RunGameLoop();
         }
 
 
-        private void RunGameLoop()
-        {
+        //private void RunGameLoop()
+        //{
             
-            Entity player = new Entity(DomainState.Instance.Domain, (uint)Connection.Instance.User_id);
-            player.AddComponent(new Transform());
+        //    Entity player = new Entity(DomainState.Instance.Domain, (uint)Connection.Instance.User_id);
+        //    player.AddComponent(new Transform());
 
-            
-
-            JsonBuilder builder = new JsonBuilder(); 
-            while (true)
-            {
-                DomainState.Instance.Domain.Clean();
-                Console.WriteLine("Game running");
-                DomainState.Instance.Upload = builder.createJsonString(); 
-                Thread.Sleep(2000);
-            }
-        }
+        //    JsonBuilder builder = new JsonBuilder(); 
+        //    while (true)
+        //    {
+        //        DomainState.Instance.Domain.Clean();
+        //        Console.WriteLine("Game running");
+        //        DomainState.Instance.Upload = builder.createJsonString(); 
+        //        Thread.Sleep(2000);
+        //    }
+        //}
 
     }
 }
