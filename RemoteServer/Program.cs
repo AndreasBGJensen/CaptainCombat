@@ -32,7 +32,8 @@ namespace RemoteServer
         
         static void Main(string[] args)
         {
-            string uri = "tcp://127.0.0.1:5000?CONN";
+            //string uri = "tcp://127.0.0.1:5000?CONN";
+            string uri = "tcp://49.12.75.251:5000?CONN";
 
             SpaceRepository repository = new SpaceRepository();
             repository.AddGate(uri);
