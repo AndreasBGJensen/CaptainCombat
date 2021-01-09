@@ -4,6 +4,7 @@ using dotSpace.Interfaces.Space;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
@@ -27,10 +28,10 @@ namespace ECS {
         private readonly List<Entity> entitiesToAdd = new List<Entity>();
 
 
-        private readonly Dictionary<GlobalId, Entity> registeredEntities = new Dictionary<GlobalId, Entity>();
+        private readonly ConcurrentDictionary<GlobalId, Entity> registeredEntities = new ConcurrentDictionary<GlobalId, Entity>();
 
         // Mapping of component ids to components
-        private readonly Dictionary<GlobalId, Component> components = new Dictionary<GlobalId, Component>();
+        private readonly ConcurrentDictionary<GlobalId, Component> components = new ConcurrentDictionary<GlobalId, Component>();
 
         public delegate void EntityCallback(Entity e);
 
@@ -195,7 +196,11 @@ namespace ECS {
         
         private void unregisterComponent(Component component) {
             componentIdGenerator.Release(component.Id.objectId);
-            components.Remove(component.Id);
+            
+            if (!components.TryRemove(component.Id, out _)){
+                throw new InvalidOperationException("Component id doesn`t exit"); 
+            }
+            //components.Remove(component.Id);
         }
 
 
@@ -203,7 +208,7 @@ namespace ECS {
             if (registeredEntities.ContainsKey(id))
                 throw new ArgumentException("Entity already exists with given ID");
             entitiesToAdd.Add(entity);
-            registeredEntities.Add(id, entity);
+            registeredEntities.TryAdd(id, entity);
             return id;
         }
 
