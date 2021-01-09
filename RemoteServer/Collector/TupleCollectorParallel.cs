@@ -61,11 +61,11 @@ namespace RemoteServer.Collector
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
-
+            var data_string = JsonConvert.SerializeObject(data);
             //Updating Tuple
             mySpace.Get("lock");
             ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
             mySpace.Put("lock");
         }
 
@@ -76,12 +76,13 @@ namespace RemoteServer.Collector
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
+            var data_string = JsonConvert.SerializeObject(data);
 
 
             //Updating Tuple
             mySpace.Get("lock");
             ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data));
+            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
             mySpace.Put("lock");
         }
 
