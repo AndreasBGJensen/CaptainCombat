@@ -1,7 +1,4 @@
-﻿
-
-
-using CaptainCombat.Source;
+﻿using Newtonsoft.Json.Linq;
 using static ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
@@ -14,17 +11,24 @@ namespace CaptainCombat.Source.Components {
 
         public Texture Texture { get => Asset.GetAsset<Texture>(TextureTag); }
 
-        public Sprite(Entity entity, Texture texture, double width, double height) : base(entity) {
+        public Sprite() {}
+
+        public Sprite(Texture texture, double width, double height) {
             TextureTag = texture.Tag;
             Width = width;
             Height = height;
         }
+       
 
+        public override object getData()
+        {
+            throw new System.NotImplementedException();
+        }
 
-
-
-        
-        
+        public override void update(JObject json)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
 }

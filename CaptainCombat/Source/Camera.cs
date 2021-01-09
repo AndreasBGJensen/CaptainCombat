@@ -25,7 +25,18 @@ namespace CaptainCombat.Source {
 
         public Camera(Domain domain) {
             entity = new Entity(domain);
-            transform = entity.AddComponent<Transform>();
+            transform = entity.AddComponent(new Transform());
+        }
+
+
+        /// <summary>
+        /// Moves the camera's transform component relative to its
+        /// current direction, the world moves along the screen
+        /// x and y axis.
+        /// </summary>
+        public void MoveInRotationDirection(double x, double y) {
+            // TODO: Implemen this (if necessary)
+            throw new NotImplementedException();
         }
 
 
@@ -41,7 +52,7 @@ namespace CaptainCombat.Source {
             // Apparently Matrix multiplication order is reversed in MonoGame,
             // so that the transformation takes place from left to right
             // (translation -> rotation -> centering)
-            return translation * rotation * center;
+            return translation * zoom * rotation * center;
         }
 
 

@@ -12,7 +12,7 @@ namespace CaptainCombat.states
     class Context
     {
         // A reference to the current state of the Context.
-        private State _state = null;
+        public State _state = null;
 
         public Context(State state)
         {
@@ -25,19 +25,9 @@ namespace CaptainCombat.states
             Console.WriteLine($"Context: Transition to {state.GetType().Name}.");
             this._state = state;
             this._state.SetContext(this);
+            this._state.Run(); 
         }
-
-        // The Context delegates part of its behavior to the current State
-        // object.
-        public void Request1()
-        {
-            this._state.Handle1();
-        }
-
-        public void Request2()
-        {
-            this._state.Handle2();
-        }
+        
     }
 
 
@@ -50,8 +40,6 @@ namespace CaptainCombat.states
             this._context = context;
         }
 
-        public abstract void Handle1();
-
-        public abstract void Handle2();
+        public abstract void Run();
     }
 }

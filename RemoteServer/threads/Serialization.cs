@@ -68,6 +68,7 @@ namespace RemoteServer.threads
                         Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
                         foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
                         {
+                        Console.WriteLine(jToken); 
                             UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
                         };
                     }
@@ -116,12 +117,15 @@ namespace RemoteServer.threads
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
+
+
             var data = serarchParam.SelectToken("data");
 
+            var data_string = JsonConvert.SerializeObject(data);
+
+
             ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-
-
-            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data));
+            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 
 

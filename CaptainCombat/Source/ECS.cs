@@ -1,6 +1,14 @@
-﻿using System;
+﻿using CaptainCombat.singletons;
+using CaptainCombat.Source.Utility;
+using dotSpace.Interfaces.Space;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-
+using System.Data;
+using System.Dynamic;
+using System.Reflection;
 
 namespace ECS {
 
@@ -12,15 +20,18 @@ namespace ECS {
         private readonly IdGenerator componentIdGenerator = new IdGenerator();
 
         // List of entities registered and finalized in this domain
-        private readonly List<Entity> entities = new List<Entity>();
+        public readonly List<Entity> entities = new List<Entity>();
 
         // List of entities that has been registered, but not finalized yet
         // They will be finalized (added to entities list), when domain is
         // cleaned
         private readonly List<Entity> entitiesToAdd = new List<Entity>();
 
+
+        private readonly ConcurrentDictionary<GlobalId, Entity> registeredEntities = new ConcurrentDictionary<GlobalId, Entity>();
+
         // Mapping of component ids to components
-        private readonly Dictionary<uint, Component> components = new Dictionary<uint, Component>();
+        private readonly ConcurrentDictionary<GlobalId, Component> components = new ConcurrentDictionary<GlobalId, Component>();
 
         public delegate void EntityCallback(Entity e);
 
@@ -66,6 +77,70 @@ namespace ECS {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3), typeof(C4) }, callback);
         }
 
+        public void update(IEnumerable<ITuple> gameData)
+        {
+            //Console.WriteLine("Run update");
+            // ITuple data format (string)comp, (int)client_id, (int)component_id, (int)entity_id, (string)data);
+            
+            foreach (ITuple data in gameData)
+            {
+                var client_id = (uint)(int)data[1];
+                var component_id = (uint)(int)data[2];
+                var entity_id = (uint)(int)data[3];
+
+                //Console.WriteLine("Test");
+                if (Connection.Instance.User_id == client_id)
+                {
+                    //Console.WriteLine("Skip"); 
+                    continue; 
+                }
+
+                Console.WriteLine(data);
+
+                Entity current_entity = null;
+               
+                GlobalId global_entity_id = new GlobalId(client_id, entity_id); 
+
+                if (registeredEntities.ContainsKey(global_entity_id))
+                {
+                    Console.WriteLine("Entity found in domain");
+                    current_entity = registeredEntities[global_entity_id]; 
+                }
+                else
+                {
+                    Console.WriteLine("Entity not found in domain create new entity");
+                    current_entity = new Entity(this, global_entity_id); 
+                }
+
+                GlobalId global_compotent_id = new GlobalId(client_id, component_id);
+                Component current_compotent = null;
+
+                if (components.ContainsKey(global_compotent_id))
+                {
+                    Console.WriteLine("Component already exists in domain");
+                    current_compotent = components[global_compotent_id];
+                    current_compotent.update((JObject)JsonConvert.DeserializeObject((string)data[4])); 
+                }
+                else
+                {
+                    Console.WriteLine("New component added to entity in domain");
+                    // Create new component
+                    var componentTypeIdentifier = (string)data[0];
+                    current_compotent = Component.CreateComponent(componentTypeIdentifier);
+
+                    current_compotent.Id = global_compotent_id;
+
+                    // TODO: Not sure if this actually works (GetType() may return Component instead of child class)
+                    current_entity.AddComponent(current_compotent, current_compotent.GetType());
+                }
+
+                // Update Component data to new data
+                var componentJsonData = (string)data[4];
+                current_compotent.update((JObject)JsonConvert.DeserializeObject(componentJsonData));
+            }
+
+        }
+
         public void Clean() {
 
             // Add new entities
@@ -77,36 +152,69 @@ namespace ECS {
             // Clean entities
             List<Entity> entitiesToRemove = new List<Entity>();
             foreach (var entity in entities) {
-                bool shouldBeRemoved = entity.clean();
+                bool shouldBeRemoved = entity.Clean();
                 if (shouldBeRemoved)
                     entitiesToRemove.Add(entity);
             }
 
             // Remove entities
             foreach (var entity in entitiesToRemove) {
-                entityIdGenerator.releaseId(entity.Id);
+                entityIdGenerator.Release(entity.Id.objectId);
                 entities.Remove(entity);
             }
 
         }
 
 
-        private uint registerComponent<C>(C component) where C : Component {
-            uint id = componentIdGenerator.getId();
-            components[id] = component;
+        /// <summary>
+        /// Executes the given callback for all Components in the Domain
+        /// that belongs to the local Client, and that are matchable (meaning
+        /// that they are finalized)
+        /// </summary>
+        public void ForLocalComponents(ComponentCallback callback) {
+            foreach( var pair in components ) {
+                var component = pair.Value;
+                if (component.Matchable && component.ShouldSynchronize && component.IsLocal )
+                    callback(component);
+            }
+        }
+        public delegate void ComponentCallback(Component component);
 
+
+        private GlobalId registerComponent<C>(C component, GlobalId id) where C : Component {
+            if (components.ContainsKey(id))
+                throw new ArgumentException("Component already exists with given ID");
+            components[id] = component;
             return id;
         }
 
+
+        private GlobalId registerComponent<C>(C component, uint clientId) where C : Component {
+            return registerComponent(component, new GlobalId(clientId, componentIdGenerator.Get()));
+        }
+
+        
         private void unregisterComponent(Component component) {
-            componentIdGenerator.releaseId(component.Id);
-            components.Remove(component.Id);
+            componentIdGenerator.Release(component.Id.objectId);
+            
+            if (!components.TryRemove(component.Id, out _)){
+                throw new InvalidOperationException("Component id doesn`t exit"); 
+            }
+            //components.Remove(component.Id);
         }
 
 
-        private uint registerEntity(Entity entity) {
+        private GlobalId registerEntity(Entity entity, GlobalId id) {
+            if (registeredEntities.ContainsKey(id))
+                throw new ArgumentException("Entity already exists with given ID");
             entitiesToAdd.Add(entity);
-            return entityIdGenerator.getId();
+            registeredEntities.TryAdd(id, entity);
+            return id;
+        }
+
+
+        private GlobalId registerEntity(Entity entity, uint clientId) {
+            return registerEntity(entity, new GlobalId(clientId, entityIdGenerator.Get()));
         }
 
 
@@ -116,7 +224,10 @@ namespace ECS {
         public class Entity {
 
             public Domain Domain { get; }
-            public uint Id { get; }
+            public GlobalId Id { get; }
+
+            public uint ClientId { get => Id.clientId; }
+
             public bool Deleted { get; private set; }
 
             private bool shouldBeDeleted = false;
@@ -124,17 +235,31 @@ namespace ECS {
             private Dictionary<Type, Component> components = new Dictionary<Type, Component>();
 
             // List of components that were added since last clean
-            private readonly List<Component> newComponents = new List<Component>();
+            public readonly List<Component> newComponents = new List<Component>();
 
             private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
+
 
             /// <summary>
             /// Construct a new Entity within the given Domain
             /// </summary>
             /// <param name="domain"></param>
-            public Entity(Domain domain) {
+            public Entity(Domain domain, uint clientId = 0) {
                 Domain = domain;
-                Id = domain.registerEntity(this);
+
+                // Get local client id if clientId is set to 0
+                clientId = clientId == 0 ? (uint) Connection.Instance.User_id : clientId;
+                Id = domain.registerEntity(this, clientId);
+            }
+
+
+            /// <summary>
+            /// Construct a new Entity within the given Domain
+            /// </summary>
+            /// <param name="domain"></param>
+            public Entity(Domain domain, GlobalId id) {
+                Domain = domain;
+                Id = domain.registerEntity(this, id);
             }
 
 
@@ -147,22 +272,19 @@ namespace ECS {
             /// <typeparam name="C">Class which inherits the Component class</typeparam>
             /// <param name="constructionArguments">List of arguments for constructor (excluding the first Entity argument)</param>
             /// <returns>The newly construct Component</returns>
-            public C AddComponent<C>(params object[] constructionArguments) where C : Component {
-                if (Deleted) throw new InvalidOperationException("Entity has been deleted");
+            public C AddComponent<C>(C component) where C : Component {
+                AddComponent(component, typeof(C));
+                return component;
+            }
 
-                Type type = typeof(C);
+
+            public Component AddComponent(Component component, Type type) {
+                if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
                 if (components.ContainsKey(type))
                     throw new InvalidOperationException($"Entity already has component {type.Name}");
 
-                // Combine passed args with Entity arguments
-                object[] args = new object[constructionArguments.Length + 1];
-                args[0] = this; // Set Entity as first parameter
-                for (int i = 0; i < constructionArguments.Length; i++)
-                    args[i + 1] = constructionArguments[i];
-
-                // Create Component instance
-                C component = (C)Activator.CreateInstance(typeof(C), args);
+                component.Entity = this;
 
                 newComponents.Add(component);
                 components.Add(type, component);
@@ -209,7 +331,7 @@ namespace ECS {
             /// Not recommend to call this function manually (Domain calls it
             /// when its cleaned.
             /// </summary>
-            public bool clean() {
+            public bool Clean() {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
                 if (shouldBeDeleted) {
@@ -232,47 +354,122 @@ namespace ECS {
         }
 
 
-        // ========================================================================================================================================================= 
-
-        public abstract class Component {
-
-            public Entity Entity { get; }
-            public Domain Domain { get; }
-            public uint Id { get; }
-
-            // This flag is set to true, if it the component has been "finalized" in the domain
-            // Should only be set by the domain
-            public bool Matchable { get; set; } = false;
-
-            public Component(Entity entity) {
-                Entity = entity;
-                Domain = entity.Domain;
-                Id = Domain.registerComponent(this);
+        public void MakeGlobal() {
+            foreach (var pair in components) {
+                pair.Value.ShouldSynchronize = false;
             }
+        }
 
+        public void MakeLocal() {
+            foreach( var pair in components ) {
+                pair.Value.ShouldSynchronize = true;
+            }
         }
 
 
         // ========================================================================================================================================================= 
 
-        private class IdGenerator {
-            // 0 is "unknown" id
-            private uint nextId = 1;
-
-            // List of ids that has been generated, but freed again
-            private Queue<uint> readyIds = new Queue<uint>();
+        public abstract class Component {
 
 
-            public uint getId() {
-                if (readyIds.Count > 0)
-                    return readyIds.Dequeue();
-                return nextId++;
+
+            private Entity entity = null;
+            public Entity Entity { 
+                get => entity;
+                set {
+                    if (entity != null)
+                        throw new ArgumentException("Component already been assigned to an Entity");
+                    
+                    // Connect component with Entity and its Domain
+                    entity = value;
+                    Domain = entity.Domain;
+
+                    // Register component in the Domain
+                    if (id != GlobalId.NULL) {
+                        if (entity.ClientId != Id.clientId)
+                            throw new ArgumentException("Component's client ID does not match with the Entity's client id");
+                        Domain.registerComponent(this, Id);
+                    }
+                    else {
+                        id = Domain.registerComponent(this, entity.ClientId);
+                    }
+                }
             }
 
-            public void releaseId(uint id) {
-                readyIds.Enqueue(id);
+            public Domain Domain { get; private set; }
+
+            private GlobalId id;
+            public GlobalId Id {
+                get => id;
+                set {
+                    if (entity != null)
+                        throw new ArgumentException("Component already been assigned to an Entity");
+                    id = value;
+                }
             }
 
+            public uint ClientId { get => Id.clientId; }
+
+
+            /// <summary>
+            /// Whether or not this Component is owned by this local Client
+            /// </summary>
+            public bool IsLocal { get => ClientId == Connection.Instance.User_id; }
+
+
+            /// <summary>
+            /// True if this Component should be synchronized with other clients, or false
+            /// if it should only exist locally.
+            /// Defaults to true
+            /// </summary>
+            public bool ShouldSynchronize { get; set; } = true;
+
+            // This flag is set to true, if it the component has been "finalized" in the domain
+            // Should only be set by the domain
+            public bool Matchable { get; set; } = false;
+
+
+            public Component() {}
+          
+
+            public abstract Object getData();
+
+            public abstract void update(JObject json);
+
+
+
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            // Setup type mapping (mapping of some identifier to Component child classes)
+
+            private static readonly Dictionary<string, Type> typeMap = new Dictionary<string, Type>();
+
+            // Constructs a new Component of the type identified by the
+            // given identifier
+            public static Component CreateComponent(string identifier) {
+                if (!typeMap.ContainsKey(identifier))
+                    throw new ArgumentException($"Component type with identifier '{identifier}' does not exist");
+                return (Component)Activator.CreateInstance(typeMap[identifier]);
+            }
+
+            // Analyze which classes inherit from Component, and
+            // add them to the 'typeMap' with their full name as
+            // an identifier
+            static Component() {
+                foreach (var type in Assembly.GetAssembly(typeof(Component)).GetTypes()) {
+                    if (type.IsSubclassOf(typeof(Component))) {
+                        var identifier = type.FullName;
+                        if (type.GetConstructor(Type.EmptyTypes) == null)
+                            throw new Exception($"Component type '{type.FullName}' does not have a constructor with no parameters");
+                        if (typeMap.ContainsKey(identifier))
+                            throw new DuplicateNameException($"Component type '{identifier}' has already been registered");
+                        typeMap.Add(identifier, type);
+                    }
+                }
+            }
+
+            public string GetTypeIdentifier() {
+                return GetType().FullName;
+            }
         }
 
     }

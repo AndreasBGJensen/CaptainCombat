@@ -8,8 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-
+using ECS;
+using static ECS.Domain;
+using CaptainCombat.json;
 
 namespace CaptainCombat.states
 {
@@ -17,6 +18,15 @@ namespace CaptainCombat.states
     {
         public Game()
         {
+        }
+
+        public object JsonSerializer { get; private set; }
+
+        public override void Run(){
+
+            Domain domain = new Domain();
+            DomainState.Instance.Domain = domain;
+
             Upload upload = new Upload();
             Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
             uploadThread.Start();
@@ -26,33 +36,26 @@ namespace CaptainCombat.states
             downloadThread.Start();
 
             RunGameLoop();
-
         }
 
-        public object JsonSerializer { get; private set; }
-
-        public override void Handle1()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Handle2()
-        {
-            throw new NotImplementedException();
-        }
 
         private void RunGameLoop()
         {
-            int index = 0;
+            
+            Entity player = new Entity(DomainState.Instance.Domain, (uint)Connection.Instance.User_id);
+            player.AddComponent(new Transform());
+
+            
+
+            JsonBuilder builder = new JsonBuilder(); 
             while (true)
             {
+                DomainState.Instance.Domain.Clean();
                 Console.WriteLine("Game running");
-                index++;
-                DataObject data = new DataObject(Connection.Instance.User + ": " + index.ToString());
-                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-                DomainState.Instance.Upload = jsonString;
+                DomainState.Instance.Upload = builder.createJsonString(); 
                 Thread.Sleep(2000);
             }
         }
+
     }
 }
