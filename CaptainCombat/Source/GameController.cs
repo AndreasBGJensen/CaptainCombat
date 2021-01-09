@@ -90,7 +90,7 @@ namespace CaptainCombat
 
         protected override void Update(GameTime gameTime) {
 
-            System.Console.WriteLine("Frame: " + gameTime.ElapsedGameTime.TotalMilliseconds);
+            //System.Console.WriteLine("Frame: " + gameTime.ElapsedGameTime.TotalMilliseconds);
 
             // Clean the Domain before each frame
             domain.Clean();
