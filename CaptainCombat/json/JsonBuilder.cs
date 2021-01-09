@@ -12,10 +12,10 @@ using static ECS.Domain;
 
 namespace CaptainCombat.json
 {
-    class JsonBuilder
+    public static class JsonBuilder
     {
         
-        public string createJsonString() {
+        public static string createJsonString() {
 
             List<DataObject> data = new List<DataObject>();
 

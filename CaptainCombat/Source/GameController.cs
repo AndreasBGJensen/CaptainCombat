@@ -1,10 +1,14 @@
-﻿using CaptainCombat.Source;
+﻿using CaptainCombat.json;
+using CaptainCombat.network;
+using CaptainCombat.singletons;
+using CaptainCombat.Source;
 using CaptainCombat.Source.Components;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Threading;
 using static ECS.Domain;
 
 namespace CaptainCombat
@@ -28,7 +32,19 @@ namespace CaptainCombat
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
+        
+            DomainState.Instance.Domain = domain;
+
+
+            Upload upload = new Upload();
+            Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
+            uploadThread.Start();
+
+            DownLoad download = new DownLoad();
+            Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
+            downloadThread.Start();
         }
+
 
         protected override void Initialize() {
             base.Initialize();
@@ -122,6 +138,8 @@ namespace CaptainCombat
             }
 
             Movement.Update(domain, seconds);
+
+            DomainState.Instance.Upload = JsonBuilder.createJsonString();
 
             base.Update(gameTime);
         }
