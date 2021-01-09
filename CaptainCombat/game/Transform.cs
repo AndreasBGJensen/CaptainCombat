@@ -23,10 +23,8 @@ namespace CaptainCombat.game
 
         public override void update(JObject json)
         {
-            //this.x = (int)json.SelectToken("x")+1;
-            //this.y = (int)json.SelectToken("y")+1;
-            this.x += 1;
-            this.y += 1;
+            this.x = (int)json.SelectToken("x")+1;
+            this.y = (int)json.SelectToken("y")+1;
         }
     }
 }

@@ -45,20 +45,17 @@ namespace CaptainCombat.states
             Entity player = new Entity(DomainState.Instance.Domain, (uint)Connection.Instance.User_id);
             player.AddComponent(new Transform());
 
-            DomainState.Instance.Domain.Clean(); 
+            
 
             JsonBuilder builder = new JsonBuilder(); 
             while (true)
             {
+                DomainState.Instance.Domain.Clean();
                 Console.WriteLine("Game running");
                 DomainState.Instance.Upload = builder.createJsonString(); 
                 Thread.Sleep(2000);
             }
         }
 
-        private object Transform()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
