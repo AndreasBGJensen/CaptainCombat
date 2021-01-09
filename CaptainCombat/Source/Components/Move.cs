@@ -29,13 +29,29 @@ namespace CaptainCombat.Source.Components {
        
         public override object getData()
         {
-            throw new System.NotImplementedException();
+            var obj = new { 
+                VelocityX = (int)this.Velocity.X,
+                VelocityY = (int)this.Velocity.Y,
+                AccelerationX = (int)this.Acceleration.X,
+                AccelerationY = (int)this.Acceleration.Y,
+                Resistance = this.Resistance,
+                ForwardVelocity = this.ForwardVelocity,
+                RotationVelocity = this.RotationVelocity,
+                RotationAcceleration = this.RotationAcceleration,
+                RotationResistance = this.RotationResistance
+            };
+            return obj;
         }
 
         public override void update(JObject json)
         {
-            throw new System.NotImplementedException();
+            this.Velocity = new Vector2((int)json.SelectToken("VelocityX"), (int)json.SelectToken("VelocityY"));
+            this.Acceleration = new Vector2((int)json.SelectToken("AccelerationX"), (int)json.SelectToken("AccelerationY"));
+            this.Resistance = (double)json.SelectToken("Resistance");
+            this.ForwardVelocity = (bool)json.SelectToken("ForwardVelocity");
+            this.RotationVelocity = (double)json.SelectToken("RotationVelocity");
+            this.RotationAcceleration = (double)json.SelectToken("RotationAcceleration");
+            this.RotationResistance = (double)json.SelectToken("RotationResistance");
         }
     }
-
 }

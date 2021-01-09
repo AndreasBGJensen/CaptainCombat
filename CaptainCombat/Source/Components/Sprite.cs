@@ -22,12 +22,18 @@ namespace CaptainCombat.Source.Components {
 
         public override object getData()
         {
-            throw new System.NotImplementedException();
+            var obj = new { 
+                TextureTag = this.TextureTag,
+                Width = this.Width,
+                Height = this.Height,
+            };
+            return obj;
         }
 
         public override void update(JObject json)
         {
-            throw new System.NotImplementedException();
+            this.Width = (double)json.SelectToken("Width");
+            this.Height = (double)json.SelectToken("Height");
         }
     }
 
