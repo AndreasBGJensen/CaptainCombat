@@ -23,7 +23,7 @@ namespace CaptainCombat.network
             while (true)
             {
                 
-                    Console.WriteLine("DownLoading");
+                    //Console.WriteLine("DownLoading");
                     //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
                     IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
                     /*
@@ -34,9 +34,7 @@ namespace CaptainCombat.network
                     }
                     */
                     DomainState.Instance.Domain.update(gameData);
-                    Console.WriteLine("Done");
-                
-                Thread.Sleep(5000);
+                    //Console.WriteLine("Done");
             }
            
         }

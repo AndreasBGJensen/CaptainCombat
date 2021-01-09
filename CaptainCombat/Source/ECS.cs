@@ -95,7 +95,7 @@ namespace ECS {
                     continue; 
                 }
 
-                Console.WriteLine(data);
+                //Console.WriteLine(data);
 
                 Entity current_entity = null;
                
@@ -103,12 +103,12 @@ namespace ECS {
 
                 if (registeredEntities.ContainsKey(global_entity_id))
                 {
-                    Console.WriteLine("Entity found in domain");
+                    //Console.WriteLine("Entity found in domain");
                     current_entity = registeredEntities[global_entity_id]; 
                 }
                 else
                 {
-                    Console.WriteLine("Entity not found in domain create new entity");
+                    //Console.WriteLine("Entity not found in domain create new entity");
                     current_entity = new Entity(this, global_entity_id); 
                 }
 
@@ -117,13 +117,13 @@ namespace ECS {
 
                 if (components.ContainsKey(global_compotent_id))
                 {
-                    Console.WriteLine("Component already exists in domain");
+                    //Console.WriteLine("Component already exists in domain");
                     current_compotent = components[global_compotent_id];
                     current_compotent.update((JObject)JsonConvert.DeserializeObject((string)data[4])); 
                 }
                 else
                 {
-                    Console.WriteLine("New component added to entity in domain");
+                    //Console.WriteLine("New component added to entity in domain");
                     // Create new component
                     var componentTypeIdentifier = (string)data[0];
                     current_compotent = Component.CreateComponent(componentTypeIdentifier);

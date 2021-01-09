@@ -23,12 +23,11 @@ namespace CaptainCombat.network
             {
                 while (true)
                 {
-                    Console.WriteLine("Uploading");
+                    //Console.WriteLine("Uploading");
                     if (DomainState.Instance.Upload != null)
                     {
                         Connection.Instance.Space.Put("components", DomainState.Instance.Upload);
                     }
-                    Thread.Sleep(5000);
                 }
             }
         }

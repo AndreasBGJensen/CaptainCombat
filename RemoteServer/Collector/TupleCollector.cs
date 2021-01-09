@@ -29,24 +29,12 @@ namespace RemoteServer.Collector
         IEnumerable<ITuple> results = mySpace.GetAll(searchString, typeof(string));
                 foreach (Tuple x in results)
                 {
-                    try
+                    Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
+                    foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
                     {
-                        //Check if a component consist of a single JSON or if it consist of a multiple components
-                        //If multiple components are uploaded it will be a JsonArray and the operation below will throw a Invalid Cast Exception and JsonArray will be unpaced in the catch block.
-                        var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)x[1]);
-                        //Console.WriteLine(test1.Count);
-                        UpdatorJObject((string)x[1], test1);
-
-                    }
-                    catch (InvalidCastException e)
-                    {
-                        Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
-                        foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
-                        {
-                            UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
-                        };
-                    }
-
+                        UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
+                    };
+                    
                 }
 
         }
