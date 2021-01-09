@@ -5,7 +5,7 @@ namespace CaptainCombat.Source.Components {
 
     public class Sprite : Component {
 
-        public string TextureTag { get; }
+        public string TextureTag { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
 
@@ -22,12 +22,19 @@ namespace CaptainCombat.Source.Components {
 
         public override object getData()
         {
-            throw new System.NotImplementedException();
+            var obj = new { 
+                TextureTag = this.TextureTag,
+                Width = this.Width,
+                Height = this.Height,
+            };
+            return obj;
         }
 
         public override void update(JObject json)
         {
-            throw new System.NotImplementedException();
+            this.TextureTag = (string)json.SelectToken("TextureTag");
+            this.Width = (double)json.SelectToken("Width");
+            this.Height = (double)json.SelectToken("Height");
         }
     }
 

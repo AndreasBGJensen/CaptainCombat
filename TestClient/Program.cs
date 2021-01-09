@@ -32,7 +32,7 @@ namespace TestClient
 			}}]";
 
 
-		string uri = "tcp://49.12.75.251:9182/space?CONN";
+			string uri = "tcp://49.12.75.251:9182/space?CONN";
             RemoteSpace space = new RemoteSpace(uri);
 
             space.Put("components", randomJsonArray3);

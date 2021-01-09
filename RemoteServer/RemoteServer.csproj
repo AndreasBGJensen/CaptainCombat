@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>RemoteServer.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="dotSpace, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\dotSpace.1.0.8\lib\net452\dotSpace.dll</HintPath>

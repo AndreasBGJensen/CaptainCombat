@@ -30,6 +30,7 @@ namespace RemoteServer.Collector
         {
             
             IEnumerable<ITuple> results = mySpace.GetAll(searchString, typeof(string));
+            Console.WriteLine(results.Count()); 
             results.AsParallel().ForAll(item =>
             {
                 try

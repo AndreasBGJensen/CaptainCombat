@@ -33,11 +33,8 @@ namespace RemoteServer.threads
             try
                 {
 
-                
-
                 collector.BeginCollect();
-                PrintUpdateComponents();
-
+                //PrintUpdateComponents();
             }
             catch (Exception e)
                 {
@@ -68,7 +65,7 @@ namespace RemoteServer.threads
                         Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
                         foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
                         {
-                        Console.WriteLine(jToken); 
+                        //Console.WriteLine(jToken); 
                             UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
                         };
                     }
