@@ -1,30 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using dotSpace.Interfaces.Space;
+using dotSpace.Objects.Network;
+using dotSpace.Objects.Space;
 using RemoteServer.singletons;
 using Tuple = dotSpace.Objects.Space.Tuple;
-using RemoteServer.TestData;
 using Newtonsoft.Json;
+using RemoteServer.TestData;
+using static RemoteServer.TestData.TestComponentClasse;
+using RemoteServer.Collector;
+using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 
 namespace RemoteServer.threads
 {
-    class Serialization
+   class Serialization
     {
-        
-        TestComponentClasse testComponentClass = new TestComponentClasse();
+        TestComponentClasse test = new TestComponentClasse();
+        CollectorClass collector = new CollectorClass();
+        Stopwatch sw = new Stopwatch(); // For performance testing
         public void RunProtocol()
         {
-
+            collector.SetSpace(Connection.Instance.Space);
+            //collector.SetCollector(new TupleCollectorParallel("components",Connection.Instance.Space));
+            collector.SetCollector(new TupleCollector("components", Connection.Instance.Space));
+            Console.WriteLine("Running...");
            while (true)
-             {
+           {
             try
-            {       
-                Collector();
-                //PrintUpdateComponents();
+                {
+
+                
+
+                collector.BeginCollect();
+                PrintUpdateComponents();
+
             }
-                catch (Exception e)
+            catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.StackTrace);
@@ -42,10 +57,9 @@ namespace RemoteServer.threads
                 {
                     try { 
                     //Check if a component consist of a single JSON or if it consist of a multiple components
+                    //If multiple components are uploaded it will be a JsonArray and the operation below will throw a Invalid Cast Exception and JsonArray will be unpaced in the catch block.
                     var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)x[1]);
-                    Console.WriteLine(test1.Count);
-                    Console.WriteLine(test1);
-
+                    //Console.WriteLine(test1.Count);
                     UpdatorJObject((string)x[1], test1);
 
                     }
@@ -75,32 +89,26 @@ namespace RemoteServer.threads
                          }
                          catch(InvalidCastException e)
                          {
-
-
                                   //Er det Json stringen for componenten som skal uddateres?
                                   //Eller skal den indeholde en component?
 
                                   var test1 = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject((string)item[1]);
                                   UpdatorJObject((string)item[1], test1);
-
                          }
                      });*/
 
-
-
             } 
 
-        private void UpdatorJObject(string componentToUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
+        private void UpdatorJObject(string stringComponentUpdate, JObject serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
             var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data.Parent);
             ITuple result = Connection.Instance.Space.GetP(comp,client_id,component_id,entity_id, typeof(string));
 
-            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data));
         }
 
         private void UpdatorJToken(string stringComponentUpdate, JToken serarchParam)
@@ -112,9 +120,6 @@ namespace RemoteServer.threads
 
 
             var data = serarchParam.SelectToken("data");
-
-            var dataObject = new JObject();
-            dataObject.Add("data", data);
 
             var data_string = JsonConvert.SerializeObject(data);
 
@@ -136,7 +141,7 @@ namespace RemoteServer.threads
 
         private void PrintUpdateComponents()
         {
-            Console.WriteLine("Printing test components");
+           // Console.WriteLine("Printing test components");
             IEnumerable<ITuple> results3 = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
             foreach (ITuple tuple in results3)
             {

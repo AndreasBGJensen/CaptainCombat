@@ -11,25 +11,39 @@ namespace RemoteServer
 {
     class Program
     {
-        /*
+        private static bool test_mode = false;
+        static GlobalInfo info = new GlobalInfo();
         static void Main(string[] args)
         {
-            Serialization serializationProtocol = new Serialization();
-            string uri = "tcp://127.0.0.1:123/space?CONN";
+
+            string uri;
+            if (test_mode) {
+               
+                uri = info.test_URI;
+            }
+            else {
+                uri = info.server_URI;
+            }
+            Console.WriteLine(uri);
 
             SpaceRepository repository = new SpaceRepository();
             repository.AddGate(uri);
             SequentialSpace space = new SequentialSpace();
             repository.AddSpace("space", space);
-
-
-
+            Console.WriteLine("Start Gameserver");
             Connection.Instance.Space = space;
-            //Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
-            serializationProtocol.RunProtocol();
+
+            NewUsers newUserProtocol = new NewUsers();
+            Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
+            newUserThread.Start();
+
+            Serialization serializationProtocol = new Serialization();
+            Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
+            serializationThread.Start();
+            //serializationProtocol.RunProtocol();
         }
-        */
-        
+       
+        /*
         static void Main(string[] args)
         {
             string uri = "tcp://127.0.0.1:5000?CONN";
@@ -50,7 +64,7 @@ namespace RemoteServer
             serializationThread.Start();
 
         }
-     
+        */
         
     }
 }

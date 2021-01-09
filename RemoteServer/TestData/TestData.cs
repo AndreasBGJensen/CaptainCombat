@@ -184,3 +184,97 @@ namespace RemoteServer.TestData
         }
     }
 }
+/*
+
+                for (int i = 0; i<1000; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+
+
+
+
+
+                // ...
+
+
+                Console.WriteLine("Sequentila Testing");
+
+
+                sw.Start();
+                //collector.BeginCollect();
+                Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Sequential Elapsed={0}", sw.Elapsed.Milliseconds);
+
+
+                Console.WriteLine("Parallel Testing");
+                for (int i = 0; i < 1000; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+
+                sw.Start();
+                collector.BeginCollect();
+                //Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Parallel Elapsed={0}", sw.Elapsed.Milliseconds);
+
+                Console.WriteLine("");
+                Console.WriteLine("RUNNING 100 instances");
+                Console.WriteLine("");
+                for (int i = 0; i < 100; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+                sw.Start();
+                collector.BeginCollect();
+                //Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Parallel Elapsed={0}", sw.Elapsed.Milliseconds);
+
+                for (int i = 0; i < 1000; i++)
+                {
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                    Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                    Connection.Instance.Space.Put("components", test.GetRandomString());
+                }
+
+
+
+
+
+                // ...
+
+
+                Console.WriteLine("Sequentila Testing");
+
+
+                sw.Start();
+                //collector.BeginCollect();
+                Collector();
+                //PrintUpdateComponents();
+                sw.Stop();
+                Console.WriteLine("Sequential Elapsed={0}", sw.Elapsed.Milliseconds);
+                */

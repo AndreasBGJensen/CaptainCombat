@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}</ProjectGuid>
+    <ProjectGuid>{05BBA8A2-0D80-481E-898B-1D6D9AA5EA8A}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RemoteServer</RootNamespace>
-    <AssemblyName>RemoteServer</AssemblyName>
+    <RootNamespace>TestClient</RootNamespace>
+    <AssemblyName>TestClient</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,9 +36,6 @@
     <Reference Include="dotSpace, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\dotSpace.1.0.8\lib\net452\dotSpace.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,23 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlobalInfo.cs" />
-    <Compile Include="Collector\CollectorClass.cs" />
-    <Compile Include="Collector\TupleCollectorParallel.cs" />
-    <Compile Include="Collector\TupleCollector.cs" />
-    <Compile Include="Collector\ICollector.cs" />
-    <Compile Include="DTO\ComponentDTO.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="singletons\Connection.cs" />
-    <Compile Include="TestData\TestData.cs" />
-    <Compile Include="threads\NewUsers.cs" />
-    <Compile Include="threads\Serialization.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
