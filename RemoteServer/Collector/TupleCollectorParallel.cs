@@ -14,7 +14,6 @@ namespace RemoteServer.Collector
 {
     class TupleCollectorParallel : CollectorClass, ICollector
     {
-        //private string searchString = "components"; //Default
         private SequentialSpace mySpace;
         private ArrayCreator creator;
 
@@ -47,6 +46,7 @@ namespace RemoteServer.Collector
 
         }
 
+        //This is ofe user if we use JObject instead of JArray's
       /*  private void UpdatorJObject(JObject serarchParam)
         {
             var comp = (string)serarchParam.SelectToken("comp");
