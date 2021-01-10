@@ -31,5 +31,10 @@ namespace RemoteServer.Collector
             this.collector = collector;
         }
 
+        public void PrintUpdateComponents()
+        {
+            collector.PrintUpdateComponents();
+        }
+
     }
 }

@@ -13,9 +13,9 @@ namespace RemoteServer.TestData
     {
 
         public string randomJsonString = @"{
-			'comp': 'Transform',
+			'comp': 'Move',
 			'client_id': 0,
-			'component_id': 13,
+			'component_id': 3,
 			'entity_id': 24,
 			'data': {
 				'x': 12,

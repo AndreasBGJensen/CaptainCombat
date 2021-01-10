@@ -14,6 +14,7 @@ using static RemoteServer.TestData.TestComponentClasse;
 using RemoteServer.Collector;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
+using RemoteServer.Collector.Helpers;
 
 namespace RemoteServer.threads
 {
@@ -21,35 +22,42 @@ namespace RemoteServer.threads
     {
         TestComponentClasse test = new TestComponentClasse();
         CollectorClass collector = new CollectorClass();
-        Stopwatch sw = new Stopwatch(); // For performance testing
         public void RunProtocol()
         {
+            ArrayCreator creator = new ArrayCreator();
             collector.SetSpace(Connection.Instance.Space);
-            //collector.SetCollector(new TupleCollectorParallel("components",Connection.Instance.Space));
-            collector.SetCollector(new TupleCollector("components", Connection.Instance.Space));
+            collector.SetCollector(new TupleCollectorParallel(creator,Connection.Instance.Space));
+            //collector.SetCollector(new TupleCollector(creator, Connection.Instance.Space));
             Console.WriteLine("Running...");
-           while (true)
-           {
+           //while (true)
+           //{
             try
                 {
+                    Connection.Instance.Space.Put("components",test.GetRandomJsonArray2());
+                Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
+
 
                 collector.BeginCollect();
-                //PrintUpdateComponents();
-            }
+
+                //Collector();
+                collector.PrintUpdateComponents();
+                }
             catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.StackTrace);
                 }
-            }
+            //}
         }
 
 
         private void Collector()
         {
             //Collecting components
-            const string searchString = "components";
-            IEnumerable<ITuple> results = Connection.Instance.Space.GetAll(searchString, typeof(string));
+            //const string searchString = "components";
+            IEnumerable<ITuple> results = Connection.Instance.Space.GetAll(typeof(string), typeof(string));
                 foreach (Tuple x in results)
                 {
                     try { 
@@ -62,12 +70,15 @@ namespace RemoteServer.threads
                     }
                     catch (InvalidCastException e)
                     {
-                        Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
+                        JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
                         foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
                         {
                         //Console.WriteLine(jToken); 
-                            UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
-                        };
+                         //   var hel = ArrayCreator(jToken);
+                        //Connection.Instance.Space.Put(hel);
+
+                        UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
+                    };
                     }
                 
                 }
@@ -110,19 +121,23 @@ namespace RemoteServer.threads
 
         private void UpdatorJToken(string stringComponentUpdate, JToken serarchParam)
         {
+
+            var array = ArrayCreator(serarchParam);
             var comp = (string)serarchParam.SelectToken("comp");
             var client_id = (int)serarchParam.SelectToken("client_id");
             var component_id = (int)serarchParam.SelectToken("component_id");
             var entity_id = (int)serarchParam.SelectToken("entity_id");
-
+            
 
             var data = serarchParam.SelectToken("data");
-
+            var data_Type = data.Type;
             var data_string = JsonConvert.SerializeObject(data);
 
+            ITuple result = Connection.Instance.Space.GetP(array);
+            Connection.Instance.Space.Put(array);
 
-            ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
+            // Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 
 
@@ -138,12 +153,51 @@ namespace RemoteServer.threads
 
         private void PrintUpdateComponents()
         {
-           // Console.WriteLine("Printing test components");
+            // Console.WriteLine("Printing test components");
             IEnumerable<ITuple> results3 = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+            //IEnumerable<ITuple> results3 = Connection.Instance.Space.QueryAll();
+
             foreach (ITuple tuple in results3)
             {
                 Console.WriteLine(tuple);
             }
+        }
+
+        private object[] ArrayCreator(JToken token)
+        {
+            
+            JToken[] array = token.ToArray();
+            var length = array.Length;
+           
+
+            object[] newArray = new object[length];
+            for(int i = 0; i< length; i++)
+            {
+                newArray[i] = DefineDatatype(array[i].First);
+
+              /*  if (array[i].Path.Contains("data"))
+                {
+                    newArray[i] = JsonConvert.SerializeObject(array[i]);
+                    
+                }*/
+                
+            }
+            
+            return newArray;
+        }
+
+        private dynamic DefineDatatype(JToken data)
+        {
+            switch (data.Type)
+            {
+                case (JTokenType)1: return JsonConvert.SerializeObject(data);
+
+                case (JTokenType)6: return (int)data;
+
+                case (JTokenType)8: return (string)data;
+                
+                default: return JsonConvert.SerializeObject(data);
+            } 
         }
     }
 }

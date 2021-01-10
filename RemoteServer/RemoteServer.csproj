@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collector\Helpers\ArrayCreator.cs" />
     <Compile Include="GlobalInfo.cs" />
     <Compile Include="Collector\CollectorClass.cs" />
     <Compile Include="Collector\TupleCollectorParallel.cs" />

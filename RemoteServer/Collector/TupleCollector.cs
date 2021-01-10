@@ -1,84 +1,53 @@
 ﻿using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Space;
 using Newtonsoft.Json;
+using RemoteServer.Collector.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Tuple = dotSpace.Objects.Space.Tuple;
 
 namespace RemoteServer.Collector
 {
      class TupleCollector : CollectorClass, ICollector
     {
-        private string searchString = "components";//Default
         private SequentialSpace mySpace;
+        private ArrayCreator creator;
 
-        public TupleCollector(string searchString, SequentialSpace space)
+        public TupleCollector(ArrayCreator creator, SequentialSpace space)
         {
-            this.searchString = searchString;
+            this.creator = creator;
             mySpace = space;
+
         }
 
         void ICollector.Collect()
         {
-         
-
-        //Collecting components
-        IEnumerable<ITuple> results = mySpace.GetAll(searchString, typeof(string));
-                foreach (Tuple x in results)
-                {
-                    Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>((string)x[1]);
-                    foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
-                    {
-                        UpdatorJToken(JsonConvert.SerializeObject(jToken), jToken);
-                    };
-                    
-                }
-
-        }
-        private void UpdatorJObject(string stringComponentUpdate, Newtonsoft.Json.Linq.JObject serarchParam)
-        {
-            var comp = (string)serarchParam.SelectToken("comp");
-            var client_id = (int)serarchParam.SelectToken("client_id");
-            var component_id = (int)serarchParam.SelectToken("component_id");
-            var entity_id = (int)serarchParam.SelectToken("entity_id");
-            var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data);
-
-            ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
-
-            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
-        }
-
-        private void UpdatorJToken(string stringComponentUpdate, Newtonsoft.Json.Linq.JToken serarchParam)
-        {
-            var comp = (string)serarchParam.SelectToken("comp");
-            var client_id = (int)serarchParam.SelectToken("client_id");
-            var component_id = (int)serarchParam.SelectToken("component_id");
-            var entity_id = (int)serarchParam.SelectToken("entity_id");
-            var data = serarchParam.SelectToken("data");
-            var data_string = JsonConvert.SerializeObject(data);
-
-            ITuple result = mySpace.GetP(comp, client_id, component_id, entity_id, typeof(string));
-
-
-            mySpace.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
-        }
-
-
-
-        private void TestPrintQueryAll()
-        {
-            IEnumerable<ITuple> results = mySpace.QueryAll("components", typeof(string));
-            foreach (ITuple tuple in results)
+            //Collecting components
+            IEnumerable<ITuple> results = mySpace.GetAll(typeof(string), typeof(string));
+            foreach (Tuple x in results)
             {
-                Console.WriteLine(tuple[1]);
+               JArray jarray = JsonConvert.DeserializeObject<JArray>((string)x[1]);
+               foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
+               {
+                   UpdatorJToken(jToken);
+               };   
             }
         }
 
-        private void PrintUpdateComponents()
+        private void UpdatorJToken(JToken serarchParam)
+        {
+            var array = creator.CreateArray(serarchParam);
+            
+            ITuple result = mySpace.GetP(array);
+            mySpace.Put(array);
+
+        }
+
+        public void PrintUpdateComponents()
         {
             Console.WriteLine("Printing test components");
             IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
@@ -86,8 +55,6 @@ namespace RemoteServer.Collector
             {
                 Console.WriteLine(tuple);
             }
-        }
-
-        
+        }  
     }
 }
