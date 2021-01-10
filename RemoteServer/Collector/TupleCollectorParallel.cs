@@ -20,8 +20,12 @@ namespace RemoteServer.Collector
 
         public TupleCollectorParallel(ArrayCreator creator, SequentialSpace space)
         {
-            mySpace = space;
-            this.creator = creator;
+           mySpace = space;
+           this.creator = creator;
+
+            //Initializing a lock so that we get atomic transactions when we update the components.
+            //Locks are not really nesseasery in this case because we at just updating and using pattern matching, 
+            //but i thought i would be a good practice
            if (mySpace.QueryP("lock") == null)
             {
                 mySpace.Put("lock");
@@ -33,7 +37,6 @@ namespace RemoteServer.Collector
             IEnumerable<ITuple> results = mySpace.GetAll(typeof(string), typeof(string));
             results.AsParallel().ForAll(item =>
             {
-                 //Check if a component consist of a single JSON or if it consist of a multiple components
                  JArray jarray = JsonConvert.DeserializeObject<JArray>((string)item[1]);
                  jarray.AsParallel().ForAll(jToken =>
                  {
@@ -65,7 +68,8 @@ namespace RemoteServer.Collector
             
             //Updating Tuple
             mySpace.Get("lock");
-            ITuple result = mySpace.GetP(array);
+            //TODO: How can I fix this so that it will not be depended og each element??
+            ITuple result = mySpace.GetP(array[0], array[1], array[2], array[3], typeof(string));
             mySpace.Put(array);
             mySpace.Put("lock");
         }

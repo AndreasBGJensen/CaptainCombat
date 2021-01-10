@@ -41,8 +41,8 @@ namespace RemoteServer.Collector
         private void UpdatorJToken(JToken serarchParam)
         {
             var array = creator.CreateArray(serarchParam);
-            
-            ITuple result = mySpace.GetP(array);
+            //TODO: How can I fix this so that it will not be depended og each element??
+            ITuple result = mySpace.GetP(array[0], array[1], array[2], array[3], typeof(string));
             mySpace.Put(array);
 
         }

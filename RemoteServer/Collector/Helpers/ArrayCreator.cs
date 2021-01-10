@@ -22,13 +22,6 @@ namespace RemoteServer.Collector.Helpers
             for (int i = 0; i < length; i++)
             {
                 newArray[i] = DefineDatatype(array[i].First);
-
-                /*  if (array[i].Path.Contains("data"))
-                  {
-                      newArray[i] = JsonConvert.SerializeObject(array[i]);
-
-                  }*/
-
             }
 
             return newArray;

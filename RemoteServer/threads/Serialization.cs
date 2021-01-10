@@ -21,33 +21,32 @@ namespace RemoteServer.threads
    class Serialization
     {
         TestComponentClasse test = new TestComponentClasse();
-        CollectorClass collector = new CollectorClass();
+        
         public void RunProtocol()
         {
-            ArrayCreator creator = new ArrayCreator();
-            collector.SetSpace(Connection.Instance.Space);
-            collector.SetCollector(new TupleCollectorParallel(creator,Connection.Instance.Space));
-            //collector.SetCollector(new TupleCollector(creator, Connection.Instance.Space));
-            Console.WriteLine("Running...");
+           CollectorClass collector = new CollectorClass();
+           ArrayCreator creator = new ArrayCreator();
+           collector.SetSpace(Connection.Instance.Space);
+           //collector.SetCollector(new TupleCollectorParallel(creator,Connection.Instance.Space));
+           collector.SetCollector(new TupleCollector(creator, Connection.Instance.Space));
+           Console.WriteLine("Running...");
            //while (true)
            //{
-            try
+                try
                 {
-                    Connection.Instance.Space.Put("components",test.GetRandomJsonArray2());
-                Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
-                Connection.Instance.Space.Put("components", test.GetRandomJsonArray2());
+                Connection.Instance.Space.Put("components",test.GetRandomJsonArray2());
                 Connection.Instance.Space.Put("components", test.GetRandomJsonArray3());
 
-
                 collector.BeginCollect();
-
+                    
                 //Collector();
-                collector.PrintUpdateComponents();
-                }
+                PrintUpdateComponents();
+
+            }
             catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.StackTrace);
                 }
             //}
         }
@@ -133,11 +132,11 @@ namespace RemoteServer.threads
             var data_Type = data.Type;
             var data_string = JsonConvert.SerializeObject(data);
 
-            ITuple result = Connection.Instance.Space.GetP(array);
-            Connection.Instance.Space.Put(array);
+           ITuple result = Connection.Instance.Space.GetP(array[0], array[1], array[2], array[3], typeof(string));
+           Connection.Instance.Space.Put(array);
 
             //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-            // Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
+            //Connection.Instance.Space.Put(new Tuple(comp, client_id, component_id, entity_id, data_string));
         }
 
 
