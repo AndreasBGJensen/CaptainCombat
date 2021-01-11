@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using StaticGameLogic_Library.Utility;
+using StaticGameLogic_Library.Source.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Data;
 using System.Dynamic;
 using System.Reflection;
 
-namespace Source {
+namespace Source.ECS {
 
 
     public class Domain {

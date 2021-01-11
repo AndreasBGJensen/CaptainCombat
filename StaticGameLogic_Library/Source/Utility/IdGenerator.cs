@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 
-namespace StaticGameLogic_Library.Utility {
+namespace StaticGameLogic_Library.Source.Utility {
 
     public struct GlobalId {
 

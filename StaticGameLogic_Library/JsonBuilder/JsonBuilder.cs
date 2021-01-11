@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static ECS.Domain;
+
 
 namespace StaticGameLogic_Library.JsonBuilder
 {
