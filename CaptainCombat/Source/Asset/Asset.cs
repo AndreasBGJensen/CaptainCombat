@@ -38,8 +38,9 @@ namespace CaptainCombat.Source {
         }
 
 
-
-
+        /// <summary>
+        /// Collection for Assets, which allows for batch loading of them
+        /// </summary>
         public class AssetCollection {
 
             private Dictionary<string, Asset> assets = new Dictionary<string, Asset>();
@@ -58,11 +59,28 @@ namespace CaptainCombat.Source {
         }
 
 
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Asset loading
+
+        /// <summary>
+        /// Returns the native asset object for this Asset.
+        /// The asset loader for this type of Asset must must.
+        /// </summary>
+        /// <typeparam name="N">Type of the native asset</typeparam>
         public N GetNative<N>(){
             return (N) handlers[GetType()].Get(this);
         }
 
+        public delegate N Loader<T, N>(T asset) where T : Asset;
 
+
+        /// <summary>
+        /// Sets the callback which is to load the native asset for a given Asset type
+        /// </summary>
+        /// <typeparam name="T">Type of the Asset</typeparam>
+        /// <typeparam name="N">Type of the native ASset</typeparam>
+        /// <param name="loader">Delegate to load the native asset</param>
         public static void SetLoader<T, N>(Asset.Loader<T, N> loader) where T : Asset {
             var assetType = typeof(T);
             if (handlers.ContainsKey(typeof(T)))
@@ -72,12 +90,15 @@ namespace CaptainCombat.Source {
         }
 
 
-        private static Dictionary<Type, IHandler> handlers = new Dictionary<Type, IHandler>();
+        
 
-
+        /// <summary>
+        /// Loads this Asset by using the Loader assigned to this Asset's type
+        /// </summary>
         public void Load() {
+            if (Loaded) return;
+
             var type = GetType();
-            Console.WriteLine("Asset type: " + type);
 
             if (!handlers.ContainsKey(type))
                 throw new NullReferenceException($"No AssetLoader found for asset type '{type.Name}'");
@@ -86,23 +107,28 @@ namespace CaptainCombat.Source {
         }
 
 
-        public delegate N Loader<T,N>(T asset) where T : Asset;
+        // List of all Asset handlers
+        private static Dictionary<Type, IHandler> handlers = new Dictionary<Type, IHandler>();
 
+        // Interface for Handler, so that they may be stored in the same
+        // list while still being generic types
         private interface IHandler {
             void Load(Asset asset);
             object Get(Asset asset);
         }
               
         private class Handler<T, N> : IHandler where T : Asset {
+            
+            // Map of Assets to their native asset counterparts
+            private Dictionary<T, N> nativeAssetMap = new Dictionary<T, N>();
             private Loader<T,N> loader;
 
             public Handler(Loader<T,N> loader) {
                 handlers[typeof(T)] = this;
                 this.loader = loader;
-            }
+            }           
 
-            private Dictionary<T, N> nativeAssetMap = new Dictionary<T, N>();
-
+            // Loads the Assset (of type T)
             public void Load(Asset asset) {
                 if (asset.GetType() != typeof(T))
                     throw new ArgumentException($"AssetLoader<{typeof(T).Name}> cannot load assets of type '{asset.GetType().Name}'");
@@ -116,6 +142,7 @@ namespace CaptainCombat.Source {
                     nativeAssetMap[(T)asset] = nativeAsset;
             }
 
+            // Retrieves the native Asset for the given ASset
             public object Get(Asset asset) {
                 if (!nativeAssetMap.ContainsKey((T)asset))
                     throw new InvalidOperationException($"Asset '{asset.Tag}' has not been loaded");
