@@ -25,6 +25,19 @@ namespace CaptainCombat.Source {
             return entity;            
         }
 
+        public static Entity CreateMessage(Domain domain, string message, double x, double y, bool staticText)
+        {
+            var entity = new Entity(domain);
+
+            var transform = entity.AddComponent(new Transform());
+            transform.X = x;
+            transform.Y = y;
+
+            entity.AddComponent(new Text(Assets.Fonts.PIRATE_FONT, message, staticText));
+
+            return entity;
+        }
+
     }
 
 

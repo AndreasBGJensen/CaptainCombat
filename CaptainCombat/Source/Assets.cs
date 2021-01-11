@@ -22,11 +22,13 @@ namespace CaptainCombat.Source {
 
             public static readonly Texture ROCK = new Texture(Collections.GLOBAL, "rock1", "Sprites/Rock1");
         }
+
+        public static class Fonts
+        {
+            public static readonly Font PIRATE_FONT = new Font(Collections.GLOBAL, "PIRATE_FONT", "fonts/Piratefont");
+        }
         
-
-
-
-
+        
     }
 
 }

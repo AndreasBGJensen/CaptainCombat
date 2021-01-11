@@ -25,7 +25,7 @@ namespace RemoteServer.threads
                 {
 
                 collector.BeginCollect();
-                collector.PrintUpdateComponents();
+                //collector.PrintUpdateComponents();
                     
                 }
                 catch (Exception e)

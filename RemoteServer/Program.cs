@@ -36,10 +36,11 @@ namespace RemoteServer
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
-
+            /*
             Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
             serializationThread.Start();
+            */
             //serializationProtocol.RunProtocol();
         }
        

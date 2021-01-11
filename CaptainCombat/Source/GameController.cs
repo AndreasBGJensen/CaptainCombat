@@ -55,13 +55,25 @@ namespace CaptainCombat
         protected override void LoadContent() {
             Renderer.Initialize(GraphicsDevice);
 
+            int xOffset = -40;
+            int yOffset = -70;
 
             // Create some test rocks
+            EntityUtility.CreateMessage(domain, "Tortuga", 150+xOffset, 100 + yOffset, false);
             EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
+            EntityUtility.CreateMessage(domain, "Port Royal", 400 + xOffset, -200 + yOffset, false);
             EntityUtility.CreateRock(domain, 400, -200, 1.0, 40);
+            EntityUtility.CreateMessage(domain, "Barataria Bay", 0 + xOffset, 50 + yOffset, false);
             EntityUtility.CreateRock(domain, 0, 50, 1.2, 300);
+            EntityUtility.CreateMessage(domain, "Clew Bay", -300 + xOffset, 75 + yOffset, false);
             EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
+            EntityUtility.CreateMessage(domain, "New Providence", -100 + xOffset, -200 + yOffset, false);
             EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);
+
+            // Game score static 
+            EntityUtility.CreateMessage(domain, "Score: 1", 0, 0, true);
+
+
 
             // Create ship
             {
@@ -149,10 +161,10 @@ namespace CaptainCombat
         protected override void Draw(GameTime gameTime)
         {
 
-
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             Renderer.RenderSprites(domain, camera);
+            Renderer.RenderText(domain, camera); 
 
             base.Draw(gameTime);
         }
