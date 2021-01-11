@@ -9,5 +9,7 @@ namespace RemoteServer.Collector
     interface ICollector
     {
         void Collect();
+
+        void PrintUpdateComponents();
     }
 }

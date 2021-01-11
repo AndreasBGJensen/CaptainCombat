@@ -53,12 +53,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collector\Helpers\ArrayCreator.cs" />
     <Compile Include="GlobalInfo.cs" />
     <Compile Include="Collector\CollectorClass.cs" />
     <Compile Include="Collector\TupleCollectorParallel.cs" />
     <Compile Include="Collector\TupleCollector.cs" />
     <Compile Include="Collector\ICollector.cs" />
-    <Compile Include="DTO\ComponentDTO.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="singletons\Connection.cs" />
