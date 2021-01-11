@@ -22,18 +22,13 @@ namespace RemoteServer.threads
         {
             while (true)
             {
-                try
-                {
-                    Tuple result = (Tuple)Connection.Instance.Space.Get("user", typeof(string));
-                    Console.WriteLine("User joined: " + result[1]);
-                    int client_id = newId;
-                    newId++; 
-                    Connection.Instance.Space.Put("users", result[1]);
-                    Connection.Instance.Space.Put("connected", client_id, "Joined successfully");
-                }
-                catch (Exception e)
-                {
-                }
+                Tuple result = (Tuple)Connection.Instance.Space.Get("user", typeof(string));
+                Console.WriteLine("User joined: " + result[1]);
+                int client_id = newId;
+                newId++; 
+                Connection.Instance.Space.Put("users", result[1]);
+                Connection.Instance.Space.Put("connected", client_id, "Joined successfully");
+                
             }
         }
     }
