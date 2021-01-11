@@ -5,7 +5,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ECS.Domain;
 using static Source.ECS.Domain;
 
 namespace StaticGameLogic_Library.Game
