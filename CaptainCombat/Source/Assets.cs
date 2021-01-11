@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Xna.Framework.Graphics;
+
 namespace CaptainCombat.Source {
     
     public static class Assets {

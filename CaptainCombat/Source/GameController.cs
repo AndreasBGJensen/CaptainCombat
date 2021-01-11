@@ -94,6 +94,12 @@ namespace CaptainCombat
             Graphics.PreferredBackBufferHeight = 720;
             Graphics.ApplyChanges();
 
+
+            // Set asset loaders
+            Asset.SetLoader<Source.Texture, Texture2D>((texture) => {
+                return Content.Load<Texture2D>(texture.Url);
+            });
+
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 

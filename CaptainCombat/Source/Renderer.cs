@@ -29,7 +29,7 @@ namespace CaptainCombat.Source {
                 var sprite = entity.GetComponent<Sprite>();
                 var transform = entity.GetComponent<Transform>();
 
-                var texture = sprite.Texture.MGTexture;
+                var texture = sprite.Texture.GetNative<Texture2D>();
 
                 float width = (float)(sprite.Width * transform.ScaleX);
                 float height = (float)(sprite.Height * transform.ScaleY);
