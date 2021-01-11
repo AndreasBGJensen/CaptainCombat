@@ -1,7 +1,6 @@
 ﻿
 using CaptainCombat.singletons;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,6 +9,10 @@ using System.Threading;
 
 namespace CaptainCombat.Source.Event {
 
+    /// <summary>
+    /// Controller which listens for incoming event tuples in the remote space, and
+    /// sends outgoing events
+    /// </summary>
     public class EventController {
 
         private static Dictionary<Type, List<EventListenerConverter>> listenerMap = new Dictionary<Type, List<EventListenerConverter>>();
@@ -21,12 +24,19 @@ namespace CaptainCombat.Source.Event {
         private static List<Event> incomingEvents = new List<Event>();
         private static bool receiveEvents = false;
 
-
+        /// <summary>
+        /// Starts the EventController by starting the receiver
+        /// and sender threads
+        /// </summary>
         public static void Start() {
             new Thread(ReceiveEvents).Start();
             new Thread(SendEvents).Start();
         }
 
+        /// <summary>
+        /// Stops the EventController, by stopping the sender
+        /// and receiver threads
+        /// </summary>
         public static void Stop() {
             receiveEvents = false;
             sendEvents = false;
@@ -78,6 +88,15 @@ namespace CaptainCombat.Source.Event {
             }
         }
 
+
+
+        /// <summary>
+        /// The listener delegate which is called upon receiving
+        /// an Event of the given type
+        /// </summary>
+        /// <typeparam name="E">The specialized class (must inherit from Event)</typeparam>
+        /// <param name="e">The event instanceto handle</param>
+        /// <returns>True if the Event was consumed, and proceeding listeners should not be called</returns>
         public delegate bool EventListener<E>(E e) where E : Event;
 
         // Works as a converter between the base Event class
@@ -85,6 +104,15 @@ namespace CaptainCombat.Source.Event {
         // type (see AddListener)
         private delegate bool EventListenerConverter(Event e);
 
+        /// <summary>
+        /// Adds a listener which is notified when an event of a particular
+        /// type is received
+        /// Multiple listeners may be added, and will be fired sequentially
+        /// in the order they have been added
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="e"></param>
+        /// <returns></returns>
         public static EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
             var eventType = typeof(E);
             if (!listenerMap.ContainsKey(eventType))
@@ -93,7 +121,11 @@ namespace CaptainCombat.Source.Event {
             return e;
         }
 
-
+        /// <summary>
+        /// Sends the given Event, which has been specified
+        /// with a receiver and sender client id.
+        /// The event is sent asynchronously
+        /// </summary>
         public static void Send(Event e) {
             lock (outgoingEvents) {
                 outgoingEvents.Add(e);
@@ -101,7 +133,10 @@ namespace CaptainCombat.Source.Event {
             senderWaitHandle.Set();
         }
 
-
+        /// <summary>
+        /// Tells the controller to "dispatch" all Events,
+        /// causing added listenes to be fired approriately
+        /// </summary>
         public static void HandleEvents() {
             lock(incomingEvents) {
                 foreach(var e in incomingEvents) {
