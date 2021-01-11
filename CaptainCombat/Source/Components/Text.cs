@@ -15,17 +15,14 @@ namespace CaptainCombat.Source.Components
         public string Message { get; set; }
         public string FontTag { get; set; }
 
-        public bool StaticText { get; set; }
-
         public Font FONT { get => Asset.GetAsset<Font>(FontTag); }
 
         public Text() { }
 
-        public Text(Font font, string message, bool staticText)
+        public Text(Font font, string message)
         {
             FontTag = font.Tag;
             Message = message;
-            StaticText = staticText; 
         }
 
 
@@ -35,7 +32,6 @@ namespace CaptainCombat.Source.Components
             {
                 FontTag = this.FontTag,
                 Message = this.Message,
-                StaticText = this.StaticText
             };
             return obj;
         }
@@ -44,7 +40,6 @@ namespace CaptainCombat.Source.Components
         {
             this.FontTag = (string)json.SelectToken("FontTag");
             this.Message = (string)json.SelectToken("Message");
-            this.StaticText = (bool)json.SelectToken("StaticText");
         }
     }
 }

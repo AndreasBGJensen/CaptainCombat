@@ -68,37 +68,6 @@ namespace CaptainCombat.Source {
 
         public static void RenderText(Domain domain, Camera camera)
         {
-            // Draw danamic text Components 
-            spriteBatch.Begin();
-
-            // Submit all entities which have a Sprite and Transform component
-            // to the sprite batch (for drawing)
-            domain.ForMatchingEntities<Text, Transform>((entity) => {
-
-                var text = entity.GetComponent<Text>();
-
-                if (!text.StaticText)
-                {
-                    return;
-                }
-
-                var transform = entity.GetComponent<Transform>();
-                var font = text.FONT.SpriteFont;
-
-                spriteBatch.DrawString(
-                    // Font 
-                    font,
-                    // Text 
-                    text.Message,
-                    // Position 
-                    new Vector2((float)transform.X, (float)transform.Y),
-                    // Color 
-                    Color.Black);
-            });
-            spriteBatch.End();
-
-
-            // Draw static text Components 
             spriteBatch.Begin(transformMatrix: camera.GetMatrix());
             //spriteBatch.Begin();
 
@@ -108,13 +77,10 @@ namespace CaptainCombat.Source {
 
                 var text = entity.GetComponent<Text>();
 
-                if (text.StaticText)
-                {
-                    return; 
-                }
+               
 
                 var transform = entity.GetComponent<Transform>();
-                var font = text.FONT.SpriteFont;
+                var font = text.FONT.GetNative<SpriteFont>();
 
                 spriteBatch.DrawString(
                     // Font 

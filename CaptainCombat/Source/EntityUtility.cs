@@ -25,7 +25,7 @@ namespace CaptainCombat.Source {
             return entity;            
         }
 
-        public static Entity CreateMessage(Domain domain, string message, double x, double y, bool staticText)
+        public static Entity CreateMessage(Domain domain, string message, double x, double y)
         {
             var entity = new Entity(domain);
 
@@ -33,7 +33,7 @@ namespace CaptainCombat.Source {
             transform.X = x;
             transform.Y = y;
 
-            entity.AddComponent(new Text(Assets.Fonts.PIRATE_FONT, message, staticText));
+            entity.AddComponent(new Text(Assets.Fonts.PIRATE_FONT, message));
 
             return entity;
         }
