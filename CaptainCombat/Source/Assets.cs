@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Xna.Framework.Graphics;
+
 namespace CaptainCombat.Source {
     
     public static class Assets {
@@ -22,11 +24,9 @@ namespace CaptainCombat.Source {
 
             public static readonly Texture ROCK = new Texture(Collections.GLOBAL, "rock1", "Sprites/Rock1");
         }
-        
-
-
-
 
     }
+
+
 
 }
