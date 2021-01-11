@@ -1,5 +1,9 @@
 ﻿
-namespace Source
+
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Assets;
+
+namespace taticGameLogic_Library.Source
 {
     
     public static class Assets {
@@ -9,9 +13,6 @@ namespace Source
             public static readonly Asset.AssetCollection GLOBAL = new Asset.AssetCollection();
 
         }
-
-
-
 
         public static class Textures {
 
@@ -23,11 +24,5 @@ namespace Source
 
             public static readonly Texture ROCK = new Texture(Collections.GLOBAL, "rock1", "Sprites/Rock1");
         }
-        
-
-
-
-
     }
-
 }

@@ -1,13 +1,6 @@
-﻿using CaptainCombat.game;
-using CaptainCombat.singletons;
-using ECS;
-using Newtonsoft.Json;
-using System;
+﻿using StaticGameLogic_Library.Game;
+using StaticGameLogic_Library.Singletons;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace StaticGameLogic_Library.JsonBuilder

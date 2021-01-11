@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Assets;
 using static Source.ECS.Domain;
 
 namespace StaticGameLogic_Library.Components {

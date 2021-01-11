@@ -49,7 +49,13 @@
   <ItemGroup>
     <Compile Include="Components\Sprite.cs" />
     <Compile Include="Components\Transform.cs" />
+    <Compile Include="Game\DataObject.cs" />
+    <Compile Include="Game\Transform.cs" />
+    <Compile Include="Singletons\Connection.cs" />
+    <Compile Include="Singletons\DomainState.cs" />
     <Compile Include="Source\Assets.cs" />
+    <Compile Include="Source\Assets\Asset.cs" />
+    <Compile Include="Source\Assets\Texture.cs" />
     <Compile Include="Source\ECS.cs" />
     <Compile Include="JsonBuilder\JsonBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -58,5 +64,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

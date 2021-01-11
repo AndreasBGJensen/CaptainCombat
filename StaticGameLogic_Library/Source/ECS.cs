@@ -1,6 +1,8 @@
 ﻿
+using dotSpace.Interfaces.Space;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StaticGameLogic_Library.Singletons;
 using StaticGameLogic_Library.Source.Utility;
 using System;
 using System.Collections.Concurrent;
