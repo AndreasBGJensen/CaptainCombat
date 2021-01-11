@@ -3,13 +3,16 @@ using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source;
 using CaptainCombat.Source.Components;
+using CaptainCombat.Source.Event;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Threading;
 using static ECS.Domain;
+
+using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
 
 namespace CaptainCombat
 {
@@ -32,6 +35,7 @@ namespace CaptainCombat
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
+
         
             DomainState.Instance.Domain = domain;
 
@@ -43,12 +47,25 @@ namespace CaptainCombat
             DownLoad download = new DownLoad();
             Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
             downloadThread.Start();
-            
+
+            EventController.Start();
+
+            EventController.AddListener<HelloEvent>((e) => {
+                Console.WriteLine("HelloEvent received!");
+                return false;
+            });
+
+            EventController.AddListener<HelloEvent>((e) => {
+                Console.WriteLine($"Hello to client {e.Receiver} from client {e.Sender}");
+                return true;
+            });
         }
 
 
         protected override void Initialize() {
             base.Initialize();
+            for (uint i = 1; i < 5; i++)
+                EventController.Send(new HelloEvent($"Hello there from client {Connection.Instance.User_id}!", i));
         }
 
 
@@ -82,6 +99,12 @@ namespace CaptainCombat
             Graphics.PreferredBackBufferHeight = 720;
             Graphics.ApplyChanges();
 
+
+            // Set asset loaders
+            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
+                return Content.Load<MGTexture>(texture.Url);
+            });
+
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
@@ -94,6 +117,8 @@ namespace CaptainCombat
 
             // Clean the Domain before each frame
             domain.Clean();
+
+            EventController.HandleEvents();
 
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //Exit();
