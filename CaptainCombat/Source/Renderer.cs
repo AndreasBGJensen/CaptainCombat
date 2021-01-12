@@ -94,5 +94,32 @@ namespace CaptainCombat.Source {
             });
             spriteBatch.End();
         }
+
+        public static void RenderInput(Domain domain, Camera camera)
+        {
+            spriteBatch.Begin(transformMatrix: camera.GetMatrix());
+            //spriteBatch.Begin();
+
+            // Submit all entities which have a Sprite and Transform component
+            // to the sprite batch (for drawing)
+            domain.ForMatchingEntities<Input, Transform>((entity) => {
+
+                var input = entity.GetComponent<Input>();
+                var transform = entity.GetComponent<Transform>();
+                var font = input.FONT.GetNative<SpriteFont>();
+
+                spriteBatch.DrawString(
+                    // Font 
+                    font,
+                    // Text 
+                    input.Message,
+                    // Position 
+                    new Vector2((float)transform.X, (float)transform.Y),
+                    // Color 
+                    Color.Black);
+            });
+            spriteBatch.End();
+        }
+
     }
 }

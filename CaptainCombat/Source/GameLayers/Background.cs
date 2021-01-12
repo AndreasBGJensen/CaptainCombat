@@ -14,14 +14,19 @@ namespace CaptainCombat.Source.GameLayers
 {
     class Background : Layer
     {
-        private Domain domain = new Domain();
-        private  Camera camera;
+        private Domain Domain = new Domain();
+        private Camera Camera;
 
-        public static Entity ship;
+        private Entity ship;
+
+        private bool disableKeyboard = false;
+
+        private Keys[] lastPressedKeys = new Keys[5];
 
         public Background()
         {
-            camera = new Camera(domain);
+            
+            Camera = new Camera(Domain);
             init(); 
         }
 
@@ -31,20 +36,20 @@ namespace CaptainCombat.Source.GameLayers
             int yOffset = -70;
 
             // Create some test rocks
-            EntityUtility.CreateMessage(domain, "Tortuga", 150 + xOffset, 100 + yOffset);
-            EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
-            EntityUtility.CreateMessage(domain, "Port Royal", 400 + xOffset, -200 + yOffset);
-            EntityUtility.CreateRock(domain, 400, -200, 1.0, 40);
-            EntityUtility.CreateMessage(domain, "Barataria Bay", 0 + xOffset, 50 + yOffset);
-            EntityUtility.CreateRock(domain, 0, 50, 1.2, 300);
-            EntityUtility.CreateMessage(domain, "Clew Bay", -300 + xOffset, 75 + yOffset);
-            EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
-            EntityUtility.CreateMessage(domain, "New Providence", -100 + xOffset, -200 + yOffset);
-            EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);
+            EntityUtility.CreateMessage(Domain, "Tortuga", 150 + xOffset, 100 + yOffset);
+            EntityUtility.CreateRock(Domain, 150, 100, 0.7, 120);
+            EntityUtility.CreateMessage(Domain, "Port Royal", 400 + xOffset, -200 + yOffset);
+            EntityUtility.CreateRock(Domain, 400, -200, 1.0, 40);
+            EntityUtility.CreateMessage(Domain, "Barataria Bay", 0 + xOffset, 50 + yOffset);
+            EntityUtility.CreateRock(Domain, 0, 50, 1.2, 300);
+            EntityUtility.CreateMessage(Domain, "Clew Bay", -300 + xOffset, 75 + yOffset);
+            EntityUtility.CreateRock(Domain, -300, 75, 1.4, 170);
+            EntityUtility.CreateMessage(Domain, "New Providence", -100 + xOffset, -200 + yOffset);
+            EntityUtility.CreateRock(Domain, -100, -200, 1.2, 30);
 
             // Create ship
             {
-                ship = new Entity(domain);
+                ship = new Entity(Domain);
                 ship.AddComponent(new Transform());
                 ship.AddComponent(new Sprite(Assets.Textures.SHIP, 66, 113));
 
@@ -57,66 +62,107 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void update(GameTime gameTime)
         {
-            domain.Clean();
-
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //Exit();
+            Domain.Clean();
+            GetKeys(); 
+            
 
             double seconds = gameTime.ElapsedGameTime.TotalSeconds;
             bool shiftPressed = Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.C))
-                domain.Clean();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R))
-                camera.Rotation += 100 * seconds * (shiftPressed ? -1 : 1);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Z))
-                camera.Zoom += 1.0 * seconds * (shiftPressed ? -1 : 1);
-
-            // Update ship movement
+            if (!disableKeyboard)
             {
-                var move = ship.GetComponent<Move>();
+                if (Keyboard.GetState().IsKeyDown(Keys.C))
+                    Domain.Clean();
 
-                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                if (Keyboard.GetState().IsKeyDown(Keys.R))
+                    Camera.Rotation += 100 * seconds * (shiftPressed ? -1 : 1);
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Z))
+                    Camera.Zoom += 1.0 * seconds * (shiftPressed ? -1 : 1);
+
+                // Update ship movement
                 {
-                    move.Acceleration = move.Acceleration.WithMagnitude(30);
-                }
-                else
-                {
-                    move.Acceleration = new Vector2(0, 0);
-                }
-                
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                {
-                    move.RotationAcceleration = 270;
-                }
-                else if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                {
-                    move.RotationAcceleration = -270;
-                }
-                else
-                {
-                    move.RotationAcceleration = 0;
+                    var move = ship.GetComponent<Move>();
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                    {
+                        move.Acceleration = move.Acceleration.WithMagnitude(30);
+                    }
+                    else
+                    {
+                        move.Acceleration = new Vector2(0, 0);
+                    }
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                    {
+                        move.RotationAcceleration = 270;
+                    }
+                    else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                    {
+                        move.RotationAcceleration = -270;
+                    }
+                    else
+                    {
+                        move.RotationAcceleration = 0;
+                    }
                 }
             }
 
             // Update camera to ship
             {
                 var transform = ship.GetComponent<Transform>();
-                camera.X = transform.X;
-                camera.Y = transform.Y;
+                Camera.X = transform.X;
+                Camera.Y = transform.Y;
             }
 
-            Movement.Update(domain, seconds);
-        }
-
-        public override void draw(GameTime gameTime)
-        {
-            Renderer.RenderSprites(domain, camera);
-            Renderer.RenderText(domain, camera);
+            Movement.Update(Domain, seconds);
         }
 
         
+
+        public override void draw(GameTime gameTime)
+        {
+            Renderer.RenderSprites(Domain, Camera);
+            Renderer.RenderText(Domain, Camera);
+        }
+
+        public void GetKeys()
+        {
+            KeyboardState kbState = Keyboard.GetState();
+            Keys[] pressedKeys = kbState.GetPressedKeys();
+
+            foreach (Keys key in lastPressedKeys)
+            {
+                if (!pressedKeys.Contains(key))
+                {
+                    OnKeyUp(key);
+                }
+            }
+            foreach (Keys key in pressedKeys)
+            {
+                if (!lastPressedKeys.Contains(key))
+                {
+                    OnKeyDown(key);
+                }
+            }
+            lastPressedKeys = pressedKeys;
+
+        }
+
+        public void OnKeyUp(Keys key)
+        {
+
+        }
+
+        public void OnKeyDown(Keys key)
+        {
+            if (key == Keys.Tab)
+            {
+                disableKeyboard = !disableKeyboard;
+            }
+        }
+
+
     }
 }

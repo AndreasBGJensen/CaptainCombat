@@ -38,6 +38,19 @@ namespace CaptainCombat.Source {
             return entity;
         }
 
+        public static Entity CreateInput(Domain domain, string message, double x, double y)
+        {
+            var entity = new Entity(domain);
+
+            var transform = entity.AddComponent(new Transform());
+            transform.X = x;
+            transform.Y = y;
+
+            entity.AddComponent(new Input(Assets.Fonts.PIRATE_FONT, message));
+
+            return entity;
+        }
+
     }
 
 

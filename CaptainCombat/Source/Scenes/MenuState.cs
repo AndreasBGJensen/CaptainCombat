@@ -1,4 +1,5 @@
 ﻿using CaptainCombat.Source.MenuLayers;
+using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -13,9 +14,11 @@ namespace CaptainCombat.Source.Scenes
     {
         List<Layer> layers = new List<Layer>();
 
+        private Domain Domain = new Domain();
+
         public MenuState()
         {
-            layers.Add(new Menu()); 
+            layers.Add(new Menu(Domain)); 
         }
 
         public override void onEnter()
@@ -30,8 +33,7 @@ namespace CaptainCombat.Source.Scenes
 
         public override void update(GameTime gameTime)
         {
-
-            foreach (Layer layer in layers)
+           foreach (Layer layer in layers)
             {
                 layer.update(gameTime);
             }

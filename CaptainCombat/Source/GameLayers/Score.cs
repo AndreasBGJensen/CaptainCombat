@@ -11,31 +11,30 @@ namespace CaptainCombat.Source.GameLayers
     class Score : Layer
     {
 
-        private Domain domain = new Domain();
-        private Camera camera;
+        private Domain Domain = new Domain(); 
+        private Camera Camera;
 
         public Score()
         {
-            camera = new Camera(domain);
+            Camera = new Camera(Domain);
             init();
         }
 
         
         public override void init()
         {
-            EntityUtility.CreateMessage(domain, "Score: 1", 50, 50);
+            EntityUtility.CreateMessage(Domain, "Score: 1", 50, 50);
         }
 
         public override void update(GameTime gameTime)
         {
-            // Clean the Domain before each frame
-            domain.Clean();
+            Domain.Clean();
         }
 
         public override void draw(GameTime gameTime)
         {
-            Renderer.RenderSprites(domain, camera);
-            Renderer.RenderText(domain, camera);
+            Renderer.RenderSprites(Domain, Camera);
+            Renderer.RenderText(Domain, Camera);
         }
     }
 }

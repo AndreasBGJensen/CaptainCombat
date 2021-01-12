@@ -10,31 +10,30 @@ namespace CaptainCombat.Source.MenuLayers
 {
     class Menu : Layer
     {
-        private Domain domain = new Domain();
-        private Camera camera;
-
-        public Menu()
+        
+        private Camera Camera;
+        private Domain Domain = new Domain();  
+        public Menu(Domain domain)
         {
-            camera = new Camera(domain);
+            Camera = new Camera(Domain);
             init();
         }
 
         public override void init()
         {
             // Game score static 
-            EntityUtility.CreateMessage(domain, "Menu", 50, 50);
+            EntityUtility.CreateMessage(Domain, "Menu", 50, 50);
         }
 
         public override void update(GameTime gameTime)
         {
-            // Clean the Domain before each frame
-            domain.Clean();
+            Domain.Clean();
         }
 
         public override void draw(GameTime gameTime)
         {
-            Renderer.RenderSprites(domain, camera);
-            Renderer.RenderText(domain, camera);
+            Renderer.RenderSprites(Domain, Camera);
+            Renderer.RenderText(Domain, Camera);
         }
     }
 }

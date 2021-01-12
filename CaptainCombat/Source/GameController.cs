@@ -28,18 +28,6 @@ namespace CaptainCombat
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-
-
-            /*
-            Upload upload = new Upload();
-            Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
-            uploadThread.Start();
-
-            DownLoad download = new DownLoad();
-            Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
-            downloadThread.Start();
-            */
-            
         }
 
 
@@ -52,7 +40,7 @@ namespace CaptainCombat
             Renderer.Initialize(GraphicsDevice);
 
             // Set statemanager 
-            stateManager = new StateManager(); 
+            stateManager = new StateManager(new GameState(this)); 
             
 
             // Set the window size
@@ -74,16 +62,12 @@ namespace CaptainCombat
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
+
         }
 
 
         protected override void Update(GameTime gameTime) {
-
-
-            //DomainState.Instance.Upload = JsonBuilder.createJsonString();
-
             stateManager._state.update(gameTime); 
-
             base.Update(gameTime);
         }
 

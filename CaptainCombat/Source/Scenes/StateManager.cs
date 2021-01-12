@@ -9,14 +9,14 @@ namespace CaptainCombat.Source.Scenes
 {
     class StateManager 
     {
-        public State gameState = new GameState();
-        public State menuState = new MenuState();
+        //public State gameState = new GameState();
+        //public State menuState = new MenuState();
 
         // A reference to the current state of the Context.
         public State _state = null; 
-        public StateManager()
+        public StateManager(State gameState)
         {
-            TransitionTo(this.gameState); 
+            TransitionTo(gameState); 
         }
 
         // The Context allows changing the State object at runtime.
