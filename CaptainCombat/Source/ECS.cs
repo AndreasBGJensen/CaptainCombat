@@ -7,11 +7,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.Reflection;
 
-namespace ECS {
 
+namespace ECS {
 
     public class Domain {
 
@@ -130,6 +129,7 @@ namespace ECS {
 
                     current_compotent.Id = global_compotent_id;
 
+                    // TODO: Not sure if this actually works (GetType() may return Component instead of child class)
                     current_entity.AddComponent(current_compotent, current_compotent.GetType());
                 }
 
@@ -455,7 +455,7 @@ namespace ECS {
             // an identifier
             static Component() {
                 foreach (var type in Assembly.GetAssembly(typeof(Component)).GetTypes()) {
-                    if (type.IsSubclassOf(typeof(Component))) {
+                    if (type.IsSubclassOf(typeof(Component)) && !type.IsAbstract ) {
                         var identifier = type.FullName;
                         if (type.GetConstructor(Type.EmptyTypes) == null)
                             throw new Exception($"Component type '{type.FullName}' does not have a constructor with no parameters");

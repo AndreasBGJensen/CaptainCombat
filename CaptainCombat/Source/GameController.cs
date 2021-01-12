@@ -28,6 +28,8 @@ namespace CaptainCombat
 
         public static Entity ship;
 
+        public static CollisionController collisionController = new CollisionController();
+
 
         public GameController() {
             Game = this;
@@ -49,23 +51,11 @@ namespace CaptainCombat
             downloadThread.Start();
 
             EventController.Start();
-
-            EventController.AddListener<HelloEvent>((e) => {
-                Console.WriteLine("HelloEvent received!");
-                return false;
-            });
-
-            EventController.AddListener<HelloEvent>((e) => {
-                Console.WriteLine($"Hello to client {e.Receiver} from client {e.Sender}");
-                return true;
-            });
         }
 
 
         protected override void Initialize() {
             base.Initialize();
-            for (uint i = 1; i < 5; i++)
-                EventController.Send(new HelloEvent($"Hello there from client {Connection.Instance.User_id}!", i));
         }
 
 
@@ -90,6 +80,10 @@ namespace CaptainCombat
                 move.Resistance = 0.25;
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
+
+                var collider = ship.AddComponent(new CircleCollider());
+                collider.Radius = 40;
+                collider.ColliderType = Assets.Colliders.SHIP;
             }
 
             camera = new Camera(domain);
@@ -108,12 +102,16 @@ namespace CaptainCombat
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
+
+            collisionController.AddListener(Assets.Colliders.SHIP, Assets.Colliders.ROCK, (ship, rock) => {
+                // TODO: Fix the ordering of entities
+                Console.WriteLine("Collision!");
+                return true;
+            });
         }
 
 
         protected override void Update(GameTime gameTime) {
-
-            //System.Console.WriteLine("Frame: " + gameTime.ElapsedGameTime.TotalMilliseconds);
 
             // Clean the Domain before each frame
             domain.Clean();
@@ -164,6 +162,7 @@ namespace CaptainCombat
             }
 
             Movement.Update(domain, seconds);
+            collisionController.CheckCollision(domain);
 
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
 
@@ -178,6 +177,7 @@ namespace CaptainCombat
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             Renderer.RenderSprites(domain, camera);
+            Renderer.RenderColliders(domain, camera);
 
             base.Draw(gameTime);
         }

@@ -28,7 +28,6 @@ namespace CaptainCombat.Source.Event {
             Receiver = receiver;
         }
 
-
         public Event(uint receiver) {
             Sender = (uint) Connection.Instance.User_id;
             Receiver = receiver;

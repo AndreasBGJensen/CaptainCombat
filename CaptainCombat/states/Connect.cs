@@ -19,19 +19,12 @@ namespace CaptainCombat.states
         {
             Console.WriteLine("Start GameClient");
 
-            try
-            {
-                string uri = "tcp://127.0.0.1:5000/space?CONN";
-                //string uri = "tcp://49.12.75.251:5000/space?CONN";
-                RemoteSpace space = new RemoteSpace(uri);
-                Connection connecting = Connection.Instance;
-                connecting.Space = space;
-                this._context.TransitionTo(new Join());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            string uri = "tcp://127.0.0.1:5000/space?CONN";
+            //string uri = "tcp://49.12.75.251:5000/space?CONN";
+            RemoteSpace space = new RemoteSpace(uri);
+            Connection connecting = Connection.Instance;
+            connecting.Space = space;
+            this._context.TransitionTo(new Join());
         }
 
     }

@@ -6,7 +6,6 @@ using System;
 
 namespace CaptainCombat.Source {
 
-
     public static class Renderer {
 
         private static GraphicsDevice graphics;
@@ -58,12 +57,107 @@ namespace CaptainCombat.Source {
                        new Vector2(width/texture.Width, height/texture.Height),
 
                        SpriteEffects.None,
+
                        1
                 );
             });
 
             spriteBatch.End();
             
+        }
+
+
+        public static void RenderColliders(Domain domain, Camera camera) {
+
+            spriteBatch.Begin(transformMatrix: camera.GetMatrix());
+
+            // Render box colliders
+            domain.ForMatchingEntities<Transform, BoxCollider>((e) => {
+                var transform = e.GetComponent<Transform>();
+                var collider = e.GetComponent<BoxCollider>();
+
+                var position = new Vector2((float)transform.X, (float)transform.Y) + collider.Offset; // Draw the texture
+
+                var color =
+                      collider.Collided ? Color.Red
+                    : collider.Enabled ? Color.Yellow
+                    : new Color(0.85f, 0.85f, 0.85f, 0.75f);
+
+                var texture = Assets.Textures.LINE_SQUARE.GetNative<Texture2D>();
+
+                spriteBatch.Draw(
+                       texture,
+
+                       // Render position and size
+                       position,
+                       //new Rectangle((int)transform.X, (int)transform.Y, (int)width, (int)height),
+
+                       // "Texture Coordinates" (null for full texture)
+                       null,
+
+                       // Tint (not implemented in Sprite component yet
+                       color,
+
+                       // Rotation (radians)
+                       (float)((transform.Rotation + collider.Rotation) * Math.PI / 180), // Rotation
+
+                       // Origin offset (relative to MG Texture)
+                       new Vector2(texture.Width / 2.0f, texture.Height / 2.0f),
+
+                       // Scale sprite size to the desired width and height
+                       new Vector2((float)(collider.Width) / texture.Width, (float)(collider.Height) / texture.Height),
+
+                       SpriteEffects.None,
+
+                       1
+                );
+            });
+
+            // Render circle colliders
+            domain.ForMatchingEntities<Transform, CircleCollider>((e) => {
+
+                var transform = e.GetComponent<Transform>();
+                var collider = e.GetComponent<CircleCollider>();
+                
+                var position = new Vector2((float)transform.X, (float)transform.Y) + collider.Offset; // Draw the texture
+
+                var color =
+                      collider.Collided ? Color.Red
+                    : collider.Enabled ? Color.Yellow
+                    : new Color(0.85f, 0.85f, 0.85f, 0.75f);
+                
+                var texture = Assets.Textures.LINE_CIRCLE.GetNative<Texture2D>();
+
+                spriteBatch.Draw(
+                       texture,
+
+                       // Render position and size
+                       position,
+                       //new Rectangle((int)transform.X, (int)transform.Y, (int)width, (int)height),
+
+                       // "Texture Coordinates" (null for full texture)
+                       null,
+
+                       // Tint (not implemented in Sprite component yet
+                       color,
+
+                       // Rotation (radians)
+                       (float)((transform.Rotation) * Math.PI / 180), // Rotation
+
+                       // Origin offset (relative to MG Texture)
+                       new Vector2(texture.Width / 2.0f, texture.Height / 2.0f),
+
+                       // Scale sprite size to the desired width and height
+                       new Vector2((float)(collider.Radius*2)/texture.Width, (float)(collider.Radius*2)/texture.Height),
+
+                       SpriteEffects.None,
+
+                       1
+                );
+            });
+
+            spriteBatch.End();
+
         }
 
 

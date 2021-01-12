@@ -1,21 +1,14 @@
 ﻿
 using CaptainCombat.Diagnostics;
 using CaptainCombat.singletons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace CaptainCombat.network
-{
+
+namespace CaptainCombat.network {
     class Upload
     {
         StopWatch watch = new StopWatch("Uploading", 50);
         public Upload()
         {
-
 
         }
 
