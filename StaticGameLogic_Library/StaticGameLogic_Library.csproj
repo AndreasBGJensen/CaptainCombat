@@ -59,6 +59,7 @@
     <Compile Include="Source\ECS.cs" />
     <Compile Include="JsonBuilder\JsonBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\EntityUtility.cs" />
     <Compile Include="Source\Utility\IdGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

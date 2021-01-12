@@ -3,6 +3,7 @@ using System.Threading;
 using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
+using RemoteServer.Mapmaker;
 using RemoteServer.singletons;
 using RemoteServer.threads;
 using Tuple = dotSpace.Objects.Space.Tuple;
@@ -36,6 +37,12 @@ namespace RemoteServer
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
+
+            
+
+            Game game = new Game();
+            game.CreateRocks();
+
 
             Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
