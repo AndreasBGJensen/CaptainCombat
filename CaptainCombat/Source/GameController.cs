@@ -39,14 +39,17 @@ namespace CaptainCombat
         protected override void LoadContent() {
             Renderer.Initialize(GraphicsDevice);
 
-            // Set statemanager 
-            stateManager = new StateManager(new GameState(this)); 
-            
-
             // Set the window size
             Graphics.PreferredBackBufferWidth = 1280;
             Graphics.PreferredBackBufferHeight = 720;
             Graphics.ApplyChanges();
+
+            // Needed for loading assets 
+            new Loading(Game);
+            new MenuState(Game);
+            new GameState(Game);
+
+            stateManager = new StateManager(new Loading(Game));
 
 
             // Set asset loaders
@@ -54,16 +57,19 @@ namespace CaptainCombat
                 return Content.Load<Texture2D>(texture.Url);
             });
 
+
             Asset.SetLoader<Source.Font, SpriteFont>((font) => {
                 return Content.Load<SpriteFont>(font.Url);
             });
 
-
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
-
+            
         }
+
+
+
 
 
         protected override void Update(GameTime gameTime) {
@@ -74,7 +80,6 @@ namespace CaptainCombat
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
             stateManager._state.draw(gameTime); 
             base.Draw(gameTime);
         }

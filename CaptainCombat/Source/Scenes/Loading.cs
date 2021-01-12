@@ -1,4 +1,4 @@
-﻿using CaptainCombat.Source.MenuLayers;
+﻿using CaptainCombat.Source.Layers;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -10,36 +10,32 @@ using System.Threading.Tasks;
 
 namespace CaptainCombat.Source.Scenes
 {
-    class MenuState : State
+    class Loading : State
     {
         List<Layer> layers = new List<Layer>();
-
-        private Domain Domain = new Domain();
         Game Game; 
-        public MenuState(Game game)
+        public Loading(Game game)
         {
-            Game = game; 
-            layers.Add(new Menu(Domain)); 
+            Game = game;
+            layers.Add(new Load());
         }
 
         public override void onEnter()
         {
-            
+
         }
 
         public override void onExit()
         {
-            
+
         }
 
         public override void update(GameTime gameTime)
         {
-            
-            if (Keyboard.GetState().IsKeyDown(Keys.CapsLock))
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                this._context.TransitionTo(new GameState(Game));
+                this._context.TransitionTo(new MenuState(Game));
             }
-         
 
             foreach (Layer layer in layers)
             {
@@ -49,7 +45,7 @@ namespace CaptainCombat.Source.Scenes
 
         public override void draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(Color.Black);
+            Game.GraphicsDevice.Clear(Color.White);
             foreach (Layer layer in layers)
             {
                 layer.draw(gameTime);

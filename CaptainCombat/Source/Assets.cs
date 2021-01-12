@@ -25,6 +25,10 @@ namespace CaptainCombat.Source {
             public static readonly Texture ROCK = new Texture(Collections.GLOBAL, "rock1", "Sprites/Rock1");
 
             public static readonly Texture Chat = new Texture(Collections.GLOBAL, "Chat", "Sprites/chat_trans");
+
+            public static readonly Texture Loader = new Texture(Collections.GLOBAL, "Loader", "Sprites/loading_trans");
+
+            public static readonly Texture Loader2 = new Texture(Collections.GLOBAL, "Loader2", "Sprites/loader2");
         }
 
         public static class Fonts

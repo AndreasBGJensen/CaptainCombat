@@ -17,9 +17,12 @@ namespace CaptainCombat.Source.Scenes
     class GameState : State
     {
         private List<Layer> layers = new List<Layer>();
-        
+        Game Game; 
+
+
         public GameState(Game game)
         {
+            Game = game; 
             layers.Add(new Background());
             layers.Add(new Score());
             layers.Add(new Chat(game));
@@ -39,11 +42,12 @@ namespace CaptainCombat.Source.Scenes
 
         public override void update(GameTime gameTime)
         {
+            /*
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                this._context.TransitionTo(new MenuState()); 
+                this._context.TransitionTo(new MenuState(Game)); 
             }
-
+            */
             foreach (Layer layer in layers)
             {
                 layer.update(gameTime);
@@ -52,6 +56,7 @@ namespace CaptainCombat.Source.Scenes
 
         public override void draw(GameTime gameTime)
         {
+            Game.GraphicsDevice.Clear(Color.CornflowerBlue);
             foreach (Layer layer in layers)
             {
                 layer.draw(gameTime);
