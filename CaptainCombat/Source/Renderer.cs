@@ -68,8 +68,11 @@ namespace CaptainCombat.Source {
         }
 
 
-        public static void RenderColliders(Domain domain, Camera camera) {
 
+        /// <summary>
+        /// Renders all Colliders to the screen
+        /// </summary>
+        public static void RenderColliders(Domain domain, Camera camera) {
             spriteBatch.Begin(transformMatrix: camera.GetMatrix());
 
             // Render box colliders
@@ -77,26 +80,19 @@ namespace CaptainCombat.Source {
                 var transform = e.GetComponent<Transform>();
                 var collider = e.GetComponent<BoxCollider>();
 
-
                 // Color of collider box
                 var color =
                       collider.Collided ? Color.Red
                     : collider.Enabled ? Color.Yellow
-                    : new Color(0.85f, 0.85f, 0.85f, 0.75f);
+                    : new Color(0.75f, 0.75f, 0.75f);
 
                 var texture = Assets.Textures.LINE_SQUARE.GetNative<Texture2D>();
 
                 spriteBatch.Draw(
                        texture,
-
-                       // Render position and size
-                       new Vector2((float)transform.X, (float)transform.Y) + collider.Offset,
-
-                       // "Texture Coordinates" (null for full texture)
+                       new Vector2((float)transform.X, (float)transform.Y),
                        null,
-
                        color,
-
                        // Rotation (radians)
                        (float)((transform.Rotation + collider.Rotation) * Math.PI / 180), // Rotation
 
@@ -107,7 +103,6 @@ namespace CaptainCombat.Source {
                        new Vector2((float)(collider.Width) / texture.Width, (float)(collider.Height) / texture.Height),
 
                        SpriteEffects.None,
-
                        1
                 );
             });
@@ -118,29 +113,20 @@ namespace CaptainCombat.Source {
                 var transform = e.GetComponent<Transform>();
                 var collider = e.GetComponent<CircleCollider>();
                 
-                var position = new Vector2((float)transform.X, (float)transform.Y) + collider.Offset; // Draw the texture
+                var position = new Vector2((float)transform.X, (float)transform.Y); // Draw the texture
 
                 var color =
                       collider.Collided ? Color.Red
                     : collider.Enabled ? Color.Yellow
-                    : new Color(0.85f, 0.85f, 0.85f, 0.75f);
+                    : new Color(0.75f, 0.75f, 0.75f, 1.0f);
                 
                 var texture = Assets.Textures.LINE_CIRCLE.GetNative<Texture2D>();
 
                 spriteBatch.Draw(
                        texture,
-
-                       // Render position and size
                        position,
-                       //new Rectangle((int)transform.X, (int)transform.Y, (int)width, (int)height),
-
-                       // "Texture Coordinates" (null for full texture)
                        null,
-
-                       // Tint (not implemented in Sprite component yet
                        color,
-
-                       // Rotation (radians)
                        (float)((transform.Rotation) * Math.PI / 180), // Rotation
 
                        // Origin offset (relative to MG Texture)
@@ -150,13 +136,11 @@ namespace CaptainCombat.Source {
                        new Vector2((float)(collider.Radius*2)/texture.Width, (float)(collider.Radius*2)/texture.Height),
 
                        SpriteEffects.None,
-
                        1
                 );
             });
 
             spriteBatch.End();
-
         }
 
 

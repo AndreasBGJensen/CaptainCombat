@@ -1,75 +1,157 @@
-﻿
-using CaptainCombat.Source.Components;
+﻿using CaptainCombat.Source.Components;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using static ECS.Domain;
 
 
 namespace CaptainCombat.Source {
 
+    using CollisionFilter = System.Tuple<ColliderType, ColliderType>;
 
-
-    public struct CollisionType {
-        ColliderType type1;
-        ColliderType type2;
-
-        public CollisionType(ColliderType type1, ColliderType type2) {
-            this.type1 = type1;
-            this.type2 = type2;
-        }
-
-        public static bool operator ==(CollisionType c1, CollisionType c2) {
-            if ((object)c1 == null)
-                return (object)c2 == null;
-            return c1.Equals(c2);
-        }
-
-        public static bool operator !=(CollisionType c1, CollisionType c2) {
-            return !(c1 == c2);
-        }
-
-        public override bool Equals(object obj) {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-
-            var other = (CollisionType)obj;
-            return (type1 == other.type1 && type2 == other.type2) || (type1 == other.type2 && type2 == other.type1);
-        }
-
-        public override int GetHashCode() {
-            return type1.GetHashCode() ^ type2.GetHashCode();
-        }
-    }
-
-
-    // Returns true if the collision was "consumed"
+    /// <summary>
+    /// Listener which is notified when a collision happens between two entities
+    /// </summary>
     public delegate bool CollisionListener(Entity e1, Entity e2);
 
 
+    /// <summary>
+    /// Handles collisions and calls collision listeners mapped to collision filters,
+    /// that are local to the controller
+    /// </summary>
     public class CollisionController {
 
-        public Dictionary<CollisionType, List<CollisionListener>> listenerMap = new Dictionary<CollisionType, List<CollisionListener>>();
+        // Map from collision filters (pair of collider types types)
+        // to list of collision listeners (submitted by AddListener)
+        private Dictionary<CollisionFilter, List<CollisionListener>> listenerMap = new Dictionary<CollisionFilter, List<CollisionListener>>();
 
+        /// <summary>
+        /// Add a listener which is notified when any collision happens between two
+        /// colliders with the given ColliderTypes (the collision filter)
+        /// </summary>
         public void AddListener(ColliderType type1, ColliderType type2, CollisionListener listener) {
-            var collisionType = new CollisionType(type1, type2);
+            var collisionType = new CollisionFilter(type1, type2);
             if (!listenerMap.ContainsKey(collisionType))
                 listenerMap[collisionType] = new List<CollisionListener>();
             listenerMap[collisionType].Add(listener);
         }
 
+        /// <summary>
+        /// Check collisions between Entities in the given Domain
+        /// Collisions are only checked between colliders with types, that have
+        /// at least one listener associated with them (added with AddListener)
+        /// </summary>
+        public void CheckCollisions(Domain domain) {
 
-        public List<CollisionListener> GetCollisionListeners(ColliderType type1, ColliderType type2) {
-            var collisionType = new CollisionType(type1, type2);
-            if (listenerMap.ContainsKey(collisionType))
-                return listenerMap[collisionType];
-            return null;
+            // Reset wrapper lists
+            foreach (var list in colliderMap.Values)
+                list.Count = 0;
+
+            // Add BoxColliders to list
+            domain.ForMatchingEntities<Transform, BoxCollider>((e) => {
+                var collider = e.GetComponent<BoxCollider>();
+                collider.Collided = false;
+                if (!collider.Enabled || collider.ColliderType == null) return;
+
+                if (!colliderMap.ContainsKey(collider.ColliderType))
+                    colliderMap[collider.ColliderType] = new ColliderDataList();
+
+                var list = colliderMap[collider.ColliderType];
+                list.Expand();
+                list.Elements[list.Count].Set(e, e.GetComponent<Transform>(), collider);
+                list.Count++;
+            });
+
+            // Add CircleColliders to list
+            domain.ForMatchingEntities<Transform, CircleCollider>((e) => {
+                var collider = e.GetComponent<CircleCollider>();
+                collider.Collided = false;
+                if (!collider.Enabled) return;
+
+                if (!colliderMap.ContainsKey(collider.ColliderType))
+                    colliderMap[collider.ColliderType] = new ColliderDataList();
+
+                var list = colliderMap[collider.ColliderType];
+                list.Expand();
+                list.Elements[list.Count].Set(e, e.GetComponent<Transform>(), collider);
+                list.Count++;
+            });
+
+            // Check registered collision pairs
+            foreach (var pair in listenerMap) {
+                if (!colliderMap.ContainsKey(pair.Key.Item1)) continue;
+                if (!colliderMap.ContainsKey(pair.Key.Item2)) continue;
+                CheckTypeCollision(colliderMap[pair.Key.Item1], colliderMap[pair.Key.Item2], pair.Value);
+            }
         }
 
-        struct ColliderWrapper {
 
+        /// <summary>
+        /// Checks collision between two list of colliders, 
+        /// and fire the given list of Listeners if a collision
+        /// is registed
+        /// </summary>
+        private void CheckTypeCollision(ColliderDataList sourceColliders, ColliderDataList targetColliders, List<CollisionListener> listeners) {
+            for (int i = 0; i < sourceColliders.Count; i++) {
+                var source = sourceColliders.Elements[i];
+                var sourceType = source.collider.GetType();
+                for (int j = 0; j < targetColliders.Count; j++) {
+                    var target = targetColliders.Elements[j];
+
+                    // Initial radius sorting
+                    if (Vector2.Distance(source.center, target.center) > source.sortDistance + target.sortDistance)
+                        continue;
+
+                    var targetType = target.collider.GetType();
+
+                    // Run approriate collision function
+                    bool collision;
+                    // Circle-Circle
+                    if (sourceType == typeof(CircleCollider) && targetType == typeof(CircleCollider)) {
+                        // Circle-circle collision has already been detected when sorting
+                        collision = true;
+                    }
+                    // Box-Circle
+                    else if (sourceType == typeof(BoxCollider) && targetType == typeof(CircleCollider)) {
+                        collision = BoxCircleCollision(ref source, ref target);
+                    }
+                    // Circle-Box
+                    else if (sourceType == typeof(CircleCollider) && targetType == typeof(BoxCollider)) {
+                        collision = BoxCircleCollision(ref target, ref source);
+                    }
+                    // Box-box
+                    else {
+                        collision = BoxBoxCollision(ref source, ref target);
+                    }
+
+                    if (!collision) continue;
+
+                    // Fire listeners
+                    foreach (var listener in listeners) {
+                        var confirmed = listener(source.entity, target.entity);
+                        // The listener can implement its own logic to "decline" collision
+                        if (confirmed) {
+                            // Set flag for rendering collisions
+                            source.collider.Collided = true;
+                            target.collider.Collided = true;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        // Maps a ColliderType to a a list of Collider data
+        // Stored an attribute to prevent reconstruction on every frame (for performance)
+        private Dictionary<ColliderType, ColliderDataList> colliderMap = new Dictionary<ColliderType, ColliderDataList>();
+
+
+        /// <summary>
+        /// Struct to group necessary data about an Entity's collider
+        /// which allows for faster computations
+        /// </summary>
+        private struct ColliderData {
             public Vector2 center;
             public float sortDistance;
             public ColliderType colliderType;
@@ -82,10 +164,9 @@ namespace CaptainCombat.Source {
                 this.collider = collider;
                 this.entity = entity;
                 this.transform = transform;
-
                 colliderType = collider.ColliderType;
 
-                center = new Vector2((float)(transform.X + collider.Offset.X), (float)(transform.Y + collider.Offset.Y));
+                center = new Vector2((float)(transform.X), (float)(transform.Y));
                 collider.CalculatePoints(transform);
 
                 var diagonal1 = Vector2.Distance(collider.Points.a, collider.Points.c);
@@ -99,25 +180,39 @@ namespace CaptainCombat.Source {
                 this.collider = collider;
                 this.entity = entity;
                 this.transform = transform;
-
-                center = new Vector2((float)(transform.X + collider.Offset.X), (float)(transform.Y + collider.Offset.Y));
-                sortDistance = (float)collider.Radius;
                 colliderType = collider.ColliderType;
-            }
 
-
-
-            public void Unset() {
-                collider = null;
-                transform = null;
-                entity = null;
+                center = new Vector2((float)(transform.X), (float)(transform.Y));
+                sortDistance = (float)collider.Radius;
             }
         }
 
 
-        private static bool IsPointInRectangle(ref Vector2 point, ref BoxColliderPoints rect) {
-            // 0 ≤ AP·AB ≤ AB·AB and 0 ≤ AP·AD ≤ AD·AD
+        /// <summary>
+        /// Wrapper for an array of ColliderData to allow
+        /// for faster iteration and construction of ColliderData
+        /// structs (less copying)
+        /// </summary>
+        private class ColliderDataList {
+            public ColliderData[] Elements = new ColliderData[64];
+            public int Count = 0;
 
+            // Double the size of the array, if the array is full
+            public void Expand() {
+                if (Count < Elements.Length) return;
+                var newList = new ColliderData[Elements.Length * 2];
+                for(int i=0; i<Elements.Length; i++) {
+                    newList[i] = Elements[i];
+                }
+                Elements = newList;
+            }
+        }
+
+
+// ===========================================================================================================================================================
+// Intersection functions
+
+         static bool IsPointInRectangle(ref Vector2 point, ref BoxColliderPoints rect) {
             var ap = point - rect.a;
             var ab = rect.b - rect.a;
             var ad = rect.d - rect.a;
@@ -127,8 +222,7 @@ namespace CaptainCombat.Source {
             var apad = Vector2.Dot(ap, ad);
             var adad = Vector2.Dot(ad, ad);
 
-
-            return  0 <= apab && apab <= abab && 0 <= apad && apad <= adad;
+            return 0 <= apab && apab <= abab && 0 <= apad && apad <= adad;
         }
 
 
@@ -140,7 +234,7 @@ namespace CaptainCombat.Source {
             var crossProduct = ba.Cross(pa);
 
             const float err = 0.001f;
-            if ( crossProduct > err )
+            if (crossProduct > err)
                 return false;
 
             var dotProduct = Vector2.Dot(ba, pa);
@@ -166,7 +260,7 @@ namespace CaptainCombat.Source {
 
             var d = Vector2.Dot(ac, ab) / ab.LengthSquared() * ab;
 
-            if ( Vector2.Distance(d, ac) > r )
+            if (Vector2.Distance(d, ac) > r)
                 return false;
 
             var temp = Vector2.Zero;
@@ -177,7 +271,7 @@ namespace CaptainCombat.Source {
         }
 
 
-        private static bool BoxBoxCollision(ref ColliderWrapper collider1, ref ColliderWrapper collider2) {
+        private static bool BoxBoxCollision(ref ColliderData collider1, ref ColliderData collider2) {
             var box1 = (BoxCollider)collider1.collider;
             var box2 = (BoxCollider)collider2.collider;
 
@@ -190,13 +284,13 @@ namespace CaptainCombat.Source {
             if (IsPointInRectangle(ref box2.Points.b, ref box1.Points)) return true;
             if (IsPointInRectangle(ref box2.Points.c, ref box1.Points)) return true;
             if (IsPointInRectangle(ref box2.Points.d, ref box1.Points)) return true;
-            
+
             return false;
         }
 
 
-        private static bool BoxCircleCollision(ref ColliderWrapper box, ref ColliderWrapper circle) {
-            var boxCollider = (BoxCollider) box.collider;
+        private static bool BoxCircleCollision(ref ColliderData box, ref ColliderData circle) {
+            var boxCollider = (BoxCollider)box.collider;
 
             if (IsPointInRectangle(ref circle.center, ref boxCollider.Points))
                 return true;
@@ -212,109 +306,5 @@ namespace CaptainCombat.Source {
 
             return false;
         }
-
-
-        public class Counter {
-            public int val = 0;
-        }
-
-        public void CheckCollision(Domain domain) {
-
-            // Creating list with "plenty of space"
-            ColliderWrapper[] colliders = new ColliderWrapper[domain.entities.Count*2];
-            var numColliders = new Counter();
-
-            domain.ForMatchingEntities<Transform, BoxCollider>((e) => {
-                var collider = e.GetComponent<BoxCollider>();
-                collider.Collided = false;
-                if (!collider.Enabled) return;
-                colliders[numColliders.val].Set(e, e.GetComponent<Transform>(), collider );
-                numColliders.val++;
-            });
-
-            domain.ForMatchingEntities<Transform, CircleCollider>((e) => {
-                var collider = e.GetComponent<CircleCollider>();
-                collider.Collided = false;
-                if (!collider.Enabled) return;
-                colliders[numColliders.val].Set(e, e.GetComponent<Transform>(), collider);
-                numColliders.val++;
-            });
-
-
-            for( int i=0; i<numColliders.val-1; i++) {
-                var type1 = colliders[i].collider.GetType();
-                for (int j = i + 1; j < numColliders.val; j++) {
-
-                    var collisionType = new CollisionType(colliders[i].colliderType, colliders[j].colliderType);
-                    if (!listenerMap.ContainsKey(collisionType)) continue;
-
-                    var listeners = listenerMap[collisionType];
-
-                    if (Vector2.Distance(colliders[i].center, colliders[j].center) > colliders[i].sortDistance + colliders[j].sortDistance)
-                        continue;
-
-                    var type2 = colliders[j].collider.GetType();
-
-                    bool collision = false;
-
-                    if (type1 == typeof(CircleCollider) && type2 == typeof(CircleCollider)) {
-                        // Circle-circle collision has already been detected when sorting
-                        collision = true;
-                    }
-                    else if (type1 == typeof(BoxCollider) && type2 == typeof(CircleCollider)) {
-                        collision = BoxCircleCollision(ref colliders[i], ref colliders[j]);
-                    }
-                    else if (type1 == typeof(CircleCollider) && type2 == typeof(BoxCollider)) {
-                        collision = BoxCircleCollision(ref colliders[j], ref colliders[i]);
-                    }
-                    else {
-                        collision = BoxBoxCollision(ref colliders[i], ref colliders[j]);
-                    }
-
-                    if (!collision) continue;
-
-                    // Fire listeners
-                    foreach (var listener in listeners) {
-                        var confirmed = listener(colliders[i].entity, colliders[j].entity);
-                        if( confirmed ) {
-                            colliders[i].collider.Collided = true;
-                            colliders[j].collider.Collided = true;
-                        }
-                    }
-                }
-            }
-
-
-
-            /*
-            Data:
-                Create some wrapper common wrapper class for colliders
-
-
-            Collect colliders in two lists (circle and box)
-
-            For each collider a
-                For each collider b
-                    If a == b
-                        continue;
-                        
-                    dist(a, b) > a.sortDistance + b.sortDistance
-                        continue;
-
-                    if a is box and b is box
-                        box-box collision
-
-                    if a is circle and b is box
-                        box-circle collision
-
-                    if a is box and b is circle
-                        box-circle collision
-
-                    if a is circle and b is circle
-                        circle-circle collision
-
-            */
-        }
-    
     }
 }

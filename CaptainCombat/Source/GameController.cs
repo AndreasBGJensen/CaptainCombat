@@ -79,10 +79,12 @@ namespace CaptainCombat
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
 
-                var collider = ship.AddComponent(new BoxCollider());
-                collider.Width = 40;
-                collider.Height = 80;
-                collider.ColliderType = Assets.Colliders.SHIP;
+                ship.AddComponent(new CircleCollider(Assets.Colliders.TEST, 20));
+
+                //var collider = ship.AddComponent(new BoxCollider());
+                //collider.Width = 40;
+                //collider.Height = 80;
+                //collider.ColliderType = Assets.Colliders.SHIP;
             }
 
             camera = new Camera(domain);
@@ -161,7 +163,7 @@ namespace CaptainCombat
             }
 
             Movement.Update(domain, seconds);
-            collisionController.CheckCollision(domain);
+            collisionController.CheckCollisions(domain);
 
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
 

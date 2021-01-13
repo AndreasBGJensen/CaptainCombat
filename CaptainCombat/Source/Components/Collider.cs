@@ -6,20 +6,11 @@ using static ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
 
-    public abstract class Collider : Component {
-        public bool Enabled { get; set; } = true;
-
-        public ColliderType ColliderType { get; set; }
-
-        public Vector2 Offset { get; set; }
-        /// <summary>
-        /// Flag to denote that this collider collided with something
-        /// in the previous frame. Only used for rendering
-        /// </summary>
-        public bool Collided { get; set; }
-    }
-
-
+    /// <summary>
+    /// ColliderTypes are used to group Collider instances together
+    /// and to limit the number of collision checks, by only checking
+    /// for collision between paricular ColliderTypes
+    /// </summary>
     public class ColliderType {
         private static Dictionary<string, ColliderType> all = new Dictionary<string, ColliderType>();
 
@@ -55,9 +46,30 @@ namespace CaptainCombat.Source.Components {
     }
 
 
+    public abstract class Collider : Component {
+
+        /// <summary>
+        /// Only enabled Colliders will trigger collisions 
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// The type of this Collider (NOT the class type, i.e. BoxCollider)
+        /// If null, the Collider will be ignored
+        /// </summary>
+        public ColliderType ColliderType { get; set; } = null;
+
+        /// <summary>
+        /// Flag to denote that this collider collided with something
+        /// in the previous frame. Only used for Rendering the Colliders
+        /// </summary>
+        public bool Collided { get; set; }
+    }
 
 
-
+    /// <summary>
+    /// A rectanglecollider, which may rotated
+    /// </summary>
     public class BoxCollider : Collider {
 
         public double Width { get; set; }
@@ -65,10 +77,28 @@ namespace CaptainCombat.Source.Components {
 
         public double Rotation { get; set; }
 
+        /// <summary>
+        /// The 4 corners of the Collider in world coordinates
+        /// They should not be set from outside this class
+        /// </summary>
         public BoxColliderPoints Points;
 
-        public BoxCollider() { }
+        /// <summary>
+        /// Constructs the Points
+        /// </summary>
+        public void CalculatePoints(Transform transform) {
+            Matrix matrix =
+                   Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(Rotation + transform.Rotation))))
+                 * Matrix.CreateTranslation((float)transform.X, (float)transform.Y, 0);
 
+            float halfWidth = (float)(Width / 2.0);
+            float halfHeight = (float)(Height / 2.0);
+
+            Points.a = Vector2.Transform(new Vector2(-halfWidth, -halfHeight), matrix);
+            Points.b = Vector2.Transform(new Vector2(halfWidth, -halfHeight), matrix);
+            Points.c = Vector2.Transform(new Vector2(halfWidth, halfHeight), matrix);
+            Points.d = Vector2.Transform(new Vector2(-halfWidth, halfHeight), matrix);
+        }
 
 
         public override object getData() {
@@ -81,25 +111,6 @@ namespace CaptainCombat.Source.Components {
         public override void update(JObject json) {
             // TODO: Implement this
         }
-
-
-        public void CalculatePoints(Transform transform) {
-            Matrix matrix =
-                   Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(Rotation + transform.Rotation))))
-                 * Matrix.CreateTranslation(Offset.X + (float)transform.X, Offset.Y + (float)transform.Y, 0);
-             
-
-            float halfWidth = (float)(Width / 2.0);
-            float halfHeight = (float)(Height / 2.0);
-
-            Points.a = Vector2.Transform(new Vector2( -halfWidth, -halfHeight), matrix);
-            Points.b = Vector2.Transform(new Vector2(  halfWidth, -halfHeight), matrix);
-            Points.c = Vector2.Transform(new Vector2(  halfWidth,  halfHeight), matrix);
-            Points.d = Vector2.Transform(new Vector2( -halfWidth, halfHeight), matrix);
-        }
-
-
-
     }
 
     public struct BoxColliderPoints {
@@ -110,14 +121,19 @@ namespace CaptainCombat.Source.Components {
     }
 
 
+    /// <summary>
+    /// Collider which is represented by a Radius only
+    /// </summary>
     public class CircleCollider : Collider {
 
         public double Radius { get; set; } = 1.0;
 
-
         public CircleCollider() { }
 
-
+        public CircleCollider(ColliderType type, double radius) {
+            ColliderType = type;
+            Radius = radius;
+        }
 
         public override object getData() {
             // TODO: Implement this

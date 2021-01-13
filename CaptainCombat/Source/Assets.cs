@@ -32,6 +32,7 @@ namespace CaptainCombat.Source {
 
         public static class Colliders {
             public static readonly ColliderType SHIP = new ColliderType("ship");
+            public static readonly ColliderType TEST = new ColliderType("test");
             public static readonly ColliderType ROCK = new ColliderType("rock");
         }
 
