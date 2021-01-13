@@ -85,8 +85,8 @@ namespace CaptainCombat.Source.Components {
 
         public void CalculatePoints(Transform transform) {
             Matrix matrix =
-                 Matrix.CreateTranslation(Offset.X + (float)transform.X, Offset.Y + (float)transform.Y, 0) 
-                * Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(Rotation + transform.Rotation))));
+                   Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(Rotation + transform.Rotation))))
+                 * Matrix.CreateTranslation(Offset.X + (float)transform.X, Offset.Y + (float)transform.Y, 0);
              
 
             float halfWidth = (float)(Width / 2.0);

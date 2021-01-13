@@ -178,9 +178,22 @@ namespace CaptainCombat.Source {
 
 
         private static bool BoxBoxCollision(ref ColliderWrapper collider1, ref ColliderWrapper collider2) {
-            // TODO: Implement this
+            var box1 = (BoxCollider)collider1.collider;
+            var box2 = (BoxCollider)collider2.collider;
+
+            if (IsPointInRectangle(ref box1.Points.a, ref box2.Points)) return true;
+            if (IsPointInRectangle(ref box1.Points.b, ref box2.Points)) return true;
+            if (IsPointInRectangle(ref box1.Points.c, ref box2.Points)) return true;
+            if (IsPointInRectangle(ref box1.Points.d, ref box2.Points)) return true;
+
+            if (IsPointInRectangle(ref box2.Points.a, ref box1.Points)) return true;
+            if (IsPointInRectangle(ref box2.Points.b, ref box1.Points)) return true;
+            if (IsPointInRectangle(ref box2.Points.c, ref box1.Points)) return true;
+            if (IsPointInRectangle(ref box2.Points.d, ref box1.Points)) return true;
+            
             return false;
         }
+
 
         private static bool BoxCircleCollision(ref ColliderWrapper box, ref ColliderWrapper circle) {
             var boxCollider = (BoxCollider) box.collider;
