@@ -46,9 +46,7 @@ namespace CaptainCombat
             Graphics.ApplyChanges();
 
             // Needed for loading assets 
-            new MenuState(Game);
-            new GameState(Game);
-
+            
             Manager = new StateManager(new Loading(Game));
 
 

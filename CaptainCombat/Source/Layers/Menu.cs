@@ -1,4 +1,5 @@
 ﻿using CaptainCombat.Source.Components;
+using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
 using ECS;
 using Microsoft.Xna.Framework;
@@ -62,11 +63,13 @@ namespace CaptainCombat.Source.MenuLayers
 
             // Players
             EntityUtility.CreateMessage(Domain, "Players in server", 0, 0, 14);
-            EntityUtility.CreateMessage(Domain, "Will", 0, 0, 14);
-            EntityUtility.CreateMessage(Domain, "Bill", 0, 0, 14);
-            EntityUtility.CreateMessage(Domain, "Kill", 0, 0, 14);
 
+            List<string> users = ClientProtocol.GetAllUsers();
 
+            foreach (String user in users)
+            {
+                EntityUtility.CreateMessage(Domain, user, 0, 0, 14);
+            }
 
             // Background
             Entity backGround = new Entity(Domain);
@@ -136,6 +139,7 @@ namespace CaptainCombat.Source.MenuLayers
                 message = "Game is staring...";
                 var input = inputBox.GetComponent<Input>();
                 input.Message = message;
+                ClientProtocol.Join(message); 
 
                 Task.Factory.StartNew(async () =>
                 {

@@ -1,4 +1,5 @@
 ﻿using CaptainCombat.Source.Components;
+using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
 using ECS;
 using Microsoft.Xna.Framework;
@@ -50,9 +51,11 @@ namespace CaptainCombat.Source.Layers
             // Loading text 
             EntityUtility.CreateMessage(Domain, "Connecting to server", -70, 0, 18);
 
+            ClientProtocol.Connect(); 
+
             Task.Factory.StartNew(async () =>
             {
-                await Task.Delay(5000);
+                await Task.Delay(3000);
                 changeState(); 
             });
         }
