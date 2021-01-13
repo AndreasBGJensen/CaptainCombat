@@ -66,7 +66,9 @@ namespace CaptainCombat.Source.GameLayers
             transform.X = 200;
             transform.Y = 200;
         }
+
         
+
         public override void update(GameTime gameTime)
         {
             int messageInDomain = 0; 
@@ -81,8 +83,9 @@ namespace CaptainCombat.Source.GameLayers
                 Domain.ForMatchingEntities<Text, Transform>((entity) => {
                     entity.Delete(); 
                 });
-                List<string> allChatMessages = new List<string>();
-                foreach (string chatMessages in AllUsersMessages)
+                int nummerOfElements = 15;
+                var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - nummerOfElements)).Take(nummerOfElements); 
+                foreach (string chatMessages in LastMessages)
                 {
                     EntityUtility.CreateMessage(Domain, chatMessages, 0, 0, 14);
                 }
@@ -146,7 +149,6 @@ namespace CaptainCombat.Source.GameLayers
             }
             else if (key == Keys.Enter)
             {
-                EntityUtility.CreateMessage(Domain, message, 360, 40, 14);
                 ClientProtocol.AddMessageToServer(message); 
                 message = string.Empty; 
                 var input = inputBox.GetComponent<Input>();
