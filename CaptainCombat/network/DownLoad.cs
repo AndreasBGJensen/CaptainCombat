@@ -27,7 +27,7 @@ namespace CaptainCombat.network
                 watch.Start();
                     //Console.WriteLine("DownLoading");
                     //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
-                IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+                 IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
                     /*
                     foreach (ITuple data in gameData)
                     {

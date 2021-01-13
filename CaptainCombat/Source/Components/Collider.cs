@@ -85,16 +85,17 @@ namespace CaptainCombat.Source.Components {
 
         public void CalculatePoints(Transform transform) {
             Matrix matrix =
-                    Matrix.CreateRotationZ((float)(Rotation + transform.Rotation))
-                * Matrix.CreateTranslation(Offset.X + (float)transform.X, Offset.Y + (float)transform.Y, 0);
+                 Matrix.CreateTranslation(Offset.X + (float)transform.X, Offset.Y + (float)transform.Y, 0) 
+                * Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(Rotation + transform.Rotation))));
+             
 
             float halfWidth = (float)(Width / 2.0);
             float halfHeight = (float)(Height / 2.0);
 
-            Points.p1 = Vector2.Transform(new Vector2(-halfWidth, -halfHeight), matrix);
-            Points.p2 = Vector2.Transform(new Vector2(halfWidth, -halfHeight), matrix);
-            Points.p3 = Vector2.Transform(new Vector2(-halfWidth, halfHeight), matrix);
-            Points.p4 = Vector2.Transform(new Vector2(halfWidth, halfHeight), matrix);
+            Points.a = Vector2.Transform(new Vector2( -halfWidth, -halfHeight), matrix);
+            Points.b = Vector2.Transform(new Vector2(  halfWidth, -halfHeight), matrix);
+            Points.c = Vector2.Transform(new Vector2(  halfWidth,  halfHeight), matrix);
+            Points.d = Vector2.Transform(new Vector2( -halfWidth, halfHeight), matrix);
         }
 
 
@@ -102,10 +103,10 @@ namespace CaptainCombat.Source.Components {
     }
 
     public struct BoxColliderPoints {
-        public Vector2 p1;
-        public Vector2 p2;
-        public Vector2 p3;
-        public Vector2 p4;
+        public Vector2 a;
+        public Vector2 b;
+        public Vector2 c;
+        public Vector2 d;
     }
 
 

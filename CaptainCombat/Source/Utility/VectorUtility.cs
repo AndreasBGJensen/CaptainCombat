@@ -33,5 +33,22 @@ namespace CaptainCombat.Source.Utility {
         public static float Direction(this Vector2 vec) {
             return MathHelper.ToDegrees((float) Math.Atan2(vec.X, -vec.Y));
         }
+
+
+        public static float AngleTo(this Vector2 vec1, Vector2 vec2) {
+            var crossProduct = vec1.Cross(vec2);
+            var dotProduct = vec1.Dot(vec2);
+            return MathHelper.ToDegrees((float)Math.Atan2(crossProduct, dotProduct));
+        }
+
+
+        public static float Dot(this Vector2 vec1, Vector2 vec2) {
+            return Vector2.Dot(vec1, vec2);
+        }
+
+
+        public static float Cross(this Vector2 vec1, Vector2 vec2) {
+            return vec1.X * vec2.Y - vec1.Y * vec2.X;
+        }
     }
 }

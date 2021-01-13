@@ -1,4 +1,5 @@
 ﻿using CaptainCombat.Source.Components;
+using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -76,8 +77,8 @@ namespace CaptainCombat.Source {
                 var transform = e.GetComponent<Transform>();
                 var collider = e.GetComponent<BoxCollider>();
 
-                var position = new Vector2((float)transform.X, (float)transform.Y) + collider.Offset; // Draw the texture
 
+                // Color of collider box
                 var color =
                       collider.Collided ? Color.Red
                     : collider.Enabled ? Color.Yellow
@@ -89,13 +90,11 @@ namespace CaptainCombat.Source {
                        texture,
 
                        // Render position and size
-                       position,
-                       //new Rectangle((int)transform.X, (int)transform.Y, (int)width, (int)height),
+                       new Vector2((float)transform.X, (float)transform.Y) + collider.Offset,
 
                        // "Texture Coordinates" (null for full texture)
                        null,
 
-                       // Tint (not implemented in Sprite component yet
                        color,
 
                        // Rotation (radians)

@@ -23,8 +23,9 @@ namespace CaptainCombat.Source {
             entity.AddComponent(new Sprite(Assets.Textures.ROCK, 100, 100));
 
             var collider = entity.AddComponent(new BoxCollider());
-            collider.Width = 90 * scale;
-            collider.Height = 90 * scale;
+            collider.Width = 60 * scale;
+            collider.Height = 45 * scale;
+            collider.Rotation = 10;
             collider.ColliderType = Assets.Colliders.ROCK;
 
             return entity;            

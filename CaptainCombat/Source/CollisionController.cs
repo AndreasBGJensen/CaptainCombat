@@ -1,5 +1,6 @@
 ﻿
 using CaptainCombat.Source.Components;
+using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
 using System;
@@ -86,10 +87,11 @@ namespace CaptainCombat.Source {
 
                 center = new Vector2((float)(transform.X + collider.Offset.X), (float)(transform.Y + collider.Offset.Y));
                 collider.CalculatePoints(transform);
-                double width = Math.Abs(collider.Width);
-                double height = Math.Abs(collider.Height);
-                double maxDimension = width > height ? width : height;
-                sortDistance = (float)(collider.Offset.Length() + maxDimension / 2.0);
+
+                var diagonal1 = Vector2.Distance(collider.Points.a, collider.Points.c);
+                var diagonal2 = Vector2.Distance(collider.Points.b, collider.Points.d);
+                double maxDiagonal = diagonal1 > diagonal2 ? diagonal1 : diagonal2;
+                sortDistance = (float)(maxDiagonal/1.95);
             
             }
 
@@ -113,13 +115,89 @@ namespace CaptainCombat.Source {
         }
 
 
-        private static bool BoxBoxCollision(ref ColliderWrapper collider1, ref ColliderWrapper collider2) {
-            throw new NotImplementedException();
+        private static bool IsPointInRectangle(ref Vector2 point, ref BoxColliderPoints rect) {
+            // 0 ≤ AP·AB ≤ AB·AB and 0 ≤ AP·AD ≤ AD·AD
+
+            var ap = point - rect.a;
+            var ab = rect.b - rect.a;
+            var ad = rect.d - rect.a;
+
+            var apab = Vector2.Dot(ap, ab);
+            var abab = Vector2.Dot(ab, ab);
+            var apad = Vector2.Dot(ap, ad);
+            var adad = Vector2.Dot(ad, ad);
+
+
+            return  0 <= apab && apab <= abab && 0 <= apad && apad <= adad;
         }
 
 
-        private static bool BoxCircleCollision(ref ColliderWrapper collider1, ref ColliderWrapper collider2) {
-            throw new NotImplementedException();
+        private static bool IsPointOnLineSegment(ref Vector2 p, ref Vector2 a, ref Vector2 b) {
+            // Check https://stackoverflow.com/questions/328107/how-can-you-determine-a-point-is-between-two-other-points-on-a-line-segment
+            var ba = b - a;
+            var pa = p - a;
+
+            var crossProduct = ba.Cross(pa);
+
+            const float err = 0.001f;
+            if ( crossProduct > err )
+                return false;
+
+            var dotProduct = Vector2.Dot(ba, pa);
+            if (dotProduct < 0)
+                return false;
+
+            var squaredLengthba = ba.LengthSquared();
+            if (dotProduct > squaredLengthba)
+                return false;
+
+            return true;
+        }
+
+        private static bool IsLineInCircle(ref Vector2 c, float r, ref Vector2 a, ref Vector2 b) {
+            // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+
+            // Check if either ends are within the circle
+            if (Vector2.Distance(c, a) < r) return true;
+            if (Vector2.Distance(c, b) < r) return true;
+
+            var ac = c - a;
+            var ab = b - a;
+
+            var d = Vector2.Dot(ac, ab) / ab.LengthSquared() * ab;
+
+            if ( Vector2.Distance(d, ac) > r )
+                return false;
+
+            var temp = Vector2.Zero;
+            if (!IsPointOnLineSegment(ref d, ref temp, ref ab))
+                return false;
+
+            return true;
+        }
+
+
+        private static bool BoxBoxCollision(ref ColliderWrapper collider1, ref ColliderWrapper collider2) {
+            // TODO: Implement this
+            return false;
+        }
+
+        private static bool BoxCircleCollision(ref ColliderWrapper box, ref ColliderWrapper circle) {
+            var boxCollider = (BoxCollider) box.collider;
+
+            if (IsPointInRectangle(ref circle.center, ref boxCollider.Points))
+                return true;
+
+            if (IsLineInCircle(ref circle.center, circle.sortDistance, ref boxCollider.Points.a, ref boxCollider.Points.b))
+                return true;
+            if (IsLineInCircle(ref circle.center, circle.sortDistance, ref boxCollider.Points.b, ref boxCollider.Points.c))
+                return true;
+            if (IsLineInCircle(ref circle.center, circle.sortDistance, ref boxCollider.Points.c, ref boxCollider.Points.d))
+                return true;
+            if (IsLineInCircle(ref circle.center, circle.sortDistance, ref boxCollider.Points.d, ref boxCollider.Points.a))
+                return true;
+
+            return false;
         }
 
 
@@ -169,6 +247,15 @@ namespace CaptainCombat.Source {
                     if (type1 == typeof(CircleCollider) && type2 == typeof(CircleCollider)) {
                         // Circle-circle collision has already been detected when sorting
                         collision = true;
+                    }
+                    else if (type1 == typeof(BoxCollider) && type2 == typeof(CircleCollider)) {
+                        collision = BoxCircleCollision(ref colliders[i], ref colliders[j]);
+                    }
+                    else if (type1 == typeof(CircleCollider) && type2 == typeof(BoxCollider)) {
+                        collision = BoxCircleCollision(ref colliders[j], ref colliders[i]);
+                    }
+                    else {
+                        collision = BoxBoxCollision(ref colliders[i], ref colliders[j]);
                     }
 
                     if (!collision) continue;

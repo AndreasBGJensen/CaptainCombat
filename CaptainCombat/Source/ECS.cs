@@ -454,6 +454,7 @@ namespace ECS {
             // add them to the 'typeMap' with their full name as
             // an identifier
             static Component() {
+
                 foreach (var type in Assembly.GetAssembly(typeof(Component)).GetTypes()) {
                     if (type.IsSubclassOf(typeof(Component)) && !type.IsAbstract ) {
                         var identifier = type.FullName;

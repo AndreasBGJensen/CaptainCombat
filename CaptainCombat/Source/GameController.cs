@@ -37,8 +37,6 @@ namespace CaptainCombat
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-
-        
             DomainState.Instance.Domain = domain;
 
             
@@ -66,7 +64,7 @@ namespace CaptainCombat
             // Create some test rocks
             EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
             EntityUtility.CreateRock(domain, 400, -200, 1.0, 40);
-            EntityUtility.CreateRock(domain, 0, 50, 1.2, 300);
+            EntityUtility.CreateRock(domain, 0, 0, 1.5, 45);
             EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
             EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);
 
@@ -81,8 +79,9 @@ namespace CaptainCombat
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
 
-                var collider = ship.AddComponent(new CircleCollider());
-                collider.Radius = 40;
+                var collider = ship.AddComponent(new BoxCollider());
+                collider.Width = 40;
+                collider.Height = 80;
                 collider.ColliderType = Assets.Colliders.SHIP;
             }
 
