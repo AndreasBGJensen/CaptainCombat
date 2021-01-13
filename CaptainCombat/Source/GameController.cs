@@ -3,14 +3,17 @@ using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source;
 using CaptainCombat.Source.Components;
+using CaptainCombat.Source.Event;
 using CaptainCombat.Source.Scenes;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Threading;
 using static ECS.Domain;
+
+using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
 
 namespace CaptainCombat
 {
@@ -34,6 +37,8 @@ namespace CaptainCombat
 
         protected override void Initialize() {
             base.Initialize();
+            for (uint i = 1; i < 5; i++)
+                EventController.Send(new HelloEvent($"Hello there from client {Connection.Instance.User_id}!", i));
         }
 
 
@@ -51,8 +56,8 @@ namespace CaptainCombat
 
 
             // Set asset loaders
-            Asset.SetLoader<Source.Texture, Texture2D>((texture) => {
-                return Content.Load<Texture2D>(texture.Url);
+            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
+                return Content.Load<MGTexture>(texture.Url);
             });
 
 

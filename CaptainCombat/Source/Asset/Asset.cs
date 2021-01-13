@@ -27,7 +27,6 @@ namespace CaptainCombat.Source {
         }
 
 
-
         public static T GetAsset<T>(string tag) where T : Asset {
             return (T)allAssets[tag];
         }

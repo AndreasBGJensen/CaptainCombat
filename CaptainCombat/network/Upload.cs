@@ -12,7 +12,7 @@ namespace CaptainCombat.network
 {
     class Upload
     {
-        StopWatch watch = new StopWatch("Uploading", 100);
+        StopWatch watch = new StopWatch("Uploading", 50);
         public Upload()
         {
 

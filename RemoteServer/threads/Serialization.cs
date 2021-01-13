@@ -21,18 +21,10 @@ namespace RemoteServer.threads
            Console.WriteLine("Running...");
            while (true)
            {
-                try
-                {
 
                 collector.BeginCollect();
-                //collector.PrintUpdateComponents();
-                    
-                }
-                catch (Exception e)
-                {
-                      Console.WriteLine(e.Message);
-                      Console.WriteLine(e.StackTrace);
-                }
+                collector.PrintUpdateComponents();
+                   
             }
         }
     }

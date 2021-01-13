@@ -130,7 +130,6 @@ namespace ECS {
 
                     current_compotent.Id = global_compotent_id;
 
-                    // TODO: Not sure if this actually works (GetType() may return Component instead of child class)
                     current_entity.AddComponent(current_compotent, current_compotent.GetType());
                 }
 

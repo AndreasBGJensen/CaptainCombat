@@ -4,9 +4,6 @@ using Newtonsoft.Json;
 using RemoteServer.Collector.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Tuple = dotSpace.Objects.Space.Tuple;
 
@@ -27,7 +24,7 @@ namespace RemoteServer.Collector
         void ICollector.Collect()
         {
             //Collecting components
-            IEnumerable<ITuple> results = mySpace.GetAll(typeof(string), typeof(string));
+            IEnumerable<ITuple> results = mySpace.GetAll("components", typeof(string));
             foreach (Tuple x in results)
             {
                JArray jarray = JsonConvert.DeserializeObject<JArray>((string)x[1]);
@@ -49,12 +46,12 @@ namespace RemoteServer.Collector
 
         public void PrintUpdateComponents()
         {
-            Console.WriteLine("Printing test components");
-            IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
-            foreach (ITuple tuple in results3)
-            {
-                Console.WriteLine(tuple);
-            }
+            //Console.WriteLine("Printing test components");
+            //IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+            //foreach (ITuple tuple in results3)
+            //{
+                //Console.WriteLine(tuple);
+            //}
         }  
     }
 }
