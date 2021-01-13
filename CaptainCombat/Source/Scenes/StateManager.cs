@@ -36,7 +36,7 @@ namespace CaptainCombat.Source.Scenes
 
     abstract class State
     {
-        protected StateManager _context;
+        public StateManager _context;
 
         public void SetContext(StateManager context)
         {

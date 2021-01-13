@@ -36,15 +36,15 @@ namespace CaptainCombat.Source.GameLayers
             int yOffset = -70;
 
             // Create some test rocks
-            EntityUtility.CreateMessage(Domain, "Tortuga", 150 + xOffset, 100 + yOffset);
+            EntityUtility.CreateMessage(Domain, "Tortuga", 150 + xOffset, 100 + yOffset, 12);
             EntityUtility.CreateRock(Domain, 150, 100, 0.7, 120);
-            EntityUtility.CreateMessage(Domain, "Port Royal", 400 + xOffset, -200 + yOffset);
+            EntityUtility.CreateMessage(Domain, "Port Royal", 400 + xOffset, -200 + yOffset, 12);
             EntityUtility.CreateRock(Domain, 400, -200, 1.0, 40);
-            EntityUtility.CreateMessage(Domain, "Barataria Bay", 0 + xOffset, 50 + yOffset);
+            EntityUtility.CreateMessage(Domain, "Barataria Bay", 0 + xOffset, 50 + yOffset, 12);
             EntityUtility.CreateRock(Domain, 0, 50, 1.2, 300);
-            EntityUtility.CreateMessage(Domain, "Clew Bay", -300 + xOffset, 75 + yOffset);
+            EntityUtility.CreateMessage(Domain, "Clew Bay", -300 + xOffset, 75 + yOffset, 12);
             EntityUtility.CreateRock(Domain, -300, 75, 1.4, 170);
-            EntityUtility.CreateMessage(Domain, "New Providence", -100 + xOffset, -200 + yOffset);
+            EntityUtility.CreateMessage(Domain, "New Providence", -100 + xOffset, -200 + yOffset, 12);
             EntityUtility.CreateRock(Domain, -100, -200, 1.2, 30);
 
             // Create ship

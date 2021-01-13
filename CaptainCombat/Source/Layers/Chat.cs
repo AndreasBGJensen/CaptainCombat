@@ -17,14 +17,14 @@ namespace CaptainCombat.Source.GameLayers
         private Domain Domain = new Domain();  
         private Camera Camera;
 
-        private bool disableKeyboard = true;
+        
       
         private Entity chat;
         private Entity inputBox;
 
+        private bool disableKeyboard = true;
         private Keys[] lastPressedKeys = new Keys[5];
         private string message = string.Empty;
-        private string lastCharacter = string.Empty;
 
         Dictionary<string, string> dict = new Dictionary<string, string>
         {
@@ -56,11 +56,11 @@ namespace CaptainCombat.Source.GameLayers
         public override void init()
         {
             // Chat messages
-            EntityUtility.CreateMessage(Domain, "Chat message 1", 360, 0);
-            EntityUtility.CreateMessage(Domain, "Chat message 2", 360, 20);
-            EntityUtility.CreateMessage(Domain, "Chat message 3", 360, 40);
+            EntityUtility.CreateMessage(Domain, "Chat message 1", 360, 0, 14);
+            EntityUtility.CreateMessage(Domain, "Chat message 2", 360, 20, 14);
+            EntityUtility.CreateMessage(Domain, "Chat message 3", 360, 40, 14);
 
-            inputBox = EntityUtility.CreateInput(Domain, "", 360, 200);
+            inputBox = EntityUtility.CreateInput(Domain, "", 360, 200, 14);
 
 
             chat = new Entity(Domain);
@@ -82,7 +82,7 @@ namespace CaptainCombat.Source.GameLayers
             if (!disableKeyboard)
             {
                 var input = inputBox.GetComponent<Input>();
-                input.Message = message; 
+                input.Message = message;
                 ShowChat(); 
             }
             else
@@ -113,7 +113,6 @@ namespace CaptainCombat.Source.GameLayers
                 }
             }
             lastPressedKeys = pressedKeys; 
-
         }
 
         public void OnKeyUp(Keys key)
@@ -126,9 +125,14 @@ namespace CaptainCombat.Source.GameLayers
             if (key == Keys.Tab)
             {
                 disableKeyboard = !disableKeyboard;
-            }else if (key == Keys.Enter)
+            }
+            else if (disableKeyboard)
             {
-                EntityUtility.CreateMessage(Domain, message, 360, 40);
+                return; 
+            }
+            else if (key == Keys.Enter)
+            {
+                EntityUtility.CreateMessage(Domain, message, 360, 40, 14);
                 message = string.Empty; 
                 var input = inputBox.GetComponent<Input>();
                 input.Message = message;
@@ -149,7 +153,7 @@ namespace CaptainCombat.Source.GameLayers
             {
                 string pattern = @"[A-Z]";
                 string keyData = key.ToString();
-                if (Regex.IsMatch(keyData, pattern) && keyData.Length <= 1 || dict.ContainsKey(keyData) )
+                if ((Regex.IsMatch(keyData, pattern) && keyData.Length <= 1 || dict.ContainsKey(keyData)) && message.Length < 20 )
                 {
                     if (dict.ContainsKey(keyData))
                     {
@@ -159,9 +163,6 @@ namespace CaptainCombat.Source.GameLayers
                     {
                         message += keyData; 
                     }
-                    
-                    var input = inputBox.GetComponent<Input>();
-                    input.Message = message;
                 }
 
             }

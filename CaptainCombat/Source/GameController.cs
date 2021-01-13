@@ -19,13 +19,14 @@ namespace CaptainCombat
         public static GameController Game { get; private set; }
         public static GraphicsDeviceManager Graphics { get; private set; }
 
-        private static StateManager stateManager; 
+        private StateManager Manager { get; set; }
 
-        
+
 
         public GameController() {
             Game = this;
             Graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -45,11 +46,10 @@ namespace CaptainCombat
             Graphics.ApplyChanges();
 
             // Needed for loading assets 
-            new Loading(Game);
             new MenuState(Game);
             new GameState(Game);
 
-            stateManager = new StateManager(new Loading(Game));
+            Manager = new StateManager(new Loading(Game));
 
 
             // Set asset loaders
@@ -73,14 +73,14 @@ namespace CaptainCombat
 
 
         protected override void Update(GameTime gameTime) {
-            stateManager._state.update(gameTime); 
+            Manager._state.update(gameTime); 
             base.Update(gameTime);
         }
 
 
         protected override void Draw(GameTime gameTime)
         {
-            stateManager._state.draw(gameTime); 
+            Manager._state.draw(gameTime); 
             base.Draw(gameTime);
         }
     }

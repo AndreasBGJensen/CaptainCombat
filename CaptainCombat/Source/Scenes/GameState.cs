@@ -42,12 +42,6 @@ namespace CaptainCombat.Source.Scenes
 
         public override void update(GameTime gameTime)
         {
-            /*
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
-                this._context.TransitionTo(new MenuState(Game)); 
-            }
-            */
             foreach (Layer layer in layers)
             {
                 layer.update(gameTime);

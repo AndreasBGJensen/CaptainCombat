@@ -19,7 +19,7 @@ namespace CaptainCombat.Source.Scenes
         public MenuState(Game game)
         {
             Game = game; 
-            layers.Add(new Menu(Domain)); 
+            layers.Add(new Menu(game, this)); 
         }
 
         public override void onEnter()

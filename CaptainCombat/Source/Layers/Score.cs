@@ -23,7 +23,7 @@ namespace CaptainCombat.Source.GameLayers
         
         public override void init()
         {
-            EntityUtility.CreateMessage(Domain, "Score: 1", 50, 50);
+            EntityUtility.CreateMessage(Domain, "Score: 1", 50, 50, 14);
         }
 
         public override void update(GameTime gameTime)

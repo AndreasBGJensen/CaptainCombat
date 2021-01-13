@@ -26,14 +26,19 @@ namespace CaptainCombat.Source {
 
             public static readonly Texture Chat = new Texture(Collections.GLOBAL, "Chat", "Sprites/chat_trans");
 
-            public static readonly Texture Loader = new Texture(Collections.GLOBAL, "Loader", "Sprites/loading_trans");
+            public static readonly Texture Loader = new Texture(Collections.GLOBAL, "Loader", "Sprites/loading3_trans");
 
-            public static readonly Texture Loader2 = new Texture(Collections.GLOBAL, "Loader2", "Sprites/loader2");
+            public static readonly Texture Background = new Texture(Collections.GLOBAL, "Background", "Sprites/loadingBackGround");
+            public static readonly Texture Menu = new Texture(Collections.GLOBAL, "Menu", "Sprites/scroll_trans");
         }
 
         public static class Fonts
         {
-            public static readonly Font PIRATE_FONT = new Font(Collections.GLOBAL, "PIRATE_FONT", "fonts/Piratefont");
+            public static readonly Font PIRATE_FONT_12 = new Font(Collections.GLOBAL, "PIRATE_FONT_12", "fonts/Font_12");
+            public static readonly Font PIRATE_FONT_14 = new Font(Collections.GLOBAL, "PIRATE_FONT_14", "fonts/Font_14");
+            public static readonly Font PIRATE_FONT_16 = new Font(Collections.GLOBAL, "PIRATE_FONT_16", "fonts/Font_16");
+            public static readonly Font PIRATE_FONT_18 = new Font(Collections.GLOBAL, "PIRATE_FONT_18", "fonts/Font_18");
+            public static readonly Font PIRATE_FONT_20 = new Font(Collections.GLOBAL, "PIRATE_FONT_20", "fonts/Font_20");
         }
         
         
