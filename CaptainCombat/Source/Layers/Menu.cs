@@ -136,16 +136,15 @@ namespace CaptainCombat.Source.MenuLayers
             {
                 disableKeyboard = !disableKeyboard;
                 EntityUtility.CreateMessage(Domain, message, 0, 0, 14);
-                message = "Game is staring...";
-                var input = inputBox.GetComponent<Input>();
-                input.Message = message;
                 ClientProtocol.Join(message); 
-
                 Task.Factory.StartNew(async () =>
                 {
                     await Task.Delay(2000);
                     changeState();
                 });
+                message = "Game is staring...";
+                var input = inputBox.GetComponent<Input>();
+                input.Message = message;
             }
             else if (key == Keys.Back)
             {

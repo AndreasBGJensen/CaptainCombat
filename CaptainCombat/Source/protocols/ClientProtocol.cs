@@ -46,6 +46,18 @@ namespace CaptainCombat.Source.protocols
             return allUsers; 
         }
 
+        public static List<string> GetAllUsersMessages()
+        {
+            return DomainState.Instance.Messages; 
+        }
+
+        public static void AddMessageToServer(string message)
+        {
+            Connection connecting = Connection.Instance;
+            RemoteSpace space = connecting.Space;
+            space.Put("chat", message);
+        }
+
 
         public static void Join(string username)
         {

@@ -161,6 +161,7 @@ namespace ECS {
             foreach (var entity in entitiesToRemove) {
                 entityIdGenerator.Release(entity.Id.objectId);
                 entities.Remove(entity);
+                registeredEntities.TryRemove(entity.Id, out _);
             }
 
         }

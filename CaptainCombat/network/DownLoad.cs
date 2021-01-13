@@ -28,14 +28,16 @@ namespace CaptainCombat.network
                     //Console.WriteLine("DownLoading");
                     //ITuple result = Connection.Instance.Space.GetP(comp, client_id, component_id, entity_id, typeof(string));
                 IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
-                    /*
-                    foreach (ITuple data in gameData)
-                    {
-                        Console.WriteLine(data);
+                IEnumerable<ITuple> messageData = Connection.Instance.Space.QueryAll("chat", typeof(string));
 
-                    }
-                    */
-                    DomainState.Instance.Domain.update(gameData);
+                List<string> allChatMessages = new List<string>();
+                foreach (ITuple chatMessages in messageData)
+                {
+                    allChatMessages.Add((string)chatMessages[1]);
+                }
+                DomainState.Instance.Messages = allChatMessages; 
+
+                DomainState.Instance.Domain.update(gameData);
                 watch.Stop();
                 watch.PrintTimer();
                 //Console.WriteLine("Done");

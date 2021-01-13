@@ -1,4 +1,6 @@
-﻿using CaptainCombat.Source.Components;
+﻿using CaptainCombat.network;
+using CaptainCombat.singletons;
+using CaptainCombat.Source.Components;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
@@ -7,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static ECS.Domain;
 
@@ -27,6 +30,7 @@ namespace CaptainCombat.Source.GameLayers
         {
             
             Camera = new Camera(Domain);
+            DomainState.Instance.Domain = Domain; 
             init(); 
         }
 
@@ -58,6 +62,14 @@ namespace CaptainCombat.Source.GameLayers
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
             }
+
+            Upload upload = new Upload();
+            Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
+            uploadThread.Start();
+
+            DownLoad download = new DownLoad();
+            Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
+            downloadThread.Start();
         }
 
         public override void update(GameTime gameTime)

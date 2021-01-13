@@ -1,4 +1,5 @@
 ﻿using CaptainCombat.Source.Components;
+using CaptainCombat.Source.protocols;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -41,7 +42,6 @@ namespace CaptainCombat.Source.GameLayers
             { "OemComma", "," },
             { "OemPeriod", "." },
             { "OemMinus", "-" },
-
         };
 
         private Game Game; 
@@ -56,10 +56,6 @@ namespace CaptainCombat.Source.GameLayers
         public override void init()
         {
             // Chat messages
-            EntityUtility.CreateMessage(Domain, "Chat message 1", 360, 0, 14);
-            EntityUtility.CreateMessage(Domain, "Chat message 2", 360, 20, 14);
-            EntityUtility.CreateMessage(Domain, "Chat message 3", 360, 40, 14);
-
             inputBox = EntityUtility.CreateInput(Domain, "", 360, 200, 14);
 
 
@@ -71,11 +67,29 @@ namespace CaptainCombat.Source.GameLayers
             transform.Y = 200;
         }
         
-
-        
-
         public override void update(GameTime gameTime)
         {
+            int messageInDomain = 0; 
+
+            Domain.ForMatchingEntities<Text, Transform>((entity) => {
+                messageInDomain++; 
+            });
+
+            List<string> AllUsersMessages = ClientProtocol.GetAllUsersMessages();
+            if (messageInDomain < AllUsersMessages.Count)
+            {
+                Domain.ForMatchingEntities<Text, Transform>((entity) => {
+                    entity.Delete(); 
+                });
+                List<string> allChatMessages = new List<string>();
+                foreach (string chatMessages in AllUsersMessages)
+                {
+                    EntityUtility.CreateMessage(Domain, chatMessages, 0, 0, 14);
+                }
+                
+            }
+            
+
             Domain.Clean();
             GetKeys(); 
 
@@ -133,9 +147,11 @@ namespace CaptainCombat.Source.GameLayers
             else if (key == Keys.Enter)
             {
                 EntityUtility.CreateMessage(Domain, message, 360, 40, 14);
+                ClientProtocol.AddMessageToServer(message); 
                 message = string.Empty; 
                 var input = inputBox.GetComponent<Input>();
                 input.Message = message;
+               
             }
             else if (key == Keys.Back)
             {
