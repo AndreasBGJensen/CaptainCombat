@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,11 @@ namespace CaptainCombat.Source.Components {
         public string Tag { get; }
 
         public ColliderTag(string tag) {
-            if (all.ContainsKey(tag))
-                throw new ArgumentException($"ColliderType with tag '{tag} already exists");
+            // TODO: Fix this
+            //if (all.ContainsKey(tag))
+            //    throw new ArgumentException($"ColliderType with tag '{tag} already exists");
             Tag = tag;
-            all.Add(tag, this);
+            //all.Add(tag, this);
         }
 
         public static ColliderTag Get(string tag) {
@@ -71,6 +73,14 @@ namespace CaptainCombat.Source.Components {
         /// in the previous frame. Only used for Rendering the Colliders
         /// </summary>
         public bool Collided { get; set; }
+
+
+        public override void OnUpdate(Component component) {
+            var c = (Collider)component;
+            Enabled = c.Enabled;
+            Tag = c.Tag;
+            Collided = c.Collided;
+        }
     }
 
 
@@ -88,6 +98,7 @@ namespace CaptainCombat.Source.Components {
         /// The 4 corners of the Collider in world coordinates
         /// They should not be set from outside this class
         /// </summary>
+        [JsonIgnore]
         public BoxColliderPoints Points;
 
         /// <summary>
@@ -108,25 +119,13 @@ namespace CaptainCombat.Source.Components {
         }
 
 
-        public override object getData() {
-            var obj = new {
-                enabled = Enabled,
-                tag = Tag == null ? "" : Tag.Tag,
-                collided = Collided,
-                width = Width,
-                height = Height,
-                rotation = Rotation
-            };
-            return obj;
-        }
+        public override void OnUpdate(Component component) {
+            base.OnUpdate(component);
 
-        public override void update(JObject json) {
-            Enabled = (bool)json.SelectToken("enabled");
-            Tag = ColliderTag.Get((string)json.SelectToken("tag"));
-            Collided = (bool)json.SelectToken("collided");
-            Width = (double)json.SelectToken("width");
-            Height = (double)json.SelectToken("height");
-            Rotation = (double)json.SelectToken("rotation");
+            var c = (BoxCollider)component;
+            Width = c.Width;
+            Height = c.Height;
+            Rotation = c.Rotation;
         }
     }
 
@@ -152,21 +151,9 @@ namespace CaptainCombat.Source.Components {
             Radius = radius;
         }
 
-        public override object getData() {
-            var obj = new {
-                enabled = Enabled,
-                tag = Tag == null ? "" : Tag.Tag,
-                collided = Collided,
-                radius = Radius,
-            };
-            return obj;
-        }
-
-        public override void update(JObject json) {
-            Enabled = (bool)json.SelectToken("enabled");
-            Tag = ColliderTag.Get((string)json.SelectToken("tag"));
-            Collided = (bool)json.SelectToken("collided");
-            Radius = (double)json.SelectToken("radius");
+        public override void OnUpdate(Component component) {
+            var c = (CircleCollider)component;
+            Radius = c.Radius;
         }
     }
 

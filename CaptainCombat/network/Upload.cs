@@ -1,32 +1,29 @@
 ﻿
+
 using CaptainCombat.Diagnostics;
 using CaptainCombat.singletons;
-using System.Diagnostics;
+
 
 namespace CaptainCombat.network {
-    class Upload
-    {
-        StopWatch watch = new StopWatch("Uploading", 50);
-        
-        public Upload()
-        {
 
-        }
+    class Upload {
 
-        public void RunProtocol()
-        {
-            while (true)
-            {
-                    
-                //Console.WriteLine("Uploading");
-                if (DomainState.Instance.Upload != null)
-                {
+        // Also known as UpdateId
+        public ulong UpdateCount = 0; 
+
+        public void RunProtocol() {
+
+            StopWatch watch = new StopWatch("Uploading", 50);
+
+            while (true) {
+
+                if (DomainState.Instance.Upload != null) {
+                    UpdateCount++;
                     watch.Start();
-                    Connection.Instance.Space.Put("components", DomainState.Instance.Upload);
+                    Connection.Instance.Space.Put("components", UpdateCount, DomainState.Instance.Upload);
                     watch.Stop();
                     watch.PrintTimer();
                 }
-                    
             }
         }
     }

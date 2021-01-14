@@ -32,21 +32,6 @@ namespace CaptainCombat.Source.Event {
             Sender = (uint) Connection.Instance.User_id;
             Receiver = receiver;
         }
-
-
-        ///// <summary>
-        ///// Saves the data of the inheriting Event into the JSON object
-        ///// </summary>
-        ///// <param name="json"></param>
-        //public abstract JObject ToJSON();
-
-        ///// <summary>
-        ///// Updates the data of this Event to the match the data
-        ///// in the JSON object
-        ///// </summary>
-        ///// <param name="json"></param>
-        //public abstract void UpdateFromJSON(JObject json);
-
     }
 
 }

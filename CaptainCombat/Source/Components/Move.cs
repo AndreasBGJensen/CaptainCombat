@@ -26,32 +26,15 @@ namespace CaptainCombat.Source.Components {
 
         public double RotationResistance { get; set; }
 
-       
-        public override object getData()
-        {
-            var obj = new { 
-                VelocityX = (double)this.Velocity.X,
-                VelocityY = (double)this.Velocity.Y,
-                AccelerationX = (double)this.Acceleration.X,
-                AccelerationY = (double)this.Acceleration.Y,
-                Resistance = this.Resistance,
-                ForwardVelocity = this.ForwardVelocity,
-                RotationVelocity = this.RotationVelocity,
-                RotationAcceleration = this.RotationAcceleration,
-                RotationResistance = this.RotationResistance
-            };
-            return obj;
-        }
-
-        public override void update(JObject json)
-        {
-            this.Velocity = new Vector2((float)json.SelectToken("VelocityX"), (float)json.SelectToken("VelocityY"));
-            this.Acceleration = new Vector2((float)json.SelectToken("AccelerationX"), (float)json.SelectToken("AccelerationY"));
-            this.Resistance = (double)json.SelectToken("Resistance");
-            this.ForwardVelocity = (bool)json.SelectToken("ForwardVelocity");
-            this.RotationVelocity = (double)json.SelectToken("RotationVelocity");
-            this.RotationAcceleration = (double)json.SelectToken("RotationAcceleration");
-            this.RotationResistance = (double)json.SelectToken("RotationResistance");
+        public override void OnUpdate(Component component) {
+            var c = (Move)component;
+            Velocity = c.Velocity;
+            Acceleration = c.Acceleration;
+            Resistance = c.Resistance;
+            ForwardVelocity = c.ForwardVelocity;
+            RotationVelocity = c.RotationVelocity;
+            RotationAcceleration = c.RotationAcceleration;
+            RotationResistance = c.RotationResistance;
         }
     }
 }

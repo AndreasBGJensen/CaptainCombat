@@ -1,17 +1,17 @@
 ﻿using System;
+using static ECS.Domain;
 
 namespace CaptainCombat.game
 {
     class DataObject
     {
         public string comp;
-        public int client_id;
-        public int component_id;
-        public int entity_id;
-        public object data; 
-        
+        public uint client_id;
+        public uint component_id;
+        public uint entity_id;
+        public Component data;
 
-        public DataObject(string comp, int client_id, int component_id, int entity_id, Object data)
+        public DataObject(string comp, uint client_id, uint component_id, uint entity_id, Component data)
         {
             this.comp = comp;
             this.client_id = client_id;

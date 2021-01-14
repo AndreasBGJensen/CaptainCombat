@@ -1,5 +1,6 @@
 ﻿using CaptainCombat.game;
 using CaptainCombat.singletons;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 
@@ -13,20 +14,17 @@ namespace CaptainCombat.json
             List<DataObject> data = new List<DataObject>();
 
             DomainState.Instance.Domain.ForLocalComponents((component) => {
+                if( component.SyncMode != Component.SynchronizationMode.NONE )
                 data.Add(new DataObject(
                     component.GetTypeIdentifier(),
-                    Connection.Instance.User_id,
-                    (int)component.Id.objectId,
-                    (int)component.Entity.Id.objectId,
-                    component.getData()
+                    (uint)Connection.Instance.User_id,
+                    component.Id.objectId,
+                    component.Entity.Id.objectId,
+                    component
                 ));
             });
 
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-            //Console.WriteLine(json); 
-
-            //Newtonsoft.Json.Linq.JArray jarray = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JArray>(json);
-            //Console.WriteLine(jarray);
+            string json = JsonConvert.SerializeObject(data);
 
             return json;
       }

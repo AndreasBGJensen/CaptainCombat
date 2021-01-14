@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using static ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
@@ -9,6 +10,7 @@ namespace CaptainCombat.Source.Components {
         public double Width { get; set; }
         public double Height { get; set; }
 
+        [JsonIgnore]
         public Texture Texture { get => Asset.GetAsset<Texture>(TextureTag); }
 
         public Sprite() {}
@@ -18,23 +20,12 @@ namespace CaptainCombat.Source.Components {
             Width = width;
             Height = height;
         }
-       
 
-        public override object getData()
-        {
-            var obj = new { 
-                TextureTag = this.TextureTag,
-                Width = this.Width,
-                Height = this.Height,
-            };
-            return obj;
-        }
-
-        public override void update(JObject json)
-        {
-            this.TextureTag = (string)json.SelectToken("TextureTag");
-            this.Width = (double)json.SelectToken("Width");
-            this.Height = (double)json.SelectToken("Height");
+        public override void OnUpdate(Component component) {
+            var c = (Sprite)component;
+            TextureTag = c.TextureTag;
+            Width = c.Width;
+            Height = c.Height;
         }
     }
 

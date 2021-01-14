@@ -116,6 +116,9 @@ namespace CaptainCombat {
 
         protected override void Update(GameTime gameTime) {
 
+            if (DomainState.Instance.Download != null)
+                domain.update(DomainState.Instance.Download);
+
             EventController.HandleEvents();
 
             double seconds = gameTime.ElapsedGameTime.TotalSeconds;
@@ -169,6 +172,7 @@ namespace CaptainCombat {
             collisionController.CheckCollisions(domain);
 
             domain.Clean();
+            
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
 
             base.Update(gameTime);

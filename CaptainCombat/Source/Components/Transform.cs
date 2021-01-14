@@ -35,26 +35,16 @@ namespace CaptainCombat.Source.Components {
             }
         }
 
-        public override object getData()
-        {
-            var obj = new {
-                X = this.X,
-                Y = this.Y,
-                ScaleX = this.ScaleX,
-                ScaleY = this.ScaleY,
-                Rotation = this.Rotation
-            };
-            return obj;
+
+        public override void OnUpdate(Component component) {
+            var c = (Transform)component;
+            X = c.X;
+            Y = c.Y;
+            ScaleX = c.ScaleX;
+            ScaleY = c.ScaleY;
+            Rotation = c.Rotation;
         }
 
-        public override void update(JObject json)
-        {
-            this.X = (double)json.SelectToken("X"); 
-            this.Y = (double)json.SelectToken("Y");
-            this.ScaleX = (double)json.SelectToken("ScaleX");
-            this.ScaleY = (double)json.SelectToken("ScaleY");
-            this.Rotation = (double)json.SelectToken("Rotation");
-        }
     }
 
 }
