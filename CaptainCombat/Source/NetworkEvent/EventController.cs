@@ -72,18 +72,23 @@ namespace CaptainCombat.Source.NetworkEvent {
             sendEvents = true;
             while (sendEvents) {
                 senderWaitHandle.WaitOne();
-                lock (outgoingEvents) {
-                    foreach (var e in outgoingEvents) {
-                        Connection.Instance.Space.Put(
-                                "event",
-                                e.GetType().FullName,
-                                (int) Connection.Instance.User_id,
-                                (int) e.Receiver,
-                                JsonConvert.SerializeObject(e)
-                        );
 
-                    }
+                var eventsCopy = new List<Event>();
+                lock (outgoingEvents) {
+                    foreach (var e in outgoingEvents)
+                        eventsCopy.Add(e);
                     outgoingEvents.Clear();
+                }
+                foreach (var e in eventsCopy) {
+                    Connection.Instance.Space.Put(
+                            "event",
+                            e.GetType().FullName,
+                            (int) Connection.Instance.User_id,
+                            (int) e.Receiver,
+                            JsonConvert.SerializeObject(e)
+                    );
+
+                }
                 }
             }
         }

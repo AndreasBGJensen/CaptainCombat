@@ -125,6 +125,7 @@ namespace CaptainCombat {
                 return true;
             });
 
+
             EventController.AddListener<ProjectileEffectEvent>((e) => {
                 Console.WriteLine($"Damage event from client {e.Sender}: {e.Damage} damage on Entity {e.TargetId.objectId}");
                 return true;
@@ -135,6 +136,7 @@ namespace CaptainCombat {
                 if (projectile.IsLocal) projectile.Delete();
                 return true;
             });
+
 
             collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
                 if( (ship.IsLocal && !projectile.IsLocal) || (!ship.IsLocal && projectile.IsLocal) ) {
