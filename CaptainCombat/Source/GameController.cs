@@ -135,11 +135,9 @@ namespace CaptainCombat {
             });
 
             collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
-                // ship.IsLocal basically checks if its the local players own ship
-                if (ship.IsLocal && !projectile.IsLocal) {
+                if( (ship.IsLocal && !projectile.IsLocal) || (!ship.IsLocal && projectile.IsLocal) ) {
                     Collider collider = projectile.GetComponent<BoxCollider>();
                     if (collider == null) collider = projectile.GetComponent<CircleCollider>();
-                    collider.Enabled = false;
                     projectile.GetComponent<Sprite>().Enabled = false;
                     projectile.GetComponent<Move>().Enabled = false;
                     EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
