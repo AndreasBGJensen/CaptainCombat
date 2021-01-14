@@ -130,13 +130,11 @@ namespace CaptainCombat {
 
 
             collisionController.AddListener(Assets.ColliderTags.ROCK, Assets.ColliderTags.PROJECTILE, (rock, projectile) => {
-                Console.WriteLine("Hit rock!");
                 if (projectile.IsLocal) projectile.Delete();
                 return true;
             });
 
             collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
-                Console.WriteLine("Ship collision!");
                 // ship.IsLocal basically checks if its the local players own ship
                 if (ship.IsLocal && !projectile.IsLocal) {
                     Collider collider = projectile.GetComponent<BoxCollider>();
@@ -159,8 +157,10 @@ namespace CaptainCombat {
 
         protected override void Update(GameTime gameTime) {
 
-            if (DomainState.Instance.Download != null)
+            if (DomainState.Instance.Download != null) {
                 domain.update(DomainState.Instance.Download);
+                DomainState.Instance.Download = null;
+            }
 
             EventController.HandleEvents();
 
