@@ -14,7 +14,8 @@ namespace CaptainCombat.singletons
         private Domain domain = null; 
         private string upload = null;
         private string download = null;
-        private IEnumerable<ITuple> messages = null; 
+        private IEnumerable<ITuple> messages = null;
+        private IEnumerable<ITuple> clients = null;
 
         private DomainState()
         {
@@ -28,6 +29,7 @@ namespace CaptainCombat.singletons
         }
 
         public IEnumerable<ITuple> Messages { get => messages; set => messages = value; }
+        public IEnumerable<ITuple> Clients { get => clients; set => clients = value; }
 
         public string Upload { get => upload; set => upload = value; }
         public string Download { get => download; set => download = value; }

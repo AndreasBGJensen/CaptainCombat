@@ -46,6 +46,13 @@ namespace CaptainCombat.Source.protocols
             return allUsers; 
         }
 
+
+        public static IEnumerable<ITuple> GetAllClients()
+        {
+            return DomainState.Instance.Clients;
+        }
+
+
         public static IEnumerable<ITuple> GetAllUsersMessages()
         {
             return DomainState.Instance.Messages; 

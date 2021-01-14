@@ -44,7 +44,7 @@ namespace CaptainCombat.Source.MenuLayers
         {
             
             // Static message to client 
-            EntityUtility.CreateMessage(Domain, "Players in server", 0, 0, 14);
+            EntityUtility.CreateMessage(Domain, "Players in server", 0, 0, 16);
 
             // Creates a list of all clients in server
             List<string> users = ClientProtocol.GetAllUsers();
@@ -64,7 +64,7 @@ namespace CaptainCombat.Source.MenuLayers
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
 
             // InputBox
-            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", -70, 150, 14);
+            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", -70, 150, 16);
         }
 
         public override void update(GameTime gameTime)
@@ -78,10 +78,7 @@ namespace CaptainCombat.Source.MenuLayers
             // Displays list of all clients in server
             DisplayPlayerNames();
 
-            // Displays input box 
-            var input = InputBox.GetComponent<Input>();
-            input.Message = PlayerName;
-
+        
             // Changes state when condition is true 
             if (ChangeState)
             {
@@ -123,7 +120,7 @@ namespace CaptainCombat.Source.MenuLayers
                 DisableKeyboard = !DisableKeyboard;
 
                 // Adds player name to domain 
-                EntityUtility.CreateMessage(Domain, PlayerName, 0, 0, 14);
+                EntityUtility.CreateMessage(Domain, PlayerName, 0, 0, 16);
 
                 // Adds playername to server 
                 ClientProtocol.Join(PlayerName);
@@ -137,6 +134,8 @@ namespace CaptainCombat.Source.MenuLayers
 
                 // Display a message to the client 
                 PlayerName = "Game is staring...";
+                var input = InputBox.GetComponent<Input>();
+                input.Message = PlayerName;
             }
             else if (key == Keys.Back)
             {
@@ -150,6 +149,8 @@ namespace CaptainCombat.Source.MenuLayers
             else if (key == Keys.Space)
             {
                 PlayerName += " ";
+                var input = InputBox.GetComponent<Input>();
+                input.Message = PlayerName;
             }
             else
             {
@@ -157,6 +158,8 @@ namespace CaptainCombat.Source.MenuLayers
                 if (KeyboardInputValidator.isValid(keyData) && PlayerName.Length < 20)
                 {
                     PlayerName = (KeyboardInputValidator.dict.ContainsKey(keyData) ? PlayerName += KeyboardInputValidator.dict[keyData] : PlayerName += keyData);
+                    var input = InputBox.GetComponent<Input>();
+                    input.Message = PlayerName;
                 }
             }
         }

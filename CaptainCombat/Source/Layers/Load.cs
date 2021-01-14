@@ -49,7 +49,7 @@ namespace CaptainCombat.Source.Layers
             }
 
             // Loading text 
-            EntityUtility.CreateMessage(Domain, "Connecting to server", -70, 0, 18);
+            EntityUtility.CreateMessage(Domain, "Connecting to server", -70, 0, 14);
 
             ClientProtocol.Connect(); 
 
