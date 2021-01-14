@@ -217,7 +217,7 @@ namespace ECS {
         private void unregisterComponent(Component component) {
             componentIdGenerator.Release(component.Id.objectId);   
             if (!registeredComponents.TryRemove(component.Id, out _)){
-                throw new InvalidOperationException("Component id doesn`t exit"); 
+                throw new InvalidOperationException("Component id does not exit"); 
             }
         }
 
