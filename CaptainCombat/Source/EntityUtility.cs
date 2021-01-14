@@ -57,11 +57,14 @@ namespace CaptainCombat.Source {
             move.ForwardVelocity = true;
             move.Velocity = new Vector2(500, 0);
 
+            var projectile = cannonBall.AddComponent(new Projectile());
+
             cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
 
             cannonBall.AddComponent(new CircleCollider(Assets.ColliderTags.PROJECTILE, 10));
 
             cannonBall.SetSyncMode(Component.SynchronizationMode.CREATE);
+            projectile.SyncMode = Component.SynchronizationMode.NONE;
 
             return null;
         }

@@ -111,12 +111,14 @@ namespace CaptainCombat {
                 var projectile = domain.GetEntity(e.ProjectileId);
                 if (projectile == null) return false;
 
+                var projectileComp = projectile.GetComponent<Projectile>();
+                if (projectileComp.HasHit) return false;
+                projectileComp.HasHit = true;
+
                 Collider collider = projectile.GetComponent<BoxCollider>();
                 if (collider == null) collider = projectile.GetComponent<CircleCollider>();
-
-                if (!collider.Enabled) return false;
-
                 collider.Enabled = false;
+
                 projectile.Delete();
                 EventController.Send(new ProjectileEffectEvent(e.Sender, e.TargetId, 100));
 
@@ -138,6 +140,7 @@ namespace CaptainCombat {
                 if( (ship.IsLocal && !projectile.IsLocal) || (!ship.IsLocal && projectile.IsLocal) ) {
                     Collider collider = projectile.GetComponent<BoxCollider>();
                     if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+                    collider.Enabled = false;
                     projectile.GetComponent<Sprite>().Enabled = false;
                     projectile.GetComponent<Move>().Enabled = false;
                     EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
