@@ -58,7 +58,9 @@ namespace CaptainCombat.Source {
             cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
 
             cannonBall.AddComponent(new CircleCollider(Assets.ColliderTypes.PROJECTILE, 10));
-            
+
+            cannonBall.SetSyncMode(Component.SynchronizationMode.CREATE);
+
             return null;
         }
 

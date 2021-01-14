@@ -15,7 +15,7 @@ namespace CaptainCombat.network
         public void RunProtocol() { 
             while (true) {
                 watch.Start();
-                DomainState.Instance.Download = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+                DomainState.Instance.Download = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(string));
                 /*
                     foreach (ITuple data in gameData)
                     {

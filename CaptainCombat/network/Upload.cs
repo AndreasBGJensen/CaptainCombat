@@ -20,7 +20,7 @@ namespace CaptainCombat.network {
                 if (DomainState.Instance.Upload != null) {
                     UpdateCount++;
                     watch.Start();
-                    Connection.Instance.Space.Put("components", UpdateCount, DomainState.Instance.Upload);
+                    Connection.Instance.Space.Put("components", UpdateCount.ToString(), DomainState.Instance.Upload);
                     watch.Stop();
                     watch.PrintTimer();
                 }

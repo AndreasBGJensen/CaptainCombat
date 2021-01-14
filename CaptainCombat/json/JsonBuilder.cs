@@ -2,7 +2,7 @@
 using CaptainCombat.singletons;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-
+using static ECS.Domain;
 
 namespace CaptainCombat.json
 {

@@ -117,9 +117,11 @@ namespace ECS {
                 var componentTypeIdentifier = (string)data[0];
                 var newComponentData = Component.CreateComponentFromJson(componentTypeIdentifier, (string)data[4]);
                 
-                if (registeredComponents.ContainsKey(global_compotent_id) && newComponentData.SyncMode == Component.SynchronizationMode.UPDATE) {
-                    var currentComponent = registeredComponents[global_compotent_id];
-                    currentComponent.Update(newComponentData);
+                if (registeredComponents.ContainsKey(global_compotent_id)) {
+                    if( newComponentData.SyncMode == Component.SynchronizationMode.UPDATE ) {
+                        var currentComponent = registeredComponents[global_compotent_id];
+                        currentComponent.Update(newComponentData);
+                    }
                 }
                 else
                 {
@@ -347,6 +349,18 @@ namespace ECS {
 
 
             /// <summary>
+            /// Sets the SyncMode for all Components that has been added to
+            /// this Entity. The Entity does not have to be cleaned, after
+            /// adding components for this to take effect on the newly added
+            /// components.
+            /// </summary>
+            public void SetSyncMode(Component.SynchronizationMode syncMode) {
+                foreach (var component in components)
+                    component.Value.SyncMode = syncMode;
+            }
+
+
+            /// <summary>
             /// Retrieve the Component of the given Type, or null if the
             /// Entity does not have the given Component
             /// </summary>
@@ -496,8 +510,8 @@ namespace ECS {
             public Component() {}
           
             public void Update(Component component) {
-                component.SyncMode = component.SyncMode;
-                component.Id = component.Id;
+                SyncMode = component.SyncMode;
+                if( entity == null ) Id = component.Id;
                 OnUpdate(component);
             }
 
