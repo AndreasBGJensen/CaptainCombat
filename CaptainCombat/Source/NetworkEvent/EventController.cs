@@ -89,7 +89,6 @@ namespace CaptainCombat.Source.NetworkEvent {
                     );
 
                 }
-                }
             }
         }
 
