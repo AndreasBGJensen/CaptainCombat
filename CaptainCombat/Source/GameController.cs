@@ -3,7 +3,8 @@ using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source;
 using CaptainCombat.Source.Components;
-using CaptainCombat.Source.Event;
+using CaptainCombat.Source.Events;
+using CaptainCombat.Source.NetworkEvent;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
@@ -49,6 +50,8 @@ namespace CaptainCombat {
             Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
             downloadThread.Start();
 
+            
+
             EventController.Start();
         }
 
@@ -61,11 +64,10 @@ namespace CaptainCombat {
         protected override void LoadContent() {
             Renderer.Initialize(GraphicsDevice);
 
-
             // Create some test rocks
             EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
             EntityUtility.CreateRock(domain, 400, -200, 1.0, 40);
-            EntityUtility.CreateRock(domain, 0, 0, 1.5, 45);
+            EntityUtility.CreateRock(domain, 50, 400, 1.5, 45);
             EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
             EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);
 
@@ -103,9 +105,50 @@ namespace CaptainCombat {
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
-            collisionController.AddListener(Assets.ColliderTypes.ROCK, Assets.ColliderTypes.PROJECTILE, (rock, projectile) => {
+
+            EventController.AddListener<ProjectileCollisionEvent>((e) => {
+                Console.WriteLine($"Collision event from Client {e.Sender}");
+
+                var projectile = domain.GetEntity(e.ProjectileId);
+                if (projectile == null) return false;
+
+                Collider collider = projectile.GetComponent<BoxCollider>();
+                if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+
+                if (!collider.Enabled) return false;
+
+                collider.Enabled = false;
                 projectile.Delete();
+                EventController.Send(new ProjectileEffectEvent(e.Sender, e.TargetId, 100));
+
                 return true;
+            });
+
+            EventController.AddListener<ProjectileEffectEvent>((e) => {
+                Console.WriteLine($"Damage event from client {e.Sender}: {e.Damage} damage on Entity {e.TargetId.objectId}");
+                return true;
+            });
+
+
+            collisionController.AddListener(Assets.ColliderTypes.ROCK, Assets.ColliderTypes.PROJECTILE, (rock, projectile) => {
+                Console.WriteLine("Hit rock!");
+                if (projectile.IsLocal) projectile.Delete();
+                return true;
+            });
+
+            collisionController.AddListener(Assets.ColliderTypes.SHIP, Assets.ColliderTypes.PROJECTILE, (ship, projectile) => {
+                // ship.IsLocal basically checks if its the local players own ship
+                if (ship.IsLocal && !projectile.IsLocal) {
+                    Collider collider = projectile.GetComponent<BoxCollider>();
+                    if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+                    collider.Enabled = false;
+                    projectile.GetComponent<Sprite>().Enabled = false;
+                    projectile.GetComponent<Move>().Enabled = false;
+                    EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
+                    Console.WriteLine("Sent collision event");
+                    return true;
+                }
+                return false;
             });
         }
 

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace CaptainCombat.Source.Event {
+namespace CaptainCombat.Source.NetworkEvent {
 
     public abstract class Event {
 

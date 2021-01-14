@@ -29,6 +29,8 @@ namespace CaptainCombat.Source {
                 var sprite = entity.GetComponent<Sprite>();
                 var transform = entity.GetComponent<Transform>();
 
+                if (!sprite.Enabled) return;
+
                 var texture = sprite.Texture.GetNative<Texture2D>();
 
                 float width = (float)(sprite.Width * transform.ScaleX);

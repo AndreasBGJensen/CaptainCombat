@@ -6,6 +6,7 @@ namespace CaptainCombat.Source.Components {
 
     public class Sprite : Component {
 
+        public bool   Enabled { get; set; } = true;
         public string TextureTag { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
@@ -23,6 +24,7 @@ namespace CaptainCombat.Source.Components {
 
         public override void OnUpdate(Component component) {
             var c = (Sprite)component;
+            Enabled = c.Enabled;
             TextureTag = c.TextureTag;
             Width = c.Width;
             Height = c.Height;

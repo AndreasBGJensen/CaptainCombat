@@ -7,7 +7,7 @@ using System.Data;
 using System.Reflection;
 using System.Threading;
 
-namespace CaptainCombat.Source.Event {
+namespace CaptainCombat.Source.NetworkEvent {
 
     /// <summary>
     /// Controller which listens for incoming event tuples in the remote space, and

@@ -147,7 +147,7 @@ namespace CaptainCombat.Source.Components {
         public CircleCollider() { }
 
         public CircleCollider(ColliderTag tag, double radius) {
-            Tag = Tag;
+            Tag = tag;
             Radius = radius;
         }
 

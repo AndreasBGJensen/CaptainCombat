@@ -20,6 +20,8 @@ namespace CaptainCombat.Source {
                 var transform = entity.GetComponent<Transform>();
                 var move = entity.GetComponent<Move>();
 
+                if (!move.Enabled) return;
+
                 // Update rotation velocity
                 move.RotationVelocity *= 1.0f - (float)(move.RotationResistance * deltaTime);
                 move.RotationVelocity += move.RotationAcceleration * (float)deltaTime;

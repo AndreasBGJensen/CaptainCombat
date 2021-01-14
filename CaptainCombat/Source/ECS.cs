@@ -32,6 +32,13 @@ namespace ECS {
 
         public delegate void EntityCallback(Entity e);
 
+
+        public Entity GetEntity(GlobalId id) {
+            Entity entity;
+            var found = registeredEntities.TryGetValue(id, out entity);
+            return found ? entity : null;
+        }
+
         
         /// <summary>
         /// Runs the given callback for all entities in the Domain, which
@@ -241,6 +248,8 @@ namespace ECS {
             public uint ClientId { get => Id.clientId; }
 
             public bool Deleted { get; private set; }
+
+            public bool IsLocal { get => Id.clientId == Connection.Instance.User_id; }
 
             // If true, it signals that the component should delete itself
             // the next time it is cleaned

@@ -8,6 +8,8 @@ namespace CaptainCombat.Source.Components {
 
     public class Move : Component {
 
+        public bool Enabled { get; set; } = true;
+
         public Vector2 Velocity { get; set; } = new Vector2(0, 0);
 
         public Vector2 Acceleration { get; set; } = new Vector2(0, 0);
@@ -28,6 +30,7 @@ namespace CaptainCombat.Source.Components {
 
         public override void OnUpdate(Component component) {
             var c = (Move)component;
+            Enabled = c.Enabled;
             Velocity = c.Velocity;
             Acceleration = c.Acceleration;
             Resistance = c.Resistance;
