@@ -1,5 +1,6 @@
 ﻿using CaptainCombat.Source.Components;
 using CaptainCombat.Source.protocols;
+using CaptainCombat.Source.Scenes;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -18,36 +19,19 @@ namespace CaptainCombat.Source.GameLayers
         private Domain Domain = new Domain();  
         private Camera Camera;
 
-        
-      
-        private Entity chat;
-        private Entity inputBox;
+        private Entity ChatBox;
+        private Entity InputBox;
 
-        private bool disableKeyboard = true;
-        private Keys[] lastPressedKeys = new Keys[5];
-        private string message = string.Empty;
+        private bool DisplayChat = false;
+        private Keys[] LastPressedKeys = new Keys[5];
+        private string ChatMessage = string.Empty;
 
-        Dictionary<string, string> dict = new Dictionary<string, string>
+        private Game Game;
+        private State ParentState;
+
+        public Chat(Game game, State state)
         {
-            { "D1", "1" },
-            { "D2", "2" },
-            { "D3", "3" },
-            { "D4", "4" },
-            { "D5", "5" },
-            { "D6", "6" },
-            { "D7", "7" },
-            { "D8", "8" },
-            { "D9", "9" },
-            { "D0", "0" },
-            { "OemComma", "," },
-            { "OemPeriod", "." },
-            { "OemMinus", "-" },
-        };
-
-        private Game Game; 
-
-        public Chat(Game game)
-        {
+            ParentState = state; 
             Game = game; 
             Camera = new Camera(Domain);
             init();
@@ -55,14 +39,14 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void init()
         {
-            // Chat messages
-            inputBox = EntityUtility.CreateInput(Domain, "", 360, 200, 14);
+            // Input box 
+            InputBox = EntityUtility.CreateInput(Domain, "", 360, 200, 14);
 
-
-            chat = new Entity(Domain);
-            chat.AddComponent(new Transform());
-            chat.AddComponent(new Sprite(Assets.Textures.Chat, 200, 200));
-            var transform = chat.GetComponent<Transform>();
+            // Chat layout
+            ChatBox = new Entity(Domain);
+            ChatBox.AddComponent(new Transform());
+            ChatBox.AddComponent(new Sprite(Assets.Textures.Chat, 200, 200));
+            var transform = ChatBox.GetComponent<Transform>();
             transform.X = 200;
             transform.Y = 200;
         }
@@ -71,8 +55,11 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void update(GameTime gameTime)
         {
-            int messageInDomain = 0; 
+            // Clearing domain 
+            Domain.Clean();
 
+            // Updates chat if new message is added to remote space on server 
+            int messageInDomain = 0; 
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 messageInDomain++; 
             });
@@ -83,31 +70,19 @@ namespace CaptainCombat.Source.GameLayers
                 Domain.ForMatchingEntities<Text, Transform>((entity) => {
                     entity.Delete(); 
                 });
-                int nummerOfElements = 15;
-                var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - nummerOfElements)).Take(nummerOfElements); 
+                int maxDisplayedMesseges = 15;
+                var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - maxDisplayedMesseges)).Take(maxDisplayedMesseges); 
                 foreach (string chatMessages in LastMessages)
                 {
                     EntityUtility.CreateMessage(Domain, chatMessages, 0, 0, 14);
                 }
-                
             }
             
+            // Handles keyboard inputs 
+            GetKeys();
 
-            Domain.Clean();
-            GetKeys(); 
-
-            if (!disableKeyboard)
-            {
-                var input = inputBox.GetComponent<Input>();
-                input.Message = message;
-                ShowChat(); 
-            }
-            else
-            {
-                var input = inputBox.GetComponent<Input>();
-                input.Message = string.Empty;
-                HideChat(); 
-            }
+            // Display chat 
+            (DisplayChat ? new Action(Display) : Hide)();
         }
 
         public void GetKeys()
@@ -115,92 +90,71 @@ namespace CaptainCombat.Source.GameLayers
             KeyboardState kbState = Keyboard.GetState();
             Keys[] pressedKeys = kbState.GetPressedKeys(); 
 
-            foreach(Keys key in lastPressedKeys)
-            {
-                if (!pressedKeys.Contains(key))
-                {
-                    OnKeyUp(key); 
-                }
-            }
             foreach (Keys key in pressedKeys)
             {
-                if (!lastPressedKeys.Contains(key))
+                if (!LastPressedKeys.Contains(key))
                 {
                     OnKeyDown(key); 
                 }
             }
-            lastPressedKeys = pressedKeys; 
+            LastPressedKeys = pressedKeys; 
         }
 
-        public void OnKeyUp(Keys key)
-        {
-
-        }
 
         public void OnKeyDown(Keys key)
         {
             if (key == Keys.Tab)
             {
-                disableKeyboard = !disableKeyboard;
+                DisplayChat = !DisplayChat;
             }
-            else if (disableKeyboard)
+            else if (!DisplayChat)
             {
                 return; 
             }
             else if (key == Keys.Enter)
             {
-                ClientProtocol.AddMessageToServer(message); 
-                message = string.Empty; 
-                var input = inputBox.GetComponent<Input>();
-                input.Message = message;
-               
+                ClientProtocol.AddMessageToServer(ChatMessage); 
+                ChatMessage = string.Empty; 
             }
             else if (key == Keys.Back)
             {
-                if (message.Length > 0) {
-                    message = message.Remove(message.Length - 1);
-                    var input = inputBox.GetComponent<Input>();
-                    input.Message = message;
+                if (ChatMessage.Length > 0) {
+                    ChatMessage = ChatMessage.Remove(ChatMessage.Length - 1);
                 } 
             }
             else if (key == Keys.Space)
             {
-                message += " "; 
+                ChatMessage += " "; 
             }
             else
             {
-                string pattern = @"[A-Z]";
                 string keyData = key.ToString();
-                if ((Regex.IsMatch(keyData, pattern) && keyData.Length <= 1 || dict.ContainsKey(keyData)) && message.Length < 20 )
+                if (KeyboardInputValidator.isValid(keyData) && ChatMessage.Length < 20)
                 {
-                    if (dict.ContainsKey(keyData))
-                    {
-                        message += dict[keyData];
-                    }
-                    else
-                    {
-                        message += keyData; 
-                    }
+                    ChatMessage = (KeyboardInputValidator.dict.ContainsKey(keyData) ? ChatMessage += KeyboardInputValidator.dict[keyData] : ChatMessage += keyData); 
                 }
 
             }
         }
 
-
-        public void ShowChat()
+        public void Display()
         {
-            { 
-            var transform = chat.GetComponent<Transform>();
-            var sprite = chat.GetComponent<Sprite>();
+            // Display input box
+            var input = InputBox.GetComponent<Input>();
+            input.Message = ChatMessage;
 
-            // Placement 
+            // Display chat box
+            { 
+            var transform = ChatBox.GetComponent<Transform>();
+            var sprite = ChatBox.GetComponent<Sprite>(); 
             transform.X = 450;
             transform.Y = 0;
             sprite.Height = 700;
             sprite.Width = 300;
             }
-            int placement_Y = -230; 
 
+            // Display messages in chat box 
+            int placement_Y = -230; 
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
                 transform.X = 360;
@@ -209,20 +163,23 @@ namespace CaptainCombat.Source.GameLayers
             });
         }
 
-        public void HideChat()
+        public void Hide()
         {
-            { 
-            var transform = chat.GetComponent<Transform>();
-            var sprite = chat.GetComponent<Sprite>();
+            // Hide input box
+            var input = InputBox.GetComponent<Input>();
+            input.Message = string.Empty;
 
-            // Placement 
+            // Shrink chat box
+            {
+                var transform = ChatBox.GetComponent<Transform>();
+            var sprite = ChatBox.GetComponent<Sprite>();
             transform.X = 580;
             transform.Y = 300;
             sprite.Height = 40;
             sprite.Width = 40;
             }
 
-
+            // Hide messages from view 
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
                 transform.Y = -1000; 

@@ -1,6 +1,7 @@
 ﻿using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source.Components;
+using CaptainCombat.Source.Scenes;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
@@ -20,15 +21,18 @@ namespace CaptainCombat.Source.GameLayers
         private Domain Domain = new Domain();
         private Camera Camera;
 
-        private Entity ship;
+        private bool DisableKeyboard = false;
+        private Keys[] LastPressedKeys = new Keys[5];
 
-        private bool disableKeyboard = false;
+        private Entity Ship;
 
-        private Keys[] lastPressedKeys = new Keys[5];
+        private State ParentState;
+        Game Game;
 
-        public Background()
+        public Background(Game game, State state)
         {
-            
+            ParentState = state; 
+            Game = game; 
             Camera = new Camera(Domain);
             DomainState.Instance.Domain = Domain; 
             init(); 
@@ -36,10 +40,10 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void init()
         {
-            int xOffset = -40;
-            int yOffset = -70;
 
             // Create some test rocks
+            int xOffset = -40;
+            int yOffset = -70;
             EntityUtility.CreateMessage(Domain, "Tortuga", 150 + xOffset, 100 + yOffset, 12);
             EntityUtility.CreateRock(Domain, 150, 100, 0.7, 120);
             EntityUtility.CreateMessage(Domain, "Port Royal", 400 + xOffset, -200 + yOffset, 12);
@@ -53,49 +57,32 @@ namespace CaptainCombat.Source.GameLayers
 
             // Create ship
             {
-                ship = new Entity(Domain);
-                ship.AddComponent(new Transform());
-                ship.AddComponent(new Sprite(Assets.Textures.SHIP, 66, 113));
+                Ship = new Entity(Domain);
+                Ship.AddComponent(new Transform());
+                Ship.AddComponent(new Sprite(Assets.Textures.SHIP, 66, 113));
 
-                var move = ship.AddComponent(new Move());
+                var move = Ship.AddComponent(new Move());
                 move.Resistance = 0.25;
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
             }
-
-            Upload upload = new Upload();
-            Thread uploadThread = new Thread(new ThreadStart(upload.RunProtocol));
-            uploadThread.Start();
-
-            DownLoad download = new DownLoad();
-            Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
-            downloadThread.Start();
         }
 
         public override void update(GameTime gameTime)
         {
+            // Clear domain 
             Domain.Clean();
-            GetKeys(); 
-            
 
+            // Handles keyboard input 
+            GetKeys();
+
+            // Update ship movement
             double seconds = gameTime.ElapsedGameTime.TotalSeconds;
-            bool shiftPressed = Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift);
-
-
-            if (!disableKeyboard)
+           
+            if (!DisableKeyboard)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.C))
-                    Domain.Clean();
-
-                if (Keyboard.GetState().IsKeyDown(Keys.R))
-                    Camera.Rotation += 100 * seconds * (shiftPressed ? -1 : 1);
-
-                if (Keyboard.GetState().IsKeyDown(Keys.Z))
-                    Camera.Zoom += 1.0 * seconds * (shiftPressed ? -1 : 1);
-
-                // Update ship movement
                 {
-                    var move = ship.GetComponent<Move>();
+                    var move = Ship.GetComponent<Move>();
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     {
@@ -123,11 +110,12 @@ namespace CaptainCombat.Source.GameLayers
 
             // Update camera to ship
             {
-                var transform = ship.GetComponent<Transform>();
+                var transform = Ship.GetComponent<Transform>();
                 Camera.X = transform.X;
                 Camera.Y = transform.Y;
             }
 
+            // Update movement in domain 
             Movement.Update(Domain, seconds);
         }
 
@@ -144,26 +132,14 @@ namespace CaptainCombat.Source.GameLayers
             KeyboardState kbState = Keyboard.GetState();
             Keys[] pressedKeys = kbState.GetPressedKeys();
 
-            foreach (Keys key in lastPressedKeys)
-            {
-                if (!pressedKeys.Contains(key))
-                {
-                    OnKeyUp(key);
-                }
-            }
             foreach (Keys key in pressedKeys)
             {
-                if (!lastPressedKeys.Contains(key))
+                if (!LastPressedKeys.Contains(key))
                 {
                     OnKeyDown(key);
                 }
             }
-            lastPressedKeys = pressedKeys;
-
-        }
-
-        public void OnKeyUp(Keys key)
-        {
+            LastPressedKeys = pressedKeys;
 
         }
 
@@ -171,10 +147,8 @@ namespace CaptainCombat.Source.GameLayers
         {
             if (key == Keys.Tab)
             {
-                disableKeyboard = !disableKeyboard;
+                DisableKeyboard = !DisableKeyboard;
             }
         }
-
-
     }
 }

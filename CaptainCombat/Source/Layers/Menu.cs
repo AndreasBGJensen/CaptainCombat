@@ -19,54 +19,36 @@ namespace CaptainCombat.Source.MenuLayers
         
         private Camera Camera;
         private Domain Domain = new Domain();
-        private KeyboardController keyboardController;
 
-        private bool disableKeyboard = false;
-        private Keys[] lastPressedKeys = new Keys[5];
-        private string message = string.Empty;
+        private bool DisableKeyboard = false;
+        private bool ChangeState = false; 
 
-        private Entity inputBox;
+        private Keys[] LastPressedKeys = new Keys[5];
+        private string PlayerName = string.Empty;
+
+        private Entity InputBox;
+
         private State ParentState;
         private Game Game; 
 
-        Dictionary<string, string> dict = new Dictionary<string, string>
-        {
-            { "D1", "1" },
-            { "D2", "2" },
-            { "D3", "3" },
-            { "D4", "4" },
-            { "D5", "5" },
-            { "D6", "6" },
-            { "D7", "7" },
-            { "D8", "8" },
-            { "D9", "9" },
-            { "D0", "0" },
-            { "OemComma", "," },
-            { "OemPeriod", "." },
-            { "OemMinus", "-" },
-
-        };
 
         public Menu(Game game, State state)
         {
+            ParentState = state;
             Game = game; 
-            ParentState = state; 
             Camera = new Camera(Domain);
-            keyboardController = new KeyboardController(); 
             init();
         }
 
         public override void init()
         {
-            // Static text 
             
-
-            // Players
+            // Static message to client 
             EntityUtility.CreateMessage(Domain, "Players in server", 0, 0, 14);
 
+            // Creates a list of all clients in server
             List<string> users = ClientProtocol.GetAllUsers();
-
-            foreach (String user in users)
+            foreach (string user in users)
             {
                 EntityUtility.CreateMessage(Domain, user, 0, 0, 14);
             }
@@ -76,19 +58,35 @@ namespace CaptainCombat.Source.MenuLayers
             backGround.AddComponent(new Transform());
             backGround.AddComponent(new Sprite(Assets.Textures.Background, 1280, 720));
 
+            // Menu
             Entity Menu = new Entity(Domain);
             Menu.AddComponent(new Transform());
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
 
             // InputBox
-            inputBox = EntityUtility.CreateInput(Domain, "Enter Name", -70, 150, 14);
+            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", -70, 150, 14);
         }
 
         public override void update(GameTime gameTime)
         {
+            // Clear domain 
             Domain.Clean();
+
+            // Handles keyboard input
             GetKeys();
-            DisplayPlayerNames(); 
+
+            // Displays list of all clients in server
+            DisplayPlayerNames();
+
+            // Displays input box 
+            var input = InputBox.GetComponent<Input>();
+            input.Message = PlayerName;
+
+            // Changes state when condition is true 
+            if (ChangeState)
+            {
+                ParentState._context.TransitionTo(new GameState(Game));
+            }
         }
 
         public override void draw(GameTime gameTime)
@@ -103,88 +101,69 @@ namespace CaptainCombat.Source.MenuLayers
             KeyboardState kbState = Keyboard.GetState();
             Keys[] pressedKeys = kbState.GetPressedKeys();
 
-            foreach (Keys key in lastPressedKeys)
-            {
-                if (!pressedKeys.Contains(key))
-                {
-                    OnKeyUp(key);
-                }
-            }
             foreach (Keys key in pressedKeys)
             {
-                if (!lastPressedKeys.Contains(key))
+                if (!LastPressedKeys.Contains(key))
                 {
                     OnKeyDown(key);
                 }
             }
-            lastPressedKeys = pressedKeys;
-        }
-
-        public void OnKeyUp(Keys key)
-        {
-
+            LastPressedKeys = pressedKeys;
         }
 
         public void OnKeyDown(Keys key)
         {
-            if (disableKeyboard)
+            if (DisableKeyboard)
             {
                 return; 
             }
-            
-            if (key == Keys.Enter)
+            else if (key == Keys.Enter)
             {
-                disableKeyboard = !disableKeyboard;
-                EntityUtility.CreateMessage(Domain, message, 0, 0, 14);
-                ClientProtocol.Join(message); 
+                // Disables keyboard
+                DisableKeyboard = !DisableKeyboard;
+
+                // Adds player name to domain 
+                EntityUtility.CreateMessage(Domain, PlayerName, 0, 0, 14);
+
+                // Adds playername to server 
+                ClientProtocol.Join(PlayerName);
+
+                // Enablers state change after delay 
                 Task.Factory.StartNew(async () =>
                 {
                     await Task.Delay(2000);
-                    changeState();
+                    ChangeState = true; 
                 });
-                message = "Game is staring...";
-                var input = inputBox.GetComponent<Input>();
-                input.Message = message;
+
+                // Display a message to the client 
+                PlayerName = "Game is staring...";
             }
             else if (key == Keys.Back)
             {
-                if (message.Length > 0)
+                if (PlayerName.Length > 0)
                 {
-                    message = message.Remove(message.Length - 1);
-                    var input = inputBox.GetComponent<Input>();
-                    input.Message = message;
+                    PlayerName = PlayerName.Remove(PlayerName.Length - 1);
+                    var input = InputBox.GetComponent<Input>();
+                    input.Message = PlayerName;
                 }
             }
             else if (key == Keys.Space)
             {
-                message += " ";
+                PlayerName += " ";
             }
             else
             {
-                string pattern = @"[A-Z]";
                 string keyData = key.ToString();
-                if ((Regex.IsMatch(keyData, pattern) && keyData.Length <= 1 || dict.ContainsKey(keyData)) && message.Length < 20)
+                if (KeyboardInputValidator.isValid(keyData) && PlayerName.Length < 20)
                 {
-                    if (dict.ContainsKey(keyData))
-                    {
-                        message += dict[keyData];
-                    }
-                    else
-                    {
-                        message += keyData;
-                    }
-
-                    var input = inputBox.GetComponent<Input>();
-                    input.Message = message;
+                    PlayerName = (KeyboardInputValidator.dict.ContainsKey(keyData) ? PlayerName += KeyboardInputValidator.dict[keyData] : PlayerName += keyData);
                 }
-
             }
         }
 
         public void DisplayPlayerNames()
         {
             int placement_Y = -180;
-
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
                 transform.Y = placement_Y;
@@ -192,13 +171,6 @@ namespace CaptainCombat.Source.MenuLayers
                 placement_Y += 25;
             });
         }
-
-
-     
-    public void changeState()
-    {
-        ParentState._context.TransitionTo(new GameState(Game));
-    }
 
     }
 }

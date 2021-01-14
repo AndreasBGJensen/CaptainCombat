@@ -1,4 +1,5 @@
-﻿using ECS;
+﻿using CaptainCombat.Source.Scenes;
+using ECS;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -13,14 +14,16 @@ namespace CaptainCombat.Source.GameLayers
 
         private Domain Domain = new Domain(); 
         private Camera Camera;
-
-        public Score()
+        private Game Game;
+        private State ParentState; 
+        public Score(Game game, State state)
         {
+            ParentState = state; 
+            Game = game; 
             Camera = new Camera(Domain);
             init();
         }
 
-        
         public override void init()
         {
            

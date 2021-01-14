@@ -22,10 +22,7 @@ namespace CaptainCombat
 
         public static GameController Game { get; private set; }
         public static GraphicsDeviceManager Graphics { get; private set; }
-
         private StateManager Manager { get; set; }
-
-
 
         public GameController() {
             Game = this;
@@ -34,7 +31,6 @@ namespace CaptainCombat
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-
 
         protected override void Initialize() {
             base.Initialize();
@@ -51,16 +47,13 @@ namespace CaptainCombat
             Graphics.PreferredBackBufferHeight = 720;
             Graphics.ApplyChanges();
 
-            // Needed for loading assets 
-            
+            // Set state. 
             Manager = new StateManager(new Loading(Game));
-
 
             // Set asset loaders
             Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
             });
-
 
             Asset.SetLoader<Source.Font, SpriteFont>((font) => {
                 return Content.Load<SpriteFont>(font.Url);
@@ -68,19 +61,12 @@ namespace CaptainCombat
 
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
-
-            
         }
-
-
-
-
 
         protected override void Update(GameTime gameTime) {
             Manager._state.update(gameTime); 
             base.Update(gameTime);
         }
-
 
         protected override void Draw(GameTime gameTime)
         {

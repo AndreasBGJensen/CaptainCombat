@@ -34,13 +34,6 @@ namespace CaptainCombat.Source.Scenes
 
         public override void update(GameTime gameTime)
         {
-            
-            if (Keyboard.GetState().IsKeyDown(Keys.CapsLock))
-            {
-                this._context.TransitionTo(new GameState(Game));
-            }
-         
-
             foreach (Layer layer in layers)
             {
                 layer.update(gameTime);
