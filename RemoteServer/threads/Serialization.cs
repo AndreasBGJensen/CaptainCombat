@@ -20,10 +20,12 @@ namespace RemoteServer.threads
            collector.SetCollector(new TupleCollector(creator, Connection.Instance.Space));
            Console.WriteLine("Running...");
            while (true)
-           {
+            {
 
-                collector.BeginCollect();
-                collector.PrintUpdateComponents();
+            
+            
+            collector.BeginCollect();
+            //collector.PrintUpdateComponents();
                    
             }
         }

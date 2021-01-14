@@ -28,10 +28,13 @@ namespace RemoteServer.Collector
             foreach (Tuple x in results)
             {
                JArray jarray = JsonConvert.DeserializeObject<JArray>((string)x[1]);
+               var id=  (int)jarray.First.SelectToken("client_id");
+                RemoveExistingClientTuples(id);
                foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
                {
-                   UpdatorJToken(jToken);
-               };   
+                    UpdatorJToken(jToken);
+                    //UpdateTupleSpace(jToken);
+                };   
             }
         }
 
@@ -44,14 +47,38 @@ namespace RemoteServer.Collector
 
         }
 
+        private void UpdateTupleSpace(JToken serarchParam)
+        {
+            var array = creator.CreateArray(serarchParam);
+            //TODO: How can I fix this so that it will not be depended og each element??
+            //ITuple result = mySpace.GetP(array[0], array[1], array[2], array[3], typeof(string));
+            //RemoveExistingClientTuples((int)array[1]);
+            mySpace.Put(array);
+        }
+
+        private void RemoveExistingClientTuples(int ClientID)
+        {
+            IEnumerable<ITuple> result = mySpace.GetAll(typeof(string), ClientID, typeof(int), typeof(int), typeof(string));
+        }
+
         public void PrintUpdateComponents()
         {
+            Console.WriteLine("Printing test components");
+            IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+            foreach (ITuple tuple in results3)
+            {
+                Console.WriteLine(tuple);
+            }
+        }
+
+        public void PrintAllComponents()
+        {
             //Console.WriteLine("Printing test components");
-            //IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
-            //foreach (ITuple tuple in results3)
-            //{
-                //Console.WriteLine(tuple);
-            //}
-        }  
+            IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
+            foreach (ITuple tuple in results3)
+            {
+            Console.WriteLine(tuple);
+            }
+        }
     }
 }
