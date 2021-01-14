@@ -12,10 +12,12 @@ using System;
 using System.Threading;
 using static ECS.Domain;
 
+
 using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
 
-namespace CaptainCombat
-{
+
+namespace CaptainCombat {
+
     public class GameController : Game {
 
         public static GameController Game { get; private set; }
@@ -25,12 +27,11 @@ namespace CaptainCombat
 
         public static Camera camera;
 
-
         public static Entity ship;
 
         public static CollisionController collisionController = new CollisionController();
 
-
+        
         public GameController() {
             Game = this;
             Graphics = new GraphicsDeviceManager(this);
@@ -79,7 +80,7 @@ namespace CaptainCombat
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
 
-                ship.AddComponent(new CircleCollider(Assets.Colliders.TEST, 20));
+                ship.AddComponent(new CircleCollider(Assets.ColliderTypes.SHIP, 20));
 
                 //var collider = ship.AddComponent(new BoxCollider());
                 //collider.Width = 40;
@@ -94,7 +95,6 @@ namespace CaptainCombat
             Graphics.PreferredBackBufferHeight = 720;
             Graphics.ApplyChanges();
 
-
             // Set asset loaders
             Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
@@ -103,30 +103,33 @@ namespace CaptainCombat
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
-
-            collisionController.AddListener(Assets.Colliders.SHIP, Assets.Colliders.ROCK, (ship, rock) => {
-                // TODO: Fix the ordering of entities
-                Console.WriteLine("Collision!");
+            collisionController.AddListener(Assets.ColliderTypes.ROCK, Assets.ColliderTypes.PROJECTILE, (rock, projectile) => {
+                projectile.Delete();
                 return true;
             });
         }
 
 
+        
+        private const double FIRE_COOLDOWN = 0.25;
+        private static double fireCooldownCurrent = 0.0;
+
         protected override void Update(GameTime gameTime) {
 
-            // Clean the Domain before each frame
-            domain.Clean();
-
             EventController.HandleEvents();
-
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //Exit();
 
             double seconds = gameTime.ElapsedGameTime.TotalSeconds;
             bool shiftPressed = Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.C))
-                domain.Clean();
+            if (fireCooldownCurrent > 0)
+                fireCooldownCurrent -= seconds;
+
+            if( Keyboard.GetState().IsKeyDown(Keys.E)) {
+                if( fireCooldownCurrent <= 0) {
+                    EntityUtility.FireCannonBall(ship);
+                    fireCooldownCurrent = FIRE_COOLDOWN;
+                }
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.R))
                 camera.Rotation += 100 * seconds * (shiftPressed ? -1 : 1);
@@ -165,6 +168,7 @@ namespace CaptainCombat
             Movement.Update(domain, seconds);
             collisionController.CheckCollisions(domain);
 
+            domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
 
             base.Update(gameTime);

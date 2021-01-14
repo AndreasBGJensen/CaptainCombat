@@ -110,9 +110,6 @@ namespace CaptainCombat.Source.Event {
         /// Multiple listeners may be added, and will be fired sequentially
         /// in the order they have been added
         /// </summary>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="e"></param>
-        /// <returns></returns>
         public static EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
             var eventType = typeof(E);
             if (!listenerMap.ContainsKey(eventType))

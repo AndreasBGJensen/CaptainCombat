@@ -1,8 +1,5 @@
 ﻿using CaptainCombat.states;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
 
 namespace CaptainCombat
 {

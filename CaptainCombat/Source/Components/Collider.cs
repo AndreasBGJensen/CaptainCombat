@@ -7,36 +7,43 @@ using static ECS.Domain;
 namespace CaptainCombat.Source.Components {
 
     /// <summary>
-    /// ColliderTypes are used to group Collider instances together
+    /// ColliderTags are used to group Collider instances together
     /// and to limit the number of collision checks, by only checking
     /// for collision between paricular ColliderTypes
     /// </summary>
-    public class ColliderType {
-        private static Dictionary<string, ColliderType> all = new Dictionary<string, ColliderType>();
+    public class ColliderTag {
+        private static Dictionary<string, ColliderTag> all = new Dictionary<string, ColliderTag>();
 
         public string Tag { get; }
 
-        public ColliderType(string tag) {
+        public ColliderTag(string tag) {
             if (all.ContainsKey(tag))
                 throw new ArgumentException($"ColliderType with tag '{tag} already exists");
             Tag = tag;
             all.Add(tag, this);
         }
 
-        public static bool operator ==(ColliderType c1, ColliderType c2) {
+        public static ColliderTag Get(string tag) {
+            if (tag == "") return null;
+            if (!all.ContainsKey(tag))
+                throw new NullReferenceException($"No ColliderType with tag '{tag}' exists");
+            return all[tag];
+        }
+
+        public static bool operator ==(ColliderTag c1, ColliderTag c2) {
             if ((object)c1 == null)
                 return (object)c2 == null;
             return c1.Equals(c2);
         }
 
-        public static bool operator !=(ColliderType c1, ColliderType c2) {
+        public static bool operator !=(ColliderTag c1, ColliderTag c2) {
             return !(c1 == c2);
         }
 
         public override bool Equals(object obj) {
             if (obj == null || GetType() != obj.GetType())
                 return false;
-            var c1 = (ColliderType)obj;
+            var c1 = (ColliderTag)obj;
             return Tag == c1.Tag;
         }
 
@@ -57,7 +64,7 @@ namespace CaptainCombat.Source.Components {
         /// The type of this Collider (NOT the class type, i.e. BoxCollider)
         /// If null, the Collider will be ignored
         /// </summary>
-        public ColliderType ColliderType { get; set; } = null;
+        public ColliderTag Tag { get; set; } = null;
 
         /// <summary>
         /// Flag to denote that this collider collided with something
@@ -102,14 +109,24 @@ namespace CaptainCombat.Source.Components {
 
 
         public override object getData() {
-            // TODO: Implement this
             var obj = new {
+                enabled = Enabled,
+                tag = Tag == null ? "" : Tag.Tag,
+                collided = Collided,
+                width = Width,
+                height = Height,
+                rotation = Rotation
             };
             return obj;
         }
 
         public override void update(JObject json) {
-            // TODO: Implement this
+            Enabled = (bool)json.SelectToken("enabled");
+            Tag = ColliderTag.Get((string)json.SelectToken("tag"));
+            Collided = (bool)json.SelectToken("collided");
+            Width = (double)json.SelectToken("width");
+            Height = (double)json.SelectToken("height");
+            Rotation = (double)json.SelectToken("rotation");
         }
     }
 
@@ -130,20 +147,26 @@ namespace CaptainCombat.Source.Components {
 
         public CircleCollider() { }
 
-        public CircleCollider(ColliderType type, double radius) {
-            ColliderType = type;
+        public CircleCollider(ColliderTag tag, double radius) {
+            Tag = Tag;
             Radius = radius;
         }
 
         public override object getData() {
-            // TODO: Implement this
             var obj = new {
+                enabled = Enabled,
+                tag = Tag == null ? "" : Tag.Tag,
+                collided = Collided,
+                radius = Radius,
             };
             return obj;
         }
 
         public override void update(JObject json) {
-            // TODO: Implement this
+            Enabled = (bool)json.SelectToken("enabled");
+            Tag = ColliderTag.Get((string)json.SelectToken("tag"));
+            Collided = (bool)json.SelectToken("collided");
+            Radius = (double)json.SelectToken("radius");
         }
     }
 

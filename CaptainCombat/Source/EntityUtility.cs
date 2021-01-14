@@ -1,6 +1,8 @@
 ﻿
 using CaptainCombat.Source.Components;
+using CaptainCombat.Source.Utility;
 using ECS;
+using Microsoft.Xna.Framework;
 using static ECS.Domain;
 
 namespace CaptainCombat.Source {
@@ -22,16 +24,42 @@ namespace CaptainCombat.Source {
 
             entity.AddComponent(new Sprite(Assets.Textures.ROCK, 100, 100));
 
-            //var collider = entity.AddComponent(new BoxCollider());
-            //collider.Width = 60 * scale;
-            //collider.Height = 45 * scale;
-            //collider.Rotation = 10;
-            //collider.Enabled = false;
-            //collider.ColliderType = Assets.Colliders.ROCK;
-
-            entity.AddComponent(new CircleCollider(Assets.Colliders.ROCK, 70*scale));
+            var collider = entity.AddComponent(new BoxCollider());
+            collider.Width = 60 * scale;
+            collider.Height = 45 * scale;
+            collider.Rotation = 10;
+            collider.Tag = Assets.ColliderTypes.ROCK;
 
             return entity;            
+        }
+
+
+        public static Entity FireCannonBall(Entity player) {
+
+            var playerTransform = player.GetComponent<Transform>();
+
+            var cannonBall = new Entity(player.Domain);
+
+            var transform = cannonBall.AddComponent(new Transform());
+
+            var playerPosition = new Vector2((float)playerTransform.X, (float)playerTransform.Y);
+            var normPosition = playerPosition;
+            normPosition.Normalize();
+            var position = playerPosition + new Vector2(30.0f, 0.0f).WithDirection((float)playerTransform.Rotation);
+
+            transform.X = position.X;
+            transform.Y = position.Y;
+            transform.Rotation = playerTransform.Rotation + 90;
+            
+            var move = cannonBall.AddComponent(new Move());
+            move.ForwardVelocity = true;
+            move.Velocity = new Vector2(500, 0);
+
+            cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
+
+            cannonBall.AddComponent(new CircleCollider(Assets.ColliderTypes.PROJECTILE, 10));
+            
+            return null;
         }
 
     }

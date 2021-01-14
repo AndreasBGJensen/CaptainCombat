@@ -34,6 +34,13 @@ namespace ECS {
 
         public delegate void EntityCallback(Entity e);
 
+        
+        public void ForAllEntities(EntityCallback callback) {
+            foreach( var entity in entities ) {
+                callback(entity);
+            }
+        }
+
 
         /// <summary>
         /// Runs the given callback for each entity, which has the given
@@ -72,15 +79,19 @@ namespace ECS {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3) }, callback);
         }
 
+
         public void ForMatchingEntities<C1, C2, C3, C4>(EntityCallback callback) where C1 : Component where C2 : Component where C3 : Component where C4 : Component {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3), typeof(C4) }, callback);
         }
+
 
         public void update(IEnumerable<ITuple> gameData)
         {
             //Console.WriteLine("Run update");
             // ITuple data format (string)comp, (int)client_id, (int)component_id, (int)entity_id, (string)data);
-            
+
+            HashSet<GlobalId> updatedComponents = new HashSet<GlobalId>();
+
             foreach (ITuple data in gameData)
             {
                 var client_id = (uint)(int)data[1];
@@ -136,9 +147,26 @@ namespace ECS {
                 // Update Component data to new data
                 var componentJsonData = (string)data[4];
                 current_compotent.update((JObject)JsonConvert.DeserializeObject(componentJsonData));
+
+                updatedComponents.Add(global_compotent_id);
             }
 
+            // Clean up remote components that no longer exists
+            foreach(var pair in components) {
+                var id = pair.Key;
+                if (id.clientId == Connection.Instance.User_id) continue;
+
+                var found = updatedComponents.Remove(id);
+                if( found ) continue;
+                
+                // Component no longer exists remotely, so we delete it
+                
+                
+            }
         }
+
+
+
 
         public void Clean() {
 
@@ -152,14 +180,16 @@ namespace ECS {
             List<Entity> entitiesToRemove = new List<Entity>();
             foreach (var entity in entities) {
                 bool shouldBeRemoved = entity.Clean();
-                if (shouldBeRemoved)
+                if (shouldBeRemoved) {
                     entitiesToRemove.Add(entity);
+                }
             }
 
             // Remove entities
             foreach (var entity in entitiesToRemove) {
                 entityIdGenerator.Release(entity.Id.objectId);
                 entities.Remove(entity);
+                registeredEntities.TryRemove(entity.Id, out _);
             }
 
         }
@@ -236,7 +266,7 @@ namespace ECS {
             // List of components that were added since last clean
             public readonly List<Component> newComponents = new List<Component>();
 
-            private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
+            private readonly HashSet<Type> componentsToRemove = new HashSet<Type>();
 
 
             /// <summary>
@@ -292,6 +322,33 @@ namespace ECS {
             }
 
 
+            public void RemoveComponent(Component component) {
+                var type = component.GetType();
+                Component matched;
+                var found = components.TryGetValue(type, out matched);
+                if( !found )
+                    throw new NullReferenceException($"Entity does not have component of type '{type.Name}'");
+                if( matched != component )
+                    throw new NullReferenceException($"Entity's component of type '{type.Name}' does not match provided argument");
+                RemoveComponent(type);
+            }
+
+
+            public void RemoveComponent<C>() where C : Component {
+                RemoveComponent(typeof(C));
+            }
+
+
+            public void RemoveComponent(Type type) {
+                if (Deleted) throw new InvalidOperationException("Entity has been deleted");
+
+                if ( !components.ContainsKey(type) )
+                    throw new NullReferenceException($"Entity does not have component of type '{type.Name}'");
+                              
+                componentsToRemove.Add(type);
+            }
+
+
             /// <summary>
             /// Retrieve the Component of the given Type, or null if the
             /// Entity does not have the given Component
@@ -330,26 +387,32 @@ namespace ECS {
             /// Not recommend to call this function manually (Domain calls it
             /// when its cleaned.
             /// </summary>
+            /// <returns>True if the Entity was deleted</returns>
             public bool Clean() {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
                 if (shouldBeDeleted) {
+                    // Unregister all components before deletion
                     foreach (var pair in components)
                         Domain.unregisterComponent(pair.Value);
                     Deleted = true;
                     return true;
                 }
                 else {
+                    // Create new components
                     foreach (var component in newComponents)
                         component.Matchable = true;
 
-                    foreach (var pair in componentsToRemove) {
-                        components.Remove(pair.Key);
-                        Domain.unregisterComponent(pair.Value);
+                    // Delete components
+                    foreach (var componentId in componentsToRemove) {
+                        var component = components[componentId];
+                        components.Remove(componentId);
+                        Domain.unregisterComponent(component);
                     }
                     return false;
                 }
             }
+
         }
 
 
@@ -358,6 +421,7 @@ namespace ECS {
                 pair.Value.ShouldSynchronize = false;
             }
         }
+
 
         public void MakeLocal() {
             foreach( var pair in components ) {
@@ -454,7 +518,6 @@ namespace ECS {
             // add them to the 'typeMap' with their full name as
             // an identifier
             static Component() {
-
                 foreach (var type in Assembly.GetAssembly(typeof(Component)).GetTypes()) {
                     if (type.IsSubclassOf(typeof(Component)) && !type.IsAbstract ) {
                         var identifier = type.FullName;

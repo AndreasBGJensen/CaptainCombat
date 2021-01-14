@@ -8,7 +8,7 @@ using static ECS.Domain;
 
 namespace CaptainCombat.Source {
 
-    using CollisionFilter = System.Tuple<ColliderType, ColliderType>;
+    using CollisionFilter = System.Tuple<ColliderTag, ColliderTag>;
 
     /// <summary>
     /// Listener which is notified when a collision happens between two entities
@@ -28,10 +28,10 @@ namespace CaptainCombat.Source {
 
         /// <summary>
         /// Add a listener which is notified when any collision happens between two
-        /// colliders with the given ColliderTypes (the collision filter)
+        /// colliders with the given ColliderTags (the collision filter)
         /// </summary>
-        public void AddListener(ColliderType type1, ColliderType type2, CollisionListener listener) {
-            var collisionType = new CollisionFilter(type1, type2);
+        public void AddListener(ColliderTag tag1, ColliderTag tag2, CollisionListener listener) {
+            var collisionType = new CollisionFilter(tag1, tag2);
             if (!listenerMap.ContainsKey(collisionType))
                 listenerMap[collisionType] = new List<CollisionListener>();
             listenerMap[collisionType].Add(listener);
@@ -52,12 +52,12 @@ namespace CaptainCombat.Source {
             domain.ForMatchingEntities<Transform, BoxCollider>((e) => {
                 var collider = e.GetComponent<BoxCollider>();
                 collider.Collided = false;
-                if (!collider.Enabled || collider.ColliderType == null) return;
+                if (!collider.Enabled || collider.Tag == null) return;
 
-                if (!colliderMap.ContainsKey(collider.ColliderType))
-                    colliderMap[collider.ColliderType] = new ColliderDataList();
+                if (!colliderMap.ContainsKey(collider.Tag))
+                    colliderMap[collider.Tag] = new ColliderDataList();
 
-                var list = colliderMap[collider.ColliderType];
+                var list = colliderMap[collider.Tag];
                 list.Expand();
                 list.Elements[list.Count].Set(e, e.GetComponent<Transform>(), collider);
                 list.Count++;
@@ -67,12 +67,12 @@ namespace CaptainCombat.Source {
             domain.ForMatchingEntities<Transform, CircleCollider>((e) => {
                 var collider = e.GetComponent<CircleCollider>();
                 collider.Collided = false;
-                if (!collider.Enabled) return;
+                if (!collider.Enabled || collider.Tag == null) return;
 
-                if (!colliderMap.ContainsKey(collider.ColliderType))
-                    colliderMap[collider.ColliderType] = new ColliderDataList();
+                if (!colliderMap.ContainsKey(collider.Tag))
+                    colliderMap[collider.Tag] = new ColliderDataList();
 
-                var list = colliderMap[collider.ColliderType];
+                var list = colliderMap[collider.Tag];
                 list.Expand();
                 list.Elements[list.Count].Set(e, e.GetComponent<Transform>(), collider);
                 list.Count++;
@@ -142,9 +142,9 @@ namespace CaptainCombat.Source {
         }
 
 
-        // Maps a ColliderType to a a list of Collider data
+        // Maps a ColliderTag to a a list of Collider data
         // Stored an attribute to prevent reconstruction on every frame (for performance)
-        private Dictionary<ColliderType, ColliderDataList> colliderMap = new Dictionary<ColliderType, ColliderDataList>();
+        private Dictionary<ColliderTag, ColliderDataList> colliderMap = new Dictionary<ColliderTag, ColliderDataList>();
 
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace CaptainCombat.Source {
         private struct ColliderData {
             public Vector2 center;
             public float sortDistance;
-            public ColliderType colliderType;
+            public ColliderTag colliderTag;
 
             public Collider collider;
             public Transform transform;
@@ -164,7 +164,7 @@ namespace CaptainCombat.Source {
                 this.collider = collider;
                 this.entity = entity;
                 this.transform = transform;
-                colliderType = collider.ColliderType;
+                colliderTag = collider.Tag;
 
                 center = new Vector2((float)(transform.X), (float)(transform.Y));
                 collider.CalculatePoints(transform);
@@ -180,7 +180,7 @@ namespace CaptainCombat.Source {
                 this.collider = collider;
                 this.entity = entity;
                 this.transform = transform;
-                colliderType = collider.ColliderType;
+                colliderTag = collider.Tag;
 
                 center = new Vector2((float)(transform.X), (float)(transform.Y));
                 sortDistance = (float)collider.Radius;

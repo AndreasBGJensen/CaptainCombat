@@ -1,4 +1,5 @@
-﻿using ECS;
+﻿using dotSpace.Interfaces.Space;
+using ECS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,6 @@ namespace CaptainCombat.singletons
         private static readonly DomainState instance = new DomainState();
         private Domain domain = null; 
         private string upload = null;
-        private string download = null;
 
         private DomainState()
         {
@@ -26,7 +26,7 @@ namespace CaptainCombat.singletons
         }
 
         public string Upload { get => upload; set => upload = value; }
-        public string Download { get => download; set => download = value; }
+        public IEnumerable<ITuple> Download { get; set; }
 
         public Domain Domain { get => domain; set => domain = value; }
     }
