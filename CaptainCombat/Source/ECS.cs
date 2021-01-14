@@ -151,17 +151,20 @@ namespace ECS {
                 updatedComponents.Add(global_compotent_id);
             }
 
+
             // Clean up remote components that no longer exists
             foreach(var pair in components) {
                 var id = pair.Key;
+
+                // Skip local components
                 if (id.clientId == Connection.Instance.User_id) continue;
 
-                var found = updatedComponents.Remove(id);
-                if( found ) continue;
+                // Component was updated, so it still exists
+                if (updatedComponents.Contains(id)) continue;
                 
                 // Component no longer exists remotely, so we delete it
-                
-                
+                var component = pair.Value;
+                component.Delete();                
             }
         }
 
@@ -499,6 +502,13 @@ namespace ECS {
 
             public abstract void update(JObject json);
 
+            
+            /// <summary>
+            /// Deletes the component and remove it from its Entity
+            /// </summary>
+            public void Delete() {
+                entity.RemoveComponent(this);
+            }
 
 
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
