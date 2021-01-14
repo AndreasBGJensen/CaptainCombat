@@ -80,11 +80,10 @@ namespace CaptainCombat {
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
 
-                ship.AddComponent(new CircleCollider(Assets.ColliderTypes.SHIP, 20));
-
-                //var collider = ship.AddComponent(new BoxCollider());
-                //collider.Width = 40;
-                //collider.Height = 80;
+                //ship.AddComponent(new CircleCollider(Assets.ColliderTypes.SHIP, 20));
+                var collider = ship.AddComponent(new BoxCollider());
+                collider.Width = 50;
+                collider.Height = 100;
                 //collider.ColliderType = Assets.Colliders.SHIP;
             }
 
