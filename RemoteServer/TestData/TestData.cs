@@ -91,6 +91,44 @@ namespace RemoteServer.TestData
 				'y': 100000
 			}}]";
 
+        public string randomJsonArray4_Client1 = @"[{
+			'comp': 'Drag',
+			'client_id': 1,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 1200,
+				'y': 1200
+			}
+            },
+{'comp': 'Move2',
+			'client_id': 1,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 1000,
+				'y': 100000
+			}}]";
+
+        public string randomJsonArray4_Client1_Counter = @"[{
+			'comp': 'Drag',
+			'client_id': 1,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 1200,
+				'y': 1200
+			}
+            },
+{'comp': 'Move2',
+			'client_id': 1,
+			'component_id': 3,
+			'entity_id': 24,
+			'data': {
+				'x': 1000,
+				'y': 100000
+			}}]";
+
         public string randomJsonString3 = @"{'comp':'name','client_id':0,'component_id':13,'entity_id':24,'data':[{'x':10,'y':12},{'Note':Bla,bla,'y':12}}";
 
         public TestComponentClasse GetTestData()
@@ -158,6 +196,16 @@ namespace RemoteServer.TestData
         public string GetRandomJsonArray4()
         {
             return randomJsonArray4;
+        }
+
+        public string GetRandomJsonArray4_Client1()
+        {
+            return randomJsonArray4_Client1;
+        }
+
+        public string GetRandomJsonArray4_Client1_Counter()
+        {
+            return randomJsonArray4_Client1_Counter;
         }
 
         public class Data

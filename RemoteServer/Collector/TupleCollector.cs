@@ -24,41 +24,43 @@ namespace RemoteServer.Collector
         void ICollector.Collect()
         {
             //Collecting components
-            IEnumerable<ITuple> results = mySpace.GetAll("components", typeof(string));
+            IEnumerable<ITuple> results = mySpace.GetAll("components",typeof(string), typeof(string));
+
+           
             foreach (Tuple x in results)
             {
-               JArray jarray = JsonConvert.DeserializeObject<JArray>((string)x[1]);
+                string update_id = (string)x[1];
+                JArray jarray = JsonConvert.DeserializeObject<JArray>((string)x[2]);
+               //Fetch client i order to remove all id components from the space
                var id=  (int)jarray.First.SelectToken("client_id");
-                RemoveExistingClientTuples(id);
-               foreach (Newtonsoft.Json.Linq.JToken jToken in jarray)
+                
+                
+               foreach (JToken jToken in jarray)
                {
-                    UpdatorJToken(jToken);
+                    UpdatorJToken(jToken, update_id);
                     //UpdateTupleSpace(jToken);
-                };   
+                };
+
+                RemoveExistingClientTuples(id, update_id);
             }
         }
 
-        private void UpdatorJToken(JToken serarchParam)
+        private void UpdatorJToken(JToken serarchParam,string UpdateID)
         {
-            var array = creator.CreateArray(serarchParam);
-            //TODO: How can I fix this so that it will not be depended og each element??
-            ITuple result = mySpace.GetP(array[0], array[1], array[2], array[3], typeof(string));
-            mySpace.Put(array);
-
-        }
-
-        private void UpdateTupleSpace(JToken serarchParam)
-        {
-            var array = creator.CreateArray(serarchParam);
+            var array = creator.CreateArray(serarchParam, UpdateID);
             //TODO: How can I fix this so that it will not be depended og each element??
             //ITuple result = mySpace.GetP(array[0], array[1], array[2], array[3], typeof(string));
-            //RemoveExistingClientTuples((int)array[1]);
             mySpace.Put(array);
+
         }
 
-        private void RemoveExistingClientTuples(int ClientID)
+        private void RemoveExistingClientTuples(int ClientID,string update_id)
         {
-            IEnumerable<ITuple> result = mySpace.GetAll(typeof(string), ClientID, typeof(int), typeof(int), typeof(string));
+            //Decrementing
+            long update_id_long = long.Parse(update_id);
+            update_id_long--;
+            string decremented_update_id = update_id_long.ToString();
+            IEnumerable<ITuple> result = mySpace.GetAll(typeof(string), ClientID, typeof(int), typeof(int), typeof(string), decremented_update_id);
         }
 
         public void PrintUpdateComponents()
