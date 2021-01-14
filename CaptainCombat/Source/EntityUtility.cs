@@ -30,6 +30,8 @@ namespace CaptainCombat.Source {
             collider.Rotation = 10;
             collider.Tag = Assets.ColliderTags.ROCK;
 
+            entity.SetSyncMode(Component.SynchronizationMode.NONE);
+
             return entity;            
         }
 

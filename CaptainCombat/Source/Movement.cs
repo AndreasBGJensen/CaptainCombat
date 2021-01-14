@@ -15,13 +15,11 @@ namespace CaptainCombat.Source {
 
         public static void Update(Domain domain, double deltaTime) {
 
-            System.Console.WriteLine("Updating movement...");
             domain.ForMatchingEntities<Transform, Move>((entity) => {
 
                 var transform = entity.GetComponent<Transform>();
                 var move = entity.GetComponent<Move>();
 
-                System.Console.WriteLine("  Update");
                 if (!move.Enabled) return;
 
                 // Update rotation velocity
