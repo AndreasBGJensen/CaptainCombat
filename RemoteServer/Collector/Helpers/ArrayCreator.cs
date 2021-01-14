@@ -10,7 +10,13 @@ namespace RemoteServer.Collector.Helpers
 {
     class ArrayCreator
     {
-
+        /// <summary>
+        /// Creates an array to be insertet in a tuple.
+        /// It converts datatypes into a format that can be consumed by dotSpaces.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="updateID"></param>
+        /// <returns></returns>
         public object[] CreateArray(JToken token,string updateID)
         {
 
@@ -30,6 +36,11 @@ namespace RemoteServer.Collector.Helpers
             return newArray;
         }
 
+        /// <summary>
+        /// Convert datatypes in to a format that is fit for Tuple spaces.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         private dynamic DefineDatatype(JToken data)
         {
             switch (data.Type)

@@ -15,7 +15,6 @@ namespace RemoteServer.threads
         {
            CollectorClass collector = new CollectorClass();
            ArrayCreator creator = new ArrayCreator();
-           collector.SetSpace(Connection.Instance.Space);
            //collector.SetCollector(new TupleCollectorParallel(creator,Connection.Instance.Space));
            collector.SetCollector(new TupleCollector(creator, Connection.Instance.Space));
            Console.WriteLine("Running...");

@@ -9,7 +9,6 @@ namespace RemoteServer.Collector
 {
     class CollectorClass
     {
-        private SequentialSpace mySpace = null;
         private ICollector collector;
 
         public void BeginCollect()
@@ -18,13 +17,7 @@ namespace RemoteServer.Collector
         }
 
        
-        public void SetSpace(SequentialSpace space)
-        {
-            if (mySpace == null)
-            {
-                mySpace = space;
-            }
-        }
+        
 
         public void SetCollector(ICollector collector)
         {
