@@ -120,7 +120,7 @@ namespace CaptainCombat {
                 collider.Enabled = false;
 
                 projectile.Delete();
-                EventController.Send(new ProjectileEffectEvent(e.Sender, e.TargetId, 100));
+                EventController.Send(new ProjectileEffectEvent(e.TargetId.clientId, e.TargetId, 100));
 
                 return true;
             });
