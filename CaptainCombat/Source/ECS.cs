@@ -95,11 +95,40 @@ namespace ECS {
         }
 
 
+        public Dictionary<uint, ulong> updateIdMap = new Dictionary<uint, ulong>();
+
         public void update(IEnumerable<ITuple> gameData) {
 
             HashSet<GlobalId> updatedComponents = new HashSet<GlobalId>();
 
-            foreach (ITuple data in gameData) {
+            Dictionary<uint, ulong> newIdMap = new Dictionary<uint, ulong>();
+            foreach (var pair in updateIdMap)
+                newIdMap.Add(pair.Key, pair.Value);
+
+            List<ITuple> sortedComponents = new List<ITuple>();
+            foreach (var component in gameData) {
+                var clientId = (uint)(int)component[1];
+
+                if (clientId == Connection.Instance.User_id) continue;
+
+                var componentId = (uint)(int)component[2];
+                var updateId = ulong.Parse((string)component[5]);
+
+                updatedComponents.Add(new GlobalId(clientId, componentId));
+
+                if (!updateIdMap.TryGetValue(clientId, out ulong currentUpdateId)) {
+                    currentUpdateId = 0;
+                }
+
+                if (updateId <= currentUpdateId) continue;
+
+                sortedComponents.Add(component);
+                newIdMap[clientId] = updateId;
+            }
+
+            updateIdMap = newIdMap;
+
+            foreach (ITuple data in sortedComponents) {
                 var client_id = (uint)(int)data[1];
                 var component_id = (uint)(int)data[2];
                 var entity_id = (uint)(int)data[3];
@@ -136,7 +165,6 @@ namespace ECS {
                     current_entity.AddComponent(newComponentData);
                 }
 
-                updatedComponents.Add(global_compotent_id);
             }
 
 
