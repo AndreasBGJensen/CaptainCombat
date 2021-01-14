@@ -12,14 +12,12 @@ namespace CaptainCombat.Source {
         }
 
 
-
-
         public static class Textures {
 
             public static readonly Texture SHIP = new Texture(Collections.GLOBAL, "ship", "Sprites/ShipRed", rotation: 180 );
             public static readonly Texture SHIP_BLUE = new Texture(Collections.GLOBAL, "ship_blue", "Sprites/ShipBlue");
             public static readonly Texture ROCK = new Texture(Collections.GLOBAL, "rock1", "Sprites/Rock1");
-            public static readonly Texture Chat = new Texture(Collections.GLOBAL, "Chat", "Sprites/chat_trans");
+            public static readonly Texture Chat = new Texture(Collections.GLOBAL, "Chat", "Sprites/scroll_trans");
             public static readonly Texture Loader = new Texture(Collections.GLOBAL, "Loader", "Sprites/loading3_trans");
             public static readonly Texture Background = new Texture(Collections.GLOBAL, "Background", "Sprites/loadingBackGround");
             public static readonly Texture Menu = new Texture(Collections.GLOBAL, "Menu", "Sprites/scroll_trans");
@@ -33,38 +31,38 @@ namespace CaptainCombat.Source {
             public static readonly Texture white_icon = new Texture(Collections.GLOBAL, "white_icon", "Sprites/white_icon");
 
             // Ships 
-            public static readonly Texture blue_ship_1 = new Texture(Collections.GLOBAL, "blue_ship_1", "Sprites/blue_ship_1");
-            public static readonly Texture blue_ship_2 = new Texture(Collections.GLOBAL, "blue_ship_2", "Sprites/blue_ship_2");
-            public static readonly Texture blue_ship_3 = new Texture(Collections.GLOBAL, "blue_ship_3", "Sprites/blue_ship_3");
-            public static readonly Texture blue_ship_4 = new Texture(Collections.GLOBAL, "blue_ship_4", "Sprites/blue_ship_4");
+            public static readonly Texture blue_ship_1 = new Texture(Collections.GLOBAL, "blue_ship_1", "Sprites/blue_ship_1", rotation: 180);
+            public static readonly Texture blue_ship_2 = new Texture(Collections.GLOBAL, "blue_ship_2", "Sprites/blue_ship_2", rotation: 180);
+            public static readonly Texture blue_ship_3 = new Texture(Collections.GLOBAL, "blue_ship_3", "Sprites/blue_ship_3", rotation: 180);
+            public static readonly Texture blue_ship_4 = new Texture(Collections.GLOBAL, "blue_ship_4", "Sprites/blue_ship_4", rotation: 180);
 
-            public static readonly Texture red_ship_1 = new Texture(Collections.GLOBAL, "red_ship_1", "Sprites/red_ship_1");
-            public static readonly Texture red_ship_2 = new Texture(Collections.GLOBAL, "red_ship_2", "Sprites/red_ship_2");
-            public static readonly Texture red_ship_3 = new Texture(Collections.GLOBAL, "red_ship_3", "Sprites/red_ship_3");
-            public static readonly Texture red_ship_4 = new Texture(Collections.GLOBAL, "red_ship_4", "Sprites/red_ship_4");
-
-
-            public static readonly Texture black_ship_1 = new Texture(Collections.GLOBAL, "black_ship_1 ", "Sprites/black_ship_1");
-            public static readonly Texture black_ship_2 = new Texture(Collections.GLOBAL, "black_ship_2 ", "Sprites/black_ship_2");
-            public static readonly Texture black_ship_3 = new Texture(Collections.GLOBAL, "black_ship_3 ", "Sprites/black_ship_3");
-            public static readonly Texture black_ship_4 = new Texture(Collections.GLOBAL, "black_ship_4 ", "Sprites/black_ship_4");
+            public static readonly Texture red_ship_1 = new Texture(Collections.GLOBAL, "red_ship_1", "Sprites/red_ship_1", rotation: 180);
+            public static readonly Texture red_ship_2 = new Texture(Collections.GLOBAL, "red_ship_2", "Sprites/red_ship_2", rotation: 180);
+            public static readonly Texture red_ship_3 = new Texture(Collections.GLOBAL, "red_ship_3", "Sprites/red_ship_3", rotation: 180);
+            public static readonly Texture red_ship_4 = new Texture(Collections.GLOBAL, "red_ship_4", "Sprites/red_ship_4", rotation: 180);
 
 
-            public static readonly Texture yellow_ship_1 = new Texture(Collections.GLOBAL, "yellow_ship_1", "Sprites/yellow_ship_1");
-            public static readonly Texture yellow_ship_2 = new Texture(Collections.GLOBAL, "yellow_ship_2", "Sprites/yellow_ship_2");
-            public static readonly Texture yellow_ship_3 = new Texture(Collections.GLOBAL, "yellow_ship_3", "Sprites/yellow_ship_3");
-            public static readonly Texture yellow_ship_4 = new Texture(Collections.GLOBAL, "yellow_ship_4", "Sprites/yellow_ship_4");
-
-            public static readonly Texture green_ship_1 = new Texture(Collections.GLOBAL, "green_ship_1", "Sprites/green_ship_1");
-            public static readonly Texture green_ship_2 = new Texture(Collections.GLOBAL, "green_ship_2", "Sprites/green_ship_2");
-            public static readonly Texture green_ship_3 = new Texture(Collections.GLOBAL, "green_ship_3", "Sprites/green_ship_3");
-            public static readonly Texture green_ship_4 = new Texture(Collections.GLOBAL, "green_ship_4", "Sprites/green_ship_4");
+            public static readonly Texture black_ship_1 = new Texture(Collections.GLOBAL, "black_ship_1 ", "Sprites/black_ship_1", rotation: 180);
+            public static readonly Texture black_ship_2 = new Texture(Collections.GLOBAL, "black_ship_2 ", "Sprites/black_ship_2", rotation: 180);
+            public static readonly Texture black_ship_3 = new Texture(Collections.GLOBAL, "black_ship_3 ", "Sprites/black_ship_3", rotation: 180);
+            public static readonly Texture black_ship_4 = new Texture(Collections.GLOBAL, "black_ship_4 ", "Sprites/black_ship_4", rotation: 180);
 
 
-            public static readonly Texture white_ship_1 = new Texture(Collections.GLOBAL, "white_ship_1", "Sprites/white_ship_1");
-            public static readonly Texture white_ship_2 = new Texture(Collections.GLOBAL, "white_ship_2", "Sprites/white_ship_2");
-            public static readonly Texture white_ship_3 = new Texture(Collections.GLOBAL, "white_ship_3", "Sprites/white_ship_3");
-            public static readonly Texture white_ship_4 = new Texture(Collections.GLOBAL, "white_ship_4", "Sprites/white_ship_4");
+            public static readonly Texture yellow_ship_1 = new Texture(Collections.GLOBAL, "yellow_ship_1", "Sprites/yellow_ship_1", rotation: 180);
+            public static readonly Texture yellow_ship_2 = new Texture(Collections.GLOBAL, "yellow_ship_2", "Sprites/yellow_ship_2", rotation: 180);
+            public static readonly Texture yellow_ship_3 = new Texture(Collections.GLOBAL, "yellow_ship_3", "Sprites/yellow_ship_3", rotation: 180);
+            public static readonly Texture yellow_ship_4 = new Texture(Collections.GLOBAL, "yellow_ship_4", "Sprites/yellow_ship_4", rotation: 180);
+
+            public static readonly Texture green_ship_1 = new Texture(Collections.GLOBAL, "green_ship_1", "Sprites/green_ship_1", rotation: 180);
+            public static readonly Texture green_ship_2 = new Texture(Collections.GLOBAL, "green_ship_2", "Sprites/green_ship_2", rotation: 180);
+            public static readonly Texture green_ship_3 = new Texture(Collections.GLOBAL, "green_ship_3", "Sprites/green_ship_3", rotation: 180);
+            public static readonly Texture green_ship_4 = new Texture(Collections.GLOBAL, "green_ship_4", "Sprites/green_ship_4", rotation: 180);
+
+
+            public static readonly Texture white_ship_1 = new Texture(Collections.GLOBAL, "white_ship_1", "Sprites/white_ship_1", rotation: 180);
+            public static readonly Texture white_ship_2 = new Texture(Collections.GLOBAL, "white_ship_2", "Sprites/white_ship_2", rotation: 180);
+            public static readonly Texture white_ship_3 = new Texture(Collections.GLOBAL, "white_ship_3", "Sprites/white_ship_3", rotation: 180);
+            public static readonly Texture white_ship_4 = new Texture(Collections.GLOBAL, "white_ship_4", "Sprites/white_ship_4", rotation: 180);
         }
 
 

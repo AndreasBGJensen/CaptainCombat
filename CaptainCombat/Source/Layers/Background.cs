@@ -56,6 +56,7 @@ namespace CaptainCombat.Source.GameLayers
             EntityUtility.CreateRock(Domain, -100, -200, 1.2, 30);
 
             // Create ship
+            /*
             {
                 Ship = new Entity(Domain);
                 Ship.AddComponent(new Transform());
@@ -66,6 +67,8 @@ namespace CaptainCombat.Source.GameLayers
                 move.RotationResistance = 0.75;
                 move.ForwardVelocity = true;
             }
+            */
+            Ship = EntityUtility.CreateShip(Domain, Connection.Instance.User_id, 1); 
         }
 
         public override void update(GameTime gameTime)

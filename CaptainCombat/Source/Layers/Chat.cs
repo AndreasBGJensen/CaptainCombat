@@ -47,12 +47,8 @@ namespace CaptainCombat.Source.GameLayers
             ChatBox = new Entity(Domain);
             ChatBox.AddComponent(new Transform());
             ChatBox.AddComponent(new Sprite(Assets.Textures.Chat, 200, 200));
-            var transform = ChatBox.GetComponent<Transform>();
-            transform.X = 200;
-            transform.Y = 200;
         }
 
-        
 
         public override void update(GameTime gameTime)
         {
@@ -73,16 +69,26 @@ namespace CaptainCombat.Source.GameLayers
                     Domain.ForMatchingEntities<Text, Transform>((entity) => {
                         entity.Delete();
                     });
+
+                    Domain.ForMatchingEntities<Sprite, Transform>((entity) =>
+                    {
+                        if (!(entity == ChatBox))
+                        {
+                            entity.Delete();
+                        }
+                    }); 
+
                     int maxDisplayedMesseges = 15;
                     var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - maxDisplayedMesseges)).Take(maxDisplayedMesseges);
                     foreach (ITuple chatMessages in LastMessages)
                     {
-
+                        EntityUtility.CreateIcon(Domain, (int)chatMessages[1]); 
                         EntityUtility.CreateMessage(Domain, (string)chatMessages[2], 0, 0, 14);
                     }
                 }
             }
             
+
             // Handles keyboard inputs 
             GetKeys();
 
@@ -150,13 +156,27 @@ namespace CaptainCombat.Source.GameLayers
 
 
             // Display messages in chat box 
+            { 
             int placement_Y = -230; 
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
-                transform.X = 360;
+                transform.X = 385;
                 transform.Y = placement_Y;
-                placement_Y += 25; 
+                placement_Y += 30; 
             });
+            }
+
+            // Display icons in chat box 
+            {
+                int placement_Y = -245;
+                Domain.ForMatchingEntities<Sprite, Transform>((entity) => {
+                    var transform = entity.GetComponent<Transform>();
+                    transform.X = 365;
+                    transform.Y = placement_Y;
+                    placement_Y += 30;
+                });
+            }
+            
 
             // Display chat box
             {
@@ -175,9 +195,17 @@ namespace CaptainCombat.Source.GameLayers
             var input = InputBox.GetComponent<Input>();
             input.Message = string.Empty;
 
+            // Display icons in chat box 
+            {
+                Domain.ForMatchingEntities<Sprite, Transform>((entity) => {
+                    var transform = entity.GetComponent<Transform>();
+                    transform.Y = -1000;
+                });
+            }
+
             // Shrink chat box
             {
-                var transform = ChatBox.GetComponent<Transform>();
+            var transform = ChatBox.GetComponent<Transform>();
             var sprite = ChatBox.GetComponent<Sprite>();
             transform.X = 580;
             transform.Y = 300;
