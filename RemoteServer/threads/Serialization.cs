@@ -19,11 +19,12 @@ namespace RemoteServer.threads
            //collector.SetCollector(new TupleCollectorParallel(creator,Connection.Instance.Space));
            collector.SetCollector(new TupleCollector(creator, Connection.Instance.Space));
            Console.WriteLine("Running...");
-           while (true)
-           {
+            while (true)
+            {
+            
 
-                collector.BeginCollect();
-                collector.PrintUpdateComponents();
+                    collector.BeginCollect();
+                    //collector.PrintUpdateComponents();
                    
             }
         }
