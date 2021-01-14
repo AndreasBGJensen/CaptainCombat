@@ -61,8 +61,10 @@ namespace CaptainCombat.Source {
         {
             List<int> fontSizes = new List<int> { 12, 14, 16, 18, 20 };
             int closest = fontSizes.OrderBy(fontSize => Math.Abs(size - fontSize)).First();
+            Font defaultFont = Assets.Fonts.PIRATE_FONT_16; 
             string assetTag = "PIRATE_FONT_"+ closest;
-            return Assets.Fonts.PIRATE_FONT_16;
+            return (Font)Asset.GetAsset(assetTag); 
+            
         }
 
     }

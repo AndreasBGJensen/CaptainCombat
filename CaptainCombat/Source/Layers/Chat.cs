@@ -1,6 +1,7 @@
 ﻿using CaptainCombat.Source.Components;
 using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
+using dotSpace.Interfaces.Space;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -64,17 +65,21 @@ namespace CaptainCombat.Source.GameLayers
                 messageInDomain++; 
             });
 
-            List<string> AllUsersMessages = ClientProtocol.GetAllUsersMessages();
-            if (messageInDomain < AllUsersMessages.Count)
+            IEnumerable<ITuple> AllUsersMessages = ClientProtocol.GetAllUsersMessages();
+            if(AllUsersMessages != null)
             {
-                Domain.ForMatchingEntities<Text, Transform>((entity) => {
-                    entity.Delete(); 
-                });
-                int maxDisplayedMesseges = 15;
-                var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - maxDisplayedMesseges)).Take(maxDisplayedMesseges); 
-                foreach (string chatMessages in LastMessages)
+                if (messageInDomain < AllUsersMessages.Count())
                 {
-                    EntityUtility.CreateMessage(Domain, chatMessages, 0, 0, 14);
+                    Domain.ForMatchingEntities<Text, Transform>((entity) => {
+                        entity.Delete();
+                    });
+                    int maxDisplayedMesseges = 15;
+                    var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - maxDisplayedMesseges)).Take(maxDisplayedMesseges);
+                    foreach (ITuple chatMessages in LastMessages)
+                    {
+
+                        EntityUtility.CreateMessage(Domain, (string)chatMessages[2], 0, 0, 14);
+                    }
                 }
             }
             
@@ -143,15 +148,6 @@ namespace CaptainCombat.Source.GameLayers
             var input = InputBox.GetComponent<Input>();
             input.Message = ChatMessage;
 
-            // Display chat box
-            { 
-            var transform = ChatBox.GetComponent<Transform>();
-            var sprite = ChatBox.GetComponent<Sprite>(); 
-            transform.X = 450;
-            transform.Y = 0;
-            sprite.Height = 700;
-            sprite.Width = 300;
-            }
 
             // Display messages in chat box 
             int placement_Y = -230; 
@@ -161,6 +157,16 @@ namespace CaptainCombat.Source.GameLayers
                 transform.Y = placement_Y;
                 placement_Y += 25; 
             });
+
+            // Display chat box
+            {
+                var transform = ChatBox.GetComponent<Transform>();
+                var sprite = ChatBox.GetComponent<Sprite>();
+                transform.X = 450;
+                transform.Y = 0;
+                sprite.Height = 700;
+                sprite.Width = 300;
+            }
         }
 
         public void Hide()

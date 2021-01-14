@@ -46,7 +46,7 @@ namespace CaptainCombat.Source.protocols
             return allUsers; 
         }
 
-        public static List<string> GetAllUsersMessages()
+        public static IEnumerable<ITuple> GetAllUsersMessages()
         {
             return DomainState.Instance.Messages; 
         }
@@ -55,7 +55,7 @@ namespace CaptainCombat.Source.protocols
         {
             Connection connecting = Connection.Instance;
             RemoteSpace space = connecting.Space;
-            space.Put("chat", message);
+            space.Put("chat", Connection.Instance.User_id, message);
         }
 
 
