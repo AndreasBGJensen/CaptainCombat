@@ -97,7 +97,7 @@ namespace CaptainCombat {
             Graphics.ApplyChanges();
 
             // Set asset loaders
-            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
+            Asset.SetLoader<Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
             });
 

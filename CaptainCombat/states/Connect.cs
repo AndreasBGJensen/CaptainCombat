@@ -14,7 +14,7 @@ namespace CaptainCombat.states
             Console.WriteLine("Start GameClient");
 
             //string uri = "tcp://127.0.0.1:5000/space?KEEP";
-            string uri = "tcp://49.12.75.251:5000/space?CONN";
+            string uri = "tcp://49.12.75.251:5000/space?KEEP";
             RemoteSpace space = new RemoteSpace(uri);
             Connection connecting = Connection.Instance;
             connecting.Space = space;
