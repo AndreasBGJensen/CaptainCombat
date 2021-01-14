@@ -18,27 +18,30 @@ namespace CaptainCombat.network
                 
                 var components = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(string));
 
+                Dictionary<uint, ulong> newIdMap = new Dictionary<uint, ulong>();
+                foreach (var pair in updateIdMap)
+                    newIdMap.Add(pair.Key, pair.Value);
+
                 List<ITuple> sortedComponents = new List<ITuple>();
                 foreach(var component in components) {
-                    var clientId = (uint)component[1];
+                    var clientId = (uint)(int)component[1];
 
                     if (clientId == Connection.Instance.User_id) continue;
 
                     var updateId = ulong.Parse((string)component[5]);
 
-                    ulong currentUpdateId;
-                    if( !updateIdMap.TryGetValue(clientId, out currentUpdateId) ){
+                    if (!updateIdMap.TryGetValue(clientId, out ulong currentUpdateId)) {
                         currentUpdateId = 0;
                     }
 
-                    if (updateId <= currentUpdateId) continue;
+                    if (updateId < currentUpdateId) continue;
 
                     sortedComponents.Add(component);
-                    updateIdMap[clientId] = updateId;
+                    newIdMap[clientId] = updateId;
                 }
 
                 DomainState.Instance.Download = sortedComponents;
-                
+                updateIdMap = newIdMap;
 
 
                 /*
