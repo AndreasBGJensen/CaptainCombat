@@ -2,8 +2,9 @@
 
 using CaptainCombat.Source.Components;
 using CaptainCombat.Source.Utility;
-using ECS;
+using Source.ECS;
 using Microsoft.Xna.Framework;
+using StaticGameLogic_Library.Source.Components;
 
 namespace CaptainCombat.Source {
 

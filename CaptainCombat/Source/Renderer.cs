@@ -1,5 +1,6 @@
 ﻿using CaptainCombat.Source.Components;
-using ECS;
+using StaticGameLogic_Library.Source.Components;
+using Source.ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;

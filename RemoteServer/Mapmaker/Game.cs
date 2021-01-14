@@ -1,10 +1,11 @@
 ﻿using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
+using RemoteServer.Mapmaker.EntityToAdd;
 using Source.ECS;
 using Source.EntityUtility;
 using StaticGameLogic_Library.JsonBuilder;
 using StaticGameLogic_Library.Singletons;
-using StaticGameLogic_Library.Source.Assets;
+using StaticGameLogic_Library.Source;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,30 +17,26 @@ namespace RemoteServer.Mapmaker
     class Game
     {
         Domain domain = new Domain();
-        
-        
-        public void CreateRocks()
+        public delegate void InitCmponent(object source, EventArgs e);
+        public event InitCmponent ComputerInit;
+
+
+        public void Init()
         {
             Connect();
             Join();
             DomainState.Instance.Domain = domain;
+            OnComputerInit();
 
 
-            EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
-            EntityUtility.CreateRock(domain, 400, -200, 1.0, 40);
-            EntityUtility.CreateRock(domain, 0, 50, 1.2, 300);
-            EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
-            EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);
-            
-            
-            domain.Clean();
-            DomainState.Instance.Upload = JsonBuilder.createJsonString();
-            Connection.Instance.Space.Put("components", DomainState.Instance.Upload);
+
+
+
         }
 
         public void Join()
         {
-            string username = "Computer_AI";
+            string username = "Genereating map...";
 
             Connection connecting = Connection.Instance;
             RemoteSpace space = connecting.Space;
@@ -74,6 +71,14 @@ namespace RemoteServer.Mapmaker
             RemoteSpace space = new RemoteSpace(uri);
             Connection connecting = Connection.Instance;
             connecting.Space = space;
+        }
+
+        protected virtual void OnComputerInit()
+        {
+            if(ComputerInit != null)
+            {
+                ComputerInit(this, EventArgs.Empty);
+            }
         }
     }
 }

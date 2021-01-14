@@ -174,6 +174,7 @@ namespace Source.ECS {
         /// </summary>
         public void ForLocalComponents(ComponentCallback callback) {
             foreach( var pair in components ) {
+                 
                 var component = pair.Value;
                 if (component.Matchable && component.ShouldSynchronize && component.IsLocal )
                     callback(component);

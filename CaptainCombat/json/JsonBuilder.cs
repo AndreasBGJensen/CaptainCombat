@@ -1,6 +1,6 @@
-﻿using CaptainCombat.game;
-using CaptainCombat.singletons;
-using ECS;
+﻿
+using StaticGameLogic_Library.Game;
+using Source.ECS;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static ECS.Domain;
+using static Source.ECS.Domain;
+using StaticGameLogic_Library.Singletons;
+using StaticGameLogic_Library.Game;
 
 namespace CaptainCombat.json
 {

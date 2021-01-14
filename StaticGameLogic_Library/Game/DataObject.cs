@@ -2,7 +2,7 @@
 
 namespace StaticGameLogic_Library.Game
 {
-    class DataObject
+    public class DataObject
     {
         public string comp;
         public int client_id;

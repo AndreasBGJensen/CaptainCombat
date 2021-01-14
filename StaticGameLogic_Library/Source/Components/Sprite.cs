@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
-using static ECS.Domain;
+using StaticGameLogic_Library.Source;
+using static Source.ECS.Domain;
 
-namespace CaptainCombat.Source.Components {
+namespace StaticGameLogic_Library.Source.Components {
 
     public class Sprite : Component {
 

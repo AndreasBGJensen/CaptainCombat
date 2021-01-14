@@ -3,13 +3,13 @@
 
 
 using Source.ECS;
-using StaticGameLogic_Library.Components;
-using taticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Components;
 using static Source.ECS.Domain;
 
 namespace Source.EntityUtility
 {
-    
+
     // Temporary (probably) utility functions
     // for constructing some simple entities
     public static class EntityUtility {

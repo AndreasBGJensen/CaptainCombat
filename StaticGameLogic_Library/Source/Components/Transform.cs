@@ -1,8 +1,9 @@
 ﻿
 using Newtonsoft.Json.Linq;
-using static ECS.Domain;
+using static Source.ECS.Domain;
 
-namespace CaptainCombat.Source.Components {
+namespace StaticGameLogic_Library.Source.Components
+{
 
     public class Transform : Component {
 

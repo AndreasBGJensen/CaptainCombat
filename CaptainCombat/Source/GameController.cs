@@ -1,4 +1,4 @@
-﻿using CaptainCombat.json;
+﻿/*using CaptainCombat.json;
 using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source;
@@ -10,9 +10,29 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Threading;
-using static ECS.Domain;
+using static ECS.Domain;*/
+
+using StaticGameLogic_Library.JsonBuilder;
+using CaptainCombat.network;
+using StaticGameLogic_Library.Singletons;
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Components;
+using StaticGameLogic_Library.Source.Utility;
+using CaptainCombat.Source.Event;
+using Source.ECS;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using System;
+using System.Threading;
+using static Source.ECS.Domain;
+using CaptainCombat.Source;
+using CaptainCombat.Source.Components;
+
+
 
 using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
+using CaptainCombat.Source.Utility;
+using Source.EntityUtility;
 
 namespace CaptainCombat
 {
@@ -24,7 +44,6 @@ namespace CaptainCombat
         private static Domain domain = new Domain();
 
         public static Camera camera;
-
 
         public static Entity ship;
 
@@ -48,7 +67,7 @@ namespace CaptainCombat
             Thread downloadThread = new Thread(new ThreadStart(download.RunProtocol));
             downloadThread.Start();
 
-            EventController.Start();
+            //EventController.Start();
 
             EventController.AddListener<HelloEvent>((e) => {
                 Console.WriteLine("HelloEvent received!");
@@ -74,11 +93,11 @@ namespace CaptainCombat
 
 
             // Create some test rocks
-            EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
+          /* EntityUtility.CreateRock(domain, 150, 100, 0.7, 120);
             EntityUtility.CreateRock(domain, 400, -200, 1.0, 40);
             EntityUtility.CreateRock(domain, 0, 50, 1.2, 300);
             EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
-            EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);
+            EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);*/
 
             // Create ship
             {
@@ -101,7 +120,7 @@ namespace CaptainCombat
 
 
             // Set asset loaders
-            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
+            Asset.SetLoader<Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
             });
 
@@ -149,7 +168,7 @@ namespace CaptainCombat
                     move.RotationAcceleration = 270;
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
-                    move.RotationAcceleration = -270;
+                    move.RotationAcceleration = -270;                                                                              
                 }
                 else {
                     move.RotationAcceleration = 0;

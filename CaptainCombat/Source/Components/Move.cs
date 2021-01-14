@@ -2,7 +2,7 @@
 
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
-using static ECS.Domain;
+using static Source.ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
 

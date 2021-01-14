@@ -1,5 +1,4 @@
 ﻿
-using StaticGameLogic_Library.Source.Assets;
 
 namespace StaticGameLogic_Library.Source
 {

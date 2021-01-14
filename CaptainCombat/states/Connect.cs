@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CaptainCombat.singletons;
+
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
+using StaticGameLogic_Library.Singletons;
 using Tuple = dotSpace.Objects.Space.Tuple;
 
 namespace CaptainCombat.states
@@ -21,7 +22,7 @@ namespace CaptainCombat.states
 
             try
             {
-                string uri = "tcp://127.0.0.1:5000/space?CONN";
+                string uri = "tcp://127.0.0.1:5000/space?KEEP";
                 //string uri = "tcp://49.12.75.251:5000/space?CONN";
                 RemoteSpace space = new RemoteSpace(uri);
                 Connection connecting = Connection.Instance;

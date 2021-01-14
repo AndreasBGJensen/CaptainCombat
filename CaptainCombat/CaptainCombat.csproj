@@ -30,4 +30,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StaticGameLogic_Library\StaticGameLogic_Library.csproj" />
+  </ItemGroup>
 </Project>

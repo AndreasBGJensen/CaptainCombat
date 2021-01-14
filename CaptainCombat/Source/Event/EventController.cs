@@ -1,6 +1,7 @@
 ﻿
-using CaptainCombat.singletons;
+
 using Newtonsoft.Json;
+using StaticGameLogic_Library.Singletons;
 using System;
 using System.Collections.Generic;
 using System.Data;

@@ -4,6 +4,7 @@ using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
 using RemoteServer.Mapmaker;
+using RemoteServer.Mapmaker.EntityToAdd;
 using RemoteServer.singletons;
 using RemoteServer.threads;
 using Tuple = dotSpace.Objects.Space.Tuple;
@@ -40,8 +41,11 @@ namespace RemoteServer
 
             
 
-            Game game = new Game();
-            game.CreateRocks();
+           Game game = new Game();
+            IEntity entity = new Rocks(100);
+            game.ComputerInit += entity.OnComputerInit;
+
+            game.Init();
 
 
             Serialization serializationProtocol = new Serialization();

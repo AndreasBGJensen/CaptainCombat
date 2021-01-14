@@ -1,6 +1,6 @@
 ﻿
 using CaptainCombat.Diagnostics;
-using CaptainCombat.singletons;
+using StaticGameLogic_Library.Singletons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
