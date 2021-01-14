@@ -26,7 +26,7 @@ namespace CaptainCombat.Source {
 
 
 
-        public static class ColliderTypes {
+        public static class ColliderTags {
             public static readonly ColliderTag PROJECTILE = new ColliderTag("projectile");
             public static readonly ColliderTag SHIP = new ColliderTag("ship");
             public static readonly ColliderTag ROCK = new ColliderTag("rock");

@@ -28,7 +28,7 @@ namespace CaptainCombat.Source {
             collider.Width = 60 * scale;
             collider.Height = 45 * scale;
             collider.Rotation = 10;
-            collider.Tag = Assets.ColliderTypes.ROCK;
+            collider.Tag = Assets.ColliderTags.ROCK;
 
             return entity;            
         }
@@ -57,7 +57,7 @@ namespace CaptainCombat.Source {
 
             cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
 
-            cannonBall.AddComponent(new CircleCollider(Assets.ColliderTypes.PROJECTILE, 10));
+            cannonBall.AddComponent(new CircleCollider(Assets.ColliderTags.PROJECTILE, 10));
 
             cannonBall.SetSyncMode(Component.SynchronizationMode.CREATE);
 

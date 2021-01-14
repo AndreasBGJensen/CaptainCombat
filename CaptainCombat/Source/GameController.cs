@@ -84,9 +84,9 @@ namespace CaptainCombat {
 
                 //ship.AddComponent(new CircleCollider(Assets.ColliderTypes.SHIP, 20));
                 var collider = ship.AddComponent(new BoxCollider());
-                collider.Width = 50;
-                collider.Height = 100;
-                //collider.ColliderType = Assets.Colliders.SHIP;
+                collider.Width = 40;
+                collider.Height = 80;
+                collider.Tag = Assets.ColliderTags.SHIP;
             }
 
             camera = new Camera(domain);
@@ -129,13 +129,14 @@ namespace CaptainCombat {
             });
 
 
-            collisionController.AddListener(Assets.ColliderTypes.ROCK, Assets.ColliderTypes.PROJECTILE, (rock, projectile) => {
+            collisionController.AddListener(Assets.ColliderTags.ROCK, Assets.ColliderTags.PROJECTILE, (rock, projectile) => {
                 Console.WriteLine("Hit rock!");
                 if (projectile.IsLocal) projectile.Delete();
                 return true;
             });
 
-            collisionController.AddListener(Assets.ColliderTypes.SHIP, Assets.ColliderTypes.PROJECTILE, (ship, projectile) => {
+            collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
+                Console.WriteLine("Ship collision!");
                 // ship.IsLocal basically checks if its the local players own ship
                 if (ship.IsLocal && !projectile.IsLocal) {
                     Collider collider = projectile.GetComponent<BoxCollider>();
