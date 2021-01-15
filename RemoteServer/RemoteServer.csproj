@@ -40,9 +40,6 @@
     <Reference Include="dotSpace, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\dotSpace.1.0.8\lib\net452\dotSpace.dll</HintPath>
     </Reference>
-    <Reference Include="MersenneTwister, Version=1.0.7081.25709, Culture=neutral, PublicKeyToken=9c84633ec57842f3, processorArchitecture=MSIL">
-      <HintPath>..\packages\MersenneTwister.1.0.6\lib\portable-net45+netcore45+win8+wp8\MersenneTwister.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -65,7 +62,6 @@
     <Compile Include="Mapmaker\EntityToAdd\IEntity.cs" />
     <Compile Include="Mapmaker\EntityToAdd\Rocks.cs" />
     <Compile Include="Mapmaker\Game.cs" />
-    <Compile Include="Mapmaker\Util\RandomFloatGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="singletons\Connection.cs" />
@@ -77,9 +73,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSES-MersenneTwister.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StaticGameLogic_Library\StaticGameLogic_Library.csproj">

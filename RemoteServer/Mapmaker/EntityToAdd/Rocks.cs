@@ -1,83 +1,53 @@
-﻿using RemoteServer.Mapmaker.Util;
-using Source.EntityUtility;
+﻿using Source.EntityUtility;
 using StaticGameLogic_Library.JsonBuilder;
 using StaticGameLogic_Library.Singletons;
 using StaticGameLogic_Library.Source.ECS;
+using StaticGameLogic_Library.Source;
 using System;
 using System.Collections.Generic;
-
 
 namespace RemoteServer.Mapmaker.EntityToAdd
 {
     class Rocks : IEntity
     {
-        private int numberOfRocks;
+        private int numRocks;
 
-        public Rocks(int numberOfIslands)
+        public Rocks(int numRocks)
         {
-            this.numberOfRocks = numberOfIslands;
+            this.numRocks = numRocks;
         }
 
         public void OnComputerInit()
         {
-            Domain domain = DomainState.Instance.Domain;
-            RockElement rockElementContainer = new RockElement();
-
-            int tries;
-
-           /* for(int i = 0; i < numberOfIslands; i++)
-            {
-                tries = 5;
+            
+            for (int i = 0; i < numRocks; i++)
+            {   
                 RockElement rock = new RockElement();
+                double x        = RandomGenerator.Double(-750, 750.0);
+                double y        = RandomGenerator.Double(-750, 750.0);
+                double scale    = RandomGenerator.Double(0.25, 2.5);
+                double rotation = RandomGenerator.Double(0, 360);
+
                 do
                 {
-                    tries--;
-                    double x = RandomFloatGenerator.GiveRandomeDouble(-10000, 10000.0);
-                    double y = RandomFloatGenerator.GiveRandomeDouble(-10000, 10000.0);
-                    double scale = RandomFloatGenerator.GiveRandomeDouble(0.1, 10);
-                    double rotation = RandomFloatGenerator.GiveRandomeDouble(0, 360);
+                    // TODO: Improve this distribution algorithm
+                    x += 10;
+                    y += 10;
                     rock.SetAttributes(x, y, scale, rotation);
+                } while (!rock.CheckDistance());
 
-                    if (tries == 0) break;
-                } while (rock.CompareTo(rock) == 1);
+                RockElement.all.Add(rock);
+            }
 
-                if (tries != 0) { 
-                    rock.Add(rock);
-               }
-            }*/
 
-           for (int i = 0; i < numberOfRocks; i++)
-           {     
-                RockElement rock = new RockElement();
-                double x        = RandomFloatGenerator.GiveRandomeDouble(-1000, 1000.0);
-                double y        = RandomFloatGenerator.GiveRandomeDouble(-1000, 1000.0);
-                double scale    = RandomFloatGenerator.GiveRandomeDouble(0.1, 5);
-                double rotation = RandomFloatGenerator.GiveRandomeDouble(0, 360);
 
-                x += 10;
-                y += 10;
+            Domain domain = DomainState.Instance.Domain;
 
-                rock.SetAttributes(x, y, scale, rotation);
-
-                //do
-                //{
-                   
-                    
-                //} while (rock.CompareTo(rock) == 1);
-        
-                rock.Add(rock);
-           }
-
-            foreach (RockElement rockElement in RockElement.rockElements)
+            foreach (RockElement rockElement in RockElement.all)
             {
                 EntityUtility.CreateRock(domain, rockElement.x, rockElement.y, rockElement.scale, rockElement.rotation);
             }
-            Console.WriteLine(String.Format("Number of Rocks: {0}", RockElement.rockElements.Count));
-            /*EntityUtility.CreateRock(domain, 50, 100, 0.7, 120);
-            EntityUtility.CreateRock(domain, 50, -200, 1.0, 40);
-            EntityUtility.CreateRock(domain, 50, 50, 1.2, 300);
-            EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
-            EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);*/
+            Console.WriteLine(String.Format("Number of Rocks: {0}", RockElement.all.Count));
 
             domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
@@ -85,9 +55,9 @@ namespace RemoteServer.Mapmaker.EntityToAdd
         }
 
 
-        class RockElement : IComparable<RockElement>
+        class RockElement
         {
-            public static List<RockElement> rockElements = new List<RockElement>();
+            public static List<RockElement> all = new List<RockElement>();
             public double x { get; set; }
             public double y { get; set; }
             public double scale { get; set; }
@@ -95,9 +65,6 @@ namespace RemoteServer.Mapmaker.EntityToAdd
 
             private int margin = 30;
 
-            public RockElement()
-            {
-            }
 
             public void SetAttributes(double x, double y, double scale, double rotation)
             {
@@ -107,89 +74,40 @@ namespace RemoteServer.Mapmaker.EntityToAdd
                 this.rotation = rotation;
             }
 
-             public int CompareTo(RockElement other)
-             {
-                 foreach (RockElement rock in rockElements)
-                 {
 
-                     if(other.x< rock.x) { 
-                         if ((other.x + (other.scale * other.margin)) > (rock.x - (rock.scale * rock.margin)))
-                         {
-                             if (((other.y + (other.scale * other.margin)) > (rock.y - (rock.scale * rock.margin))) ||
-                             ((other.y - (other.scale * other.margin)) < (rock.y + (rock.scale * rock.margin))))
-                             {
-                                 return 1;
-                             }
-
-
-                         }
-                     }
-
-                     if (other.x > rock.x) { 
-                         if ((other.x - (other.scale * other.margin)) < (rock.x + (rock.scale * rock.margin)))
-                         {
-                             if (((other.y + (other.scale * other.margin)) > (rock.y - (rock.scale * rock.margin))) ||
-                             ((other.y - (other.scale * other.margin)) < (rock.y + (rock.scale * rock.margin))))
-                             {
-                                 return 1;
-                             }
-                         }
-                     }
-                 }
-                 return 0;
-             }
-
-            /*public int CompareTo(RockElement other)
+            public bool CheckDistance ()
             {
-                
-                Parallel.ForEach(rockElements, (rock) =>
+                foreach (RockElement rock in all)
                 {
-                   
-                    if (other.x < rock.x)
-                    {
-                        if ((other.x + (other.scale * other.margin)) > (rock.x - (rock.scale * rock.margin)))
+
+                    if(x< rock.x) { 
+                        if ((x + (scale * margin)) > (rock.x - (rock.scale * rock.margin)))
                         {
-                            if (((other.y + (other.scale * other.margin)) > (rock.y - (rock.scale * rock.margin))) ||
-                            ((other.y - (other.scale * other.margin)) < (rock.y + (rock.scale * rock.margin))))
+                            if (((y + (scale * margin)) > (rock.y - (rock.scale * rock.margin))) ||
+                            ((y - (scale * margin)) < (rock.y + (rock.scale * rock.margin))))
                             {
-                                result = 1;
+                            return false;
                             }
 
 
                         }
                     }
-                    else
-                    {
-                        result = 0;
-                    }
 
-                    if (other.x > rock.x)
-                    {
-                        if ((other.x - (other.scale * other.margin)) < (rock.x + (rock.scale * rock.margin)))
+                    if (x > rock.x) { 
+                        if ((x - (scale * margin)) < (rock.x + (rock.scale * rock.margin)))
                         {
-                            if (((other.y + (other.scale * other.margin)) > (rock.y - (rock.scale * rock.margin))) ||
-                            ((other.y - (other.scale * other.margin)) < (rock.y + (rock.scale * rock.margin))))
+                            if (((y + (scale * margin)) > (rock.y - (rock.scale * rock.margin))) ||
+                            ((y - (scale * margin)) < (rock.y + (rock.scale * rock.margin))))
                             {
-                                result = 1;
+                                return false;
                             }
                         }
                     }
-                    else
-                    {
-                        result = 0;
-                    }
-                });
-                return result;
-            }*/
-
-           
-
-            public void Add(RockElement rock)
-            {
-                rockElements.Add(rock);
+                }
+                 
+                return true;
             }
-
-            
+           
         }
     }
 }

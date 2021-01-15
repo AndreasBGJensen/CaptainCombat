@@ -39,34 +39,6 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void init()
         {
-
-            // Create some test rocks
-            int xOffset = -40;
-            int yOffset = -70;
-            EntityUtility.CreateMessage(Domain, "Tortuga", 150 + xOffset, 100 + yOffset, 12);
-            EntityUtility.CreateRock(Domain, 150, 100, 0.7, 120);
-            EntityUtility.CreateMessage(Domain, "Port Royal", 400 + xOffset, -200 + yOffset, 12);
-            EntityUtility.CreateRock(Domain, 400, -200, 1.0, 40);
-            EntityUtility.CreateMessage(Domain, "Barataria Bay", 0 + xOffset, 50 + yOffset, 12);
-            EntityUtility.CreateRock(Domain, 0, 50, 1.2, 300);
-            EntityUtility.CreateMessage(Domain, "Clew Bay", -300 + xOffset, 75 + yOffset, 12);
-            EntityUtility.CreateRock(Domain, -300, 75, 1.4, 170);
-            EntityUtility.CreateMessage(Domain, "New Providence", -100 + xOffset, -200 + yOffset, 12);
-            EntityUtility.CreateRock(Domain, -100, -200, 1.2, 30);
-
-            // Create ship
-            /*
-            {
-                Ship = new Entity(Domain);
-                Ship.AddComponent(new Transform());
-                Ship.AddComponent(new Sprite(Assets.Textures.SHIP, 66, 113));
-
-                var move = Ship.AddComponent(new Move());
-                move.Resistance = 0.25;
-                move.RotationResistance = 0.75;
-                move.ForwardVelocity = true;
-            }
-            */
             Ship = EntityUtility.CreateShip(Domain, Connection.Instance.User_id, 1); 
         }
 

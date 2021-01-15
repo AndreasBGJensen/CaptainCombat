@@ -5,7 +5,7 @@ using dotSpace.Objects.Space;
 using RemoteServer.Mapmaker;
 using RemoteServer.threads;
 using StaticGameLogic_Library.Singletons;
-using Tuple = dotSpace.Objects.Space.Tuple;
+
 
 namespace RemoteServer
 {
