@@ -112,12 +112,7 @@ namespace CaptainCombat.Source.Components {
         /// Constructs the Points
         /// </summary>
         public void CalculatePoints(Transform transform) {
-            // TODO: Clean this up this method
-
             Matrix matrix = Matrix.CreateRotation(Rotation + transform.Rotation) * Matrix.CreateTranslation(transform.Position);
-
-            //  Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(box.Rotation + transform.Rotation))))
-            //* Matrix.CreateTranslation((float)transform.Position.X, (float)transform.Position.Y, 0);
 
             float halfWidth = (float)(Width / 2.0);
             float halfHeight = (float)(Height / 2.0);
@@ -125,12 +120,7 @@ namespace CaptainCombat.Source.Components {
             Points.a = new Vector(-halfWidth, -halfHeight) * matrix;
             Points.b = new Vector( halfWidth,  -halfHeight) * matrix;
             Points.c = new Vector( halfWidth,   halfHeight) * matrix;
-            Points.c = new Vector(-halfWidth,  halfHeight) * matrix;
-
-            //box.Points.a = Vector2.Transform(new Vector2(-halfWidth, -halfHeight), matrix);
-            //box.Points.b = Vector2.Transform(new Vector2(halfWidth, -halfHeight), matrix);
-            //box.Points.c = Vector2.Transform(new Vector2(halfWidth, halfHeight), matrix);
-            //box.Points.d = Vector2.Transform(new Vector2(-halfWidth, halfHeight), matrix);
+            Points.d = new Vector(-halfWidth,  halfHeight) * matrix;
         }
     }
 

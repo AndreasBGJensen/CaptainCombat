@@ -235,7 +235,7 @@ namespace CaptainCombat.Source {
             const float err = 0.001f;
             if (crossProduct > err)
                 return false;
-
+             
             var dotProduct = ba.Dot(pa);
             if (dotProduct < 0)
                 return false;

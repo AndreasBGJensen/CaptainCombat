@@ -11,7 +11,7 @@ namespace RemoteServer
 {
     class Program
     {
-        private static bool test_mode = false;
+        private static bool test_mode = true;
         static GlobalInfo info = new GlobalInfo();
         static void Main(string[] args)
         {

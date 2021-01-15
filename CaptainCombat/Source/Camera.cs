@@ -29,20 +29,12 @@ namespace CaptainCombat.Source {
 
 
         public Matrix GetMatrix() {
-            // TODO: Cleanup this method
-            //var translation = Matrix.CreateTranslation(-(float)transform.Position.X, -(float)transform.Position.Y, 0);
-            //var rotation = Matrix.CreateRotationZ((float)(transform.Rotation * Math.PI / 180.0));
-            //var zoom = Matrix.CreateScale((float)transform.ScaleX, (float)transform.ScaleX, 1.0f);
             var translation = Matrix.CreateTranslation(-transform.Position);
             var rotation = Matrix.CreateRotation(transform.Rotation);
             var zoom = Matrix.CreateScale(transform.ScaleX, transform.ScaleY);
 
-
-            //var center = Matrix.CreateTranslation((float)GameController.Graphics.PreferredBackBufferWidth / 2.0f, (float)GameController.Graphics.PreferredBackBufferHeight / 2.0f, 0);
-
             var center = Matrix.CreateTranslation(GameController.Graphics.PreferredBackBufferWidth / 2.0f, GameController.Graphics.PreferredBackBufferHeight / 2.0f);
 
-            // Matrix multiplication order is reversed
             return translation * zoom * rotation * center;
         }
 
