@@ -6,9 +6,8 @@ namespace CaptainCombat.Source.Components {
 
     public class Transform : Component {
 
-        public double X { get; set; } = 0;
-        public double Y { get; set; } = 0;
-
+        public Vector Position;
+        
         // Should be checked for negative scale
         private double scaleX = 1.0;
         public double ScaleX {
@@ -35,26 +34,15 @@ namespace CaptainCombat.Source.Components {
             }
         }
 
-        public override object getData()
-        {
-            var obj = new {
-                X = this.X,
-                Y = this.Y,
-                ScaleX = this.ScaleX,
-                ScaleY = this.ScaleY,
-                Rotation = this.Rotation
-            };
-            return obj;
+
+        public override void OnUpdate(Component component) {
+            var c = (Transform)component;
+            Position = c.Position;
+            ScaleX = c.ScaleX;
+            ScaleY = c.ScaleY;
+            Rotation = c.Rotation;
         }
 
-        public override void update(JObject json)
-        {
-            this.X = (double)json.SelectToken("X"); 
-            this.Y = (double)json.SelectToken("Y");
-            this.ScaleX = (double)json.SelectToken("ScaleX");
-            this.ScaleY = (double)json.SelectToken("ScaleY");
-            this.Rotation = (double)json.SelectToken("Rotation");
-        }
     }
 
 }

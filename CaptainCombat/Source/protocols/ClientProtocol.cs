@@ -16,18 +16,12 @@ namespace CaptainCombat.Source.protocols
         public static void Connect()
         {
             Console.WriteLine("Connected to server");
-            try
-            {
-                string uri = "tcp://127.0.0.1:5000/space?CONN";
-                //string uri = "tcp://49.12.75.251:5000/space?CONN";
-                RemoteSpace space = new RemoteSpace(uri);
-                Connection connecting = Connection.Instance;
-                connecting.Space = space;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+
+            string uri = "tcp://127.0.0.1:5000/space?KEEP";
+            //string uri = "tcp://49.12.75.251:5000/space?KEEP";
+            RemoteSpace space = new RemoteSpace(uri);
+            Connection connecting = Connection.Instance;
+            connecting.Space = space;
         }
 
         public static List<string> GetAllUsers()
@@ -73,20 +67,13 @@ namespace CaptainCombat.Source.protocols
         public static void Join(string username)
         {
             Console.WriteLine("Enter game");
-            try
-            {
-                Connection connecting = Connection.Instance;
-                RemoteSpace space = connecting.Space;
-                space.Put("user", username);
-                Tuple results = (Tuple)space.Get("connected", typeof(int), typeof(string));
-                Console.WriteLine(results[2]);
-                Connection.Instance.User = username;
-                Connection.Instance.User_id = (int)results[1];
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            Connection connecting = Connection.Instance;
+            RemoteSpace space = connecting.Space;
+            space.Put("user", username);
+            Tuple results = (Tuple)space.Get("connected", typeof(int), typeof(string));
+            Console.WriteLine(results[2]);
+            Connection.Instance.User = username;
+            Connection.Instance.User_id = (int)results[1];
         }
 
         public static void AddClientScoreToServer(int clientScore)

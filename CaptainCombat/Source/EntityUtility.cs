@@ -19,15 +19,51 @@ namespace CaptainCombat.Source {
             var entity = new Entity(domain);
 
             var transform = entity.AddComponent(new Transform());
-            transform.X = x;
-            transform.Y = y;
+            transform.Position = new Vector(x, y);
             transform.ScaleX = scale;
             transform.ScaleY = scale;
             transform.Rotation = rotation;
 
             entity.AddComponent(new Sprite(Assets.Textures.ROCK, 100, 100));
 
+            var collider = entity.AddComponent(new BoxCollider());
+            collider.Width = 60 * scale;
+            collider.Height = 45 * scale;
+            collider.Rotation = 10;
+            collider.Tag = Assets.ColliderTags.ROCK;
+
+            entity.SetSyncMode(Component.SynchronizationMode.NONE);
+
             return entity;            
+        }
+
+
+        public static Entity FireCannonBall(Entity player) {
+
+            var playerTransform = player.GetComponent<Transform>();
+
+            var cannonBall = new Entity(player.Domain);
+
+            var transform = cannonBall.AddComponent(new Transform());
+
+            var playerPosition = playerTransform.Position;
+            transform.Position = playerPosition + Vector.CreateDirection(playerTransform.Rotation) * 30;
+            transform.Rotation = playerTransform.Rotation + 90;
+            
+            var move = cannonBall.AddComponent(new Move());
+            move.ForwardVelocity = true;
+            move.Velocity = new Vector(500, 0);
+
+            var projectile = cannonBall.AddComponent(new Projectile());
+
+            cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
+
+            cannonBall.AddComponent(new CircleCollider(Assets.ColliderTags.PROJECTILE, 10));
+
+            cannonBall.SetSyncMode(Component.SynchronizationMode.CREATE);
+            projectile.SyncMode = Component.SynchronizationMode.NONE;
+
+            return null;
         }
 
         public static Entity CreateMessage(Domain domain, string message, double x, double y, int size)
@@ -35,8 +71,8 @@ namespace CaptainCombat.Source {
             var entity = new Entity(domain);
 
             var transform = entity.AddComponent(new Transform());
-            transform.X = x;
-            transform.Y = y;
+            transform.Position.X = x;
+            transform.Position.Y = y;
 
             entity.AddComponent(new Text(getFont(size), message));
 
@@ -48,8 +84,8 @@ namespace CaptainCombat.Source {
             var entity = new Entity(domain);
 
             var transform = entity.AddComponent(new Transform());
-            transform.X = x;
-            transform.Y = y;
+            transform.Position.X = x;
+            transform.Position.Y = y;
 
             entity.AddComponent(new Input(getFont(size), message));
 

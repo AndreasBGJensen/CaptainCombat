@@ -2,16 +2,14 @@
 using CaptainCombat.Source.Utility;
 using dotSpace.Interfaces.Space;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.Reflection;
 
-namespace ECS {
 
+namespace ECS {
 
     public class Domain {
 
@@ -22,18 +20,36 @@ namespace ECS {
         // List of entities registered and finalized in this domain
         public readonly List<Entity> entities = new List<Entity>();
 
-        // List of entities that has been registered, but not finalized yet
+        // List of entities that has been registered, but not commited yet
         // They will be finalized (added to entities list), when domain is
         // cleaned
         private readonly List<Entity> entitiesToAdd = new List<Entity>();
 
-
         private readonly ConcurrentDictionary<GlobalId, Entity> registeredEntities = new ConcurrentDictionary<GlobalId, Entity>();
 
         // Mapping of component ids to components
-        private readonly ConcurrentDictionary<GlobalId, Component> components = new ConcurrentDictionary<GlobalId, Component>();
+        private readonly ConcurrentDictionary<GlobalId, Component> registeredComponents = new ConcurrentDictionary<GlobalId, Component>();
 
         public delegate void EntityCallback(Entity e);
+
+
+        public Entity GetEntity(GlobalId id) {
+            Entity entity;
+            var found = registeredEntities.TryGetValue(id, out entity);
+            return found ? entity : null;
+        }
+
+        
+        /// <summary>
+        /// Runs the given callback for all entities in the Domain, which
+        /// has been committed
+        /// </summary>
+        /// <param name="callback"></param>
+        public void ForAllEntities(EntityCallback callback) {
+            foreach( var entity in entities ) {
+                callback(entity);
+            }
+        }
 
 
         /// <summary>
@@ -49,7 +65,7 @@ namespace ECS {
                 bool match = true;
                 foreach (var type in componentTypes) {
                     var component = entity.GetComponent(type);
-                    if (component == null || !component.Matchable) {
+                    if (component == null || !component.Commited) {
                         match = false;
                         break;
                     }
@@ -73,72 +89,105 @@ namespace ECS {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3) }, callback);
         }
 
+
         public void ForMatchingEntities<C1, C2, C3, C4>(EntityCallback callback) where C1 : Component where C2 : Component where C3 : Component where C4 : Component {
             ForMatchingEntities(new Type[] { typeof(C1), typeof(C2), typeof(C3), typeof(C4) }, callback);
         }
 
-        public void update(IEnumerable<ITuple> gameData)
-        {
-            //Console.WriteLine("Run update");
-            // ITuple data format (string)comp, (int)client_id, (int)component_id, (int)entity_id, (string)data);
-            
-            foreach (ITuple data in gameData)
-            {
+
+        public Dictionary<uint, ulong> updateIdMap = new Dictionary<uint, ulong>();
+
+        public void update(IEnumerable<ITuple> gameData) {
+
+            // TODO: Clean up this method
+
+            HashSet<GlobalId> updatedComponents = new HashSet<GlobalId>();
+
+            Dictionary<uint, ulong> newIdMap = new Dictionary<uint, ulong>();
+            foreach (var pair in updateIdMap)
+                newIdMap.Add(pair.Key, pair.Value);
+
+            List<ITuple> sortedComponents = new List<ITuple>();
+            foreach (var component in gameData) {
+                var clientId = (uint)(int)component[1];
+
+                if (clientId == Connection.Instance.User_id) continue;
+
+                var componentId = (uint)(int)component[2];
+                var updateId = ulong.Parse((string)component[5]);
+
+                updatedComponents.Add(new GlobalId(clientId, componentId));
+
+                if (!updateIdMap.TryGetValue(clientId, out ulong currentUpdateId)) {
+                    currentUpdateId = 0;
+                }
+
+                if (updateId <= currentUpdateId) continue;
+
+                sortedComponents.Add(component);
+                newIdMap[clientId] = updateId;
+            }
+
+            updateIdMap = newIdMap;
+
+            foreach (ITuple data in sortedComponents) {
                 var client_id = (uint)(int)data[1];
                 var component_id = (uint)(int)data[2];
                 var entity_id = (uint)(int)data[3];
 
-                //Console.WriteLine("Test");
                 if (Connection.Instance.User_id == client_id)
-                {
-                    //Console.WriteLine("Skip"); 
-                    continue; 
-                }
+                    continue;
 
-                //Console.WriteLine(data);
-
-                Entity current_entity = null;
-               
                 GlobalId global_entity_id = new GlobalId(client_id, entity_id); 
 
+                Entity current_entity;
                 if (registeredEntities.ContainsKey(global_entity_id))
                 {
-                    //Console.WriteLine("Entity found in domain");
                     current_entity = registeredEntities[global_entity_id]; 
                 }
                 else
                 {
-                    //Console.WriteLine("Entity not found in domain create new entity");
                     current_entity = new Entity(this, global_entity_id); 
                 }
 
                 GlobalId global_compotent_id = new GlobalId(client_id, component_id);
-                Component current_compotent = null;
 
-                if (components.ContainsKey(global_compotent_id))
-                {
-                    //Console.WriteLine("Component already exists in domain");
-                    current_compotent = components[global_compotent_id];
-                    current_compotent.update((JObject)JsonConvert.DeserializeObject((string)data[4])); 
+                var componentTypeIdentifier = (string)data[0];
+                var newComponentData = Component.CreateComponentFromJson(componentTypeIdentifier, (string)data[4]);
+                
+                if (registeredComponents.ContainsKey(global_compotent_id)) {
+                    if( newComponentData.SyncMode == Component.SynchronizationMode.UPDATE ) {
+                        var currentComponent = registeredComponents[global_compotent_id];
+                        currentComponent.Update(newComponentData);
+                    }
                 }
                 else
                 {
-                    //Console.WriteLine("New component added to entity in domain");
                     // Create new component
-                    var componentTypeIdentifier = (string)data[0];
-                    current_compotent = Component.CreateComponent(componentTypeIdentifier);
-
-                    current_compotent.Id = global_compotent_id;
-
-                    current_entity.AddComponent(current_compotent, current_compotent.GetType());
+                    current_entity.AddComponent(newComponentData);
                 }
 
-                // Update Component data to new data
-                var componentJsonData = (string)data[4];
-                current_compotent.update((JObject)JsonConvert.DeserializeObject(componentJsonData));
             }
 
+
+            // Clean up remote components that no longer exists
+            foreach(var pair in registeredComponents) {
+                var id = pair.Key;
+
+                // Skip local components
+                if (id.clientId == Connection.Instance.User_id) continue;
+
+                // Component was updated, so it still exists
+                if (updatedComponents.Contains(id)) continue;
+                
+                // Component no longer exists remotely, so we delete it
+                var component = pair.Value;
+                component.Delete();                
+            }
         }
+
+
+
 
         public void Clean() {
 
@@ -152,8 +201,9 @@ namespace ECS {
             List<Entity> entitiesToRemove = new List<Entity>();
             foreach (var entity in entities) {
                 bool shouldBeRemoved = entity.Clean();
-                if (shouldBeRemoved)
+                if (shouldBeRemoved) {
                     entitiesToRemove.Add(entity);
+                }
             }
 
             // Remove entities
@@ -172,9 +222,9 @@ namespace ECS {
         /// that they are finalized)
         /// </summary>
         public void ForLocalComponents(ComponentCallback callback) {
-            foreach( var pair in components ) {
+            foreach( var pair in registeredComponents ) {
                 var component = pair.Value;
-                if (component.Matchable && component.ShouldSynchronize && component.IsLocal )
+                if (component.Commited && component.IsLocal )
                     callback(component);
             }
         }
@@ -182,9 +232,9 @@ namespace ECS {
 
 
         private GlobalId registerComponent<C>(C component, GlobalId id) where C : Component {
-            if (components.ContainsKey(id))
+            if (registeredComponents.ContainsKey(id))
                 throw new ArgumentException("Component already exists with given ID");
-            components[id] = component;
+            registeredComponents[id] = component;
             return id;
         }
 
@@ -195,12 +245,10 @@ namespace ECS {
 
         
         private void unregisterComponent(Component component) {
-            componentIdGenerator.Release(component.Id.objectId);
-            
-            if (!components.TryRemove(component.Id, out _)){
-                throw new InvalidOperationException("Component id doesn`t exit"); 
+            componentIdGenerator.Release(component.Id.objectId);   
+            if (!registeredComponents.TryRemove(component.Id, out _)){
+                throw new InvalidOperationException("Component id does not exit"); 
             }
-            //components.Remove(component.Id);
         }
 
 
@@ -224,37 +272,47 @@ namespace ECS {
         public class Entity {
 
             public Domain Domain { get; }
+
             public GlobalId Id { get; }
 
             public uint ClientId { get => Id.clientId; }
 
             public bool Deleted { get; private set; }
 
+            public bool IsLocal { get => Id.clientId == Connection.Instance.User_id; }
+
+            // If true, it signals that the component should delete itself
+            // the next time it is cleaned
             private bool shouldBeDeleted = false;
 
+            /// <summary>
+            /// Dictionary of ALL components within this Entity, including components
+            /// that are about to be added and removed
+            /// </summary>
             private Dictionary<Type, Component> components = new Dictionary<Type, Component>();
 
             // List of components that were added since last clean
-            public readonly List<Component> newComponents = new List<Component>();
+            public readonly List<Component> componentsToAdd = new List<Component>();
 
-            private readonly Dictionary<Type, Component> componentsToRemove = new Dictionary<Type, Component>();
+            private readonly HashSet<Type> componentsToRemove = new HashSet<Type>();
 
 
             /// <summary>
-            /// Construct a new Entity within the given Domain
+            /// Create an Entity within the Domain with the
+            /// local Client's ID and a new, unique object id
             /// </summary>
             /// <param name="domain"></param>
-            public Entity(Domain domain, uint clientId = 0) {
+            public Entity(Domain domain) {
                 Domain = domain;
-
                 // Get local client id if clientId is set to 0
-                clientId = clientId == 0 ? (uint) Connection.Instance.User_id : clientId;
-                Id = domain.registerEntity(this, clientId);
+                Id = domain.registerEntity(this, (uint)Connection.Instance.User_id);
             }
 
 
             /// <summary>
-            /// Construct a new Entity within the given Domain
+            /// Creates am new Entity within the given Domain, that has a predefined ID
+            /// This may eventually throw an exception in case an Entity with
+            /// the given ID already exists, when the Entity is commited
             /// </summary>
             /// <param name="domain"></param>
             public Entity(Domain domain, GlobalId id) {
@@ -264,32 +322,80 @@ namespace ECS {
 
 
             /// <summary>
-            /// Construct a new Component of the given Type, and bind it to the Entity.
-            /// Only one Component of each type can be bound to an Entity
-            /// The new Component will not partake in Entity matching in the Domain,
-            /// before the Domain has been cleaned.
+            /// Adds the given Component to this Entity
+            /// The Entity will not partake in matches, before the Entity
+            /// has been cleaned.
             /// </summary>
-            /// <typeparam name="C">Class which inherits the Component class</typeparam>
-            /// <param name="constructionArguments">List of arguments for constructor (excluding the first Entity argument)</param>
-            /// <returns>The newly construct Component</returns>
-            public C AddComponent<C>(C component) where C : Component {
-                AddComponent(component, typeof(C));
-                return component;
+            /// <param name="component">Component to add to this Entity</param>
+            /// <returns>The same object that was passed to the function</returns>
+            public T AddComponent<T>(T component) where T : Component {
+                // This method is just a wrapper, to allow the return
+                // of the component in its actual type rather than the
+                // base Component class
+                return (T) AddComponent((Component)component);
             }
 
 
-            public Component AddComponent(Component component, Type type) {
+            /// <summary>
+            /// Adds the given Component to this Entity
+            /// The Entity will not partake in matches, before the Entity
+            /// has been cleaned.
+            /// </summary>
+            /// <param name="component">Component to add to this Entity</param>
+            /// <returns>The same object that was passed to the function</returns>
+            public Component AddComponent(Component component) {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
+
+                var type = component.GetType();
 
                 if (components.ContainsKey(type))
                     throw new InvalidOperationException($"Entity already has component {type.Name}");
 
                 component.Entity = this;
 
-                newComponents.Add(component);
+                componentsToAdd.Add(component);
                 components.Add(type, component);
 
                 return component;
+            }
+
+
+            public void RemoveComponent(Component component) {
+                var type = component.GetType();
+                Component matched;
+                var found = components.TryGetValue(type, out matched);
+                if( !found )
+                    throw new NullReferenceException($"Entity does not have component of type '{type.Name}'");
+                if( matched != component )
+                    throw new NullReferenceException($"Entity's component of type '{type.Name}' does not match provided argument");
+                RemoveComponent(type);
+            }
+
+
+            public void RemoveComponent<C>() where C : Component {
+                RemoveComponent(typeof(C));
+            }
+
+
+            public void RemoveComponent(Type type) {
+                if (Deleted) throw new InvalidOperationException("Entity has been deleted");
+
+                if ( !components.ContainsKey(type) )
+                    throw new NullReferenceException($"Entity does not have component of type '{type.Name}'");
+                              
+                componentsToRemove.Add(type);
+            }
+
+
+            /// <summary>
+            /// Sets the SyncMode for all Components that has been added to
+            /// this Entity. The Entity does not have to be cleaned, after
+            /// adding components for this to take effect on the newly added
+            /// components.
+            /// </summary>
+            public void SetSyncMode(Component.SynchronizationMode syncMode) {
+                foreach (var component in components)
+                    component.Value.SyncMode = syncMode;
             }
 
 
@@ -331,51 +437,65 @@ namespace ECS {
             /// Not recommend to call this function manually (Domain calls it
             /// when its cleaned.
             /// </summary>
+            /// <returns>True if the Entity was deleted</returns>
             public bool Clean() {
                 if (Deleted) throw new InvalidOperationException("Entity has been deleted");
 
+                bool deleted;
                 if (shouldBeDeleted) {
+                    // Unregister all components before deletion
                     foreach (var pair in components)
                         Domain.unregisterComponent(pair.Value);
                     Deleted = true;
-                    return true;
+                    deleted = true;
                 }
                 else {
-                    foreach (var component in newComponents)
-                        component.Matchable = true;
+                    // Create new components
+                    foreach (var component in componentsToAdd)
+                        component.Commited = true;
 
-                    foreach (var pair in componentsToRemove) {
-                        components.Remove(pair.Key);
-                        Domain.unregisterComponent(pair.Value);
+                    // Delete components
+                    foreach (var componentType in componentsToRemove) {
+                        var component = components[componentType];
+                        components.Remove(componentType);
+                        Domain.unregisterComponent(component);
                     }
-                    return false;
+                    deleted = false;
                 }
+
+                componentsToAdd.Clear();
+                componentsToRemove.Clear();
+
+                return deleted;
             }
+
         }
 
 
-        public void MakeGlobal() {
-            foreach (var pair in components) {
-                pair.Value.ShouldSynchronize = false;
-            }
-        }
+        //public void MakeGlobal() {
+        //    foreach (var pair in components) {
+        //        pair.Value.ShouldSynchronize = false;
+        //    }
+        //}
 
-        public void MakeLocal() {
-            foreach( var pair in components ) {
-                pair.Value.ShouldSynchronize = true;
-            }
-        }
+
+        //public void MakeLocal() {
+        //    foreach( var pair in components ) {
+        //        pair.Value.ShouldSynchronize = true;
+        //    }
+        //}
 
 
         // ========================================================================================================================================================= 
-
         public abstract class Component {
 
-
-
+            [JsonIgnore]
             private Entity entity = null;
+            [JsonIgnore]
             public Entity Entity { 
                 get => entity;
+                
+                // Assign the component to the Entity
                 set {
                     if (entity != null)
                         throw new ArgumentException("Component already been assigned to an Entity");
@@ -396,6 +516,7 @@ namespace ECS {
                 }
             }
 
+            [JsonIgnore]
             public Domain Domain { get; private set; }
 
             private GlobalId id;
@@ -408,34 +529,39 @@ namespace ECS {
                 }
             }
 
+            [JsonIgnore]
             public uint ClientId { get => Id.clientId; }
 
+            public SynchronizationMode SyncMode { get; set; } = SynchronizationMode.UPDATE;
 
             /// <summary>
             /// Whether or not this Component is owned by this local Client
             /// </summary>
+            [JsonIgnore]
             public bool IsLocal { get => ClientId == Connection.Instance.User_id; }
-
-
-            /// <summary>
-            /// True if this Component should be synchronized with other clients, or false
-            /// if it should only exist locally.
-            /// Defaults to true
-            /// </summary>
-            public bool ShouldSynchronize { get; set; } = true;
 
             // This flag is set to true, if it the component has been "finalized" in the domain
             // Should only be set by the domain
-            public bool Matchable { get; set; } = false;
+            [JsonIgnore]
+            public bool Commited { get; set; } = false;
 
 
             public Component() {}
           
+            public void Update(Component component) {
+                SyncMode = component.SyncMode;
+                if( entity == null ) Id = component.Id;
+                OnUpdate(component);
+            }
 
-            public abstract Object getData();
-
-            public abstract void update(JObject json);
-
+            public abstract void OnUpdate(Component component);
+            
+            /// <summary>
+            /// Deletes the component and remove it from its Entity
+            /// </summary>
+            public void Delete() {
+                entity.RemoveComponent(this);
+            }
 
 
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -445,10 +571,10 @@ namespace ECS {
 
             // Constructs a new Component of the type identified by the
             // given identifier
-            public static Component CreateComponent(string identifier) {
+            public static Component CreateComponentFromJson(string identifier, string json) {
                 if (!typeMap.ContainsKey(identifier))
-                    throw new ArgumentException($"Component type with identifier '{identifier}' does not exist");
-                return (Component)Activator.CreateInstance(typeMap[identifier]);
+                    throw new ArgumentException($"Component type with identifier '{identifier}' does not exist");   
+                return (Component)JsonConvert.DeserializeObject(json, typeMap[identifier]);
             }
 
             // Analyze which classes inherit from Component, and
@@ -456,7 +582,7 @@ namespace ECS {
             // an identifier
             static Component() {
                 foreach (var type in Assembly.GetAssembly(typeof(Component)).GetTypes()) {
-                    if (type.IsSubclassOf(typeof(Component))) {
+                    if (type.IsSubclassOf(typeof(Component)) && !type.IsAbstract ) {
                         var identifier = type.FullName;
                         if (type.GetConstructor(Type.EmptyTypes) == null)
                             throw new Exception($"Component type '{type.FullName}' does not have a constructor with no parameters");
@@ -469,6 +595,21 @@ namespace ECS {
 
             public string GetTypeIdentifier() {
                 return GetType().FullName;
+            }
+
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            // Networking state
+            public enum SynchronizationMode {
+                // The component will not be uploaded to the network
+                NONE,
+                
+                // The component will be continously updated
+                // by client
+                UPDATE,
+
+                // The component is uploaded by creator, but will be
+                // simulated locally on each client
+                CREATE
             }
         }
 

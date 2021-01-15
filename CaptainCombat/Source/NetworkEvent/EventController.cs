@@ -7,7 +7,7 @@ using System.Data;
 using System.Reflection;
 using System.Threading;
 
-namespace CaptainCombat.Source.Event {
+namespace CaptainCombat.Source.NetworkEvent {
 
     /// <summary>
     /// Controller which listens for incoming event tuples in the remote space, and
@@ -72,18 +72,22 @@ namespace CaptainCombat.Source.Event {
             sendEvents = true;
             while (sendEvents) {
                 senderWaitHandle.WaitOne();
-                lock (outgoingEvents) {
-                    foreach (var e in outgoingEvents) {
-                        Connection.Instance.Space.Put(
-                                "event",
-                                e.GetType().FullName,
-                                (int) Connection.Instance.User_id,
-                                (int) e.Receiver,
-                                JsonConvert.SerializeObject(e)
-                        );
 
-                    }
+                var eventsCopy = new List<Event>();
+                lock (outgoingEvents) {
+                    foreach (var e in outgoingEvents)
+                        eventsCopy.Add(e);
                     outgoingEvents.Clear();
+                }
+                foreach (var e in eventsCopy) {
+                    Connection.Instance.Space.Put(
+                            "event",
+                            e.GetType().FullName,
+                            (int) Connection.Instance.User_id,
+                            (int) e.Receiver,
+                            JsonConvert.SerializeObject(e)
+                    );
+
                 }
             }
         }
@@ -110,9 +114,6 @@ namespace CaptainCombat.Source.Event {
         /// Multiple listeners may be added, and will be fired sequentially
         /// in the order they have been added
         /// </summary>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="e"></param>
-        /// <returns></returns>
         public static EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
             var eventType = typeof(E);
             if (!listenerMap.ContainsKey(eventType))

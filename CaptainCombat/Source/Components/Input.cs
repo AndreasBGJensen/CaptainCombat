@@ -24,20 +24,11 @@ namespace CaptainCombat.Source.Components
         }
 
 
-        public override object getData()
-        {
-            var obj = new
-            {
-                FontTag = this.FontTag,
-                Message = this.Message,
-            };
-            return obj;
+        public override void OnUpdate(Component component) {
+            var c = (Input)component;
+            FontTag = c.FontTag;
+            Message = c.Message;
         }
 
-        public override void update(JObject json)
-        {
-            this.FontTag = (string)json.SelectToken("FontTag");
-            this.Message = (string)json.SelectToken("Message");
-        }
     }
 }

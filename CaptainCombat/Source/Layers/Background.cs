@@ -1,4 +1,5 @@
-﻿using CaptainCombat.network;
+﻿using CaptainCombat.json;
+using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source.Components;
 using CaptainCombat.Source.protocols;
@@ -12,13 +13,12 @@ using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using static ECS.Domain;
+
 
 namespace CaptainCombat.Source.GameLayers
 {
+
     class Background : Layer
     {
         private Domain Domain = new Domain();
@@ -81,8 +81,18 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void update(GameTime gameTime)
         {
-            // Clear domain 
+
+            if (DomainState.Instance.Download != null) {
+                Domain.update(DomainState.Instance.Download);
+                DomainState.Instance.Download = null;
+            }
+
             Domain.Clean();
+
+            // TODO: Fix this
+            //EventController.HandleEvents();
+
+            // Clear domain
 
             // Handles keyboard input 
             GetKeys();
@@ -97,11 +107,11 @@ namespace CaptainCombat.Source.GameLayers
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     {
-                        move.Acceleration = move.Acceleration.WithMagnitude(30);
+                        move.Acceleration = new Vector(30, 0);
                     }
                     else
                     {
-                        move.Acceleration = new Vector2(0, 0);
+                        move.Acceleration = new Vector(0, 0);
                     }
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Right))
@@ -122,16 +132,19 @@ namespace CaptainCombat.Source.GameLayers
             // Update camera to ship
             {
                 var transform = Ship.GetComponent<Transform>();
-                Camera.X = transform.X;
-                Camera.Y = transform.Y;
+                Camera.Position = transform.Position;
             }
+
 
             // Update movement in domain 
             Movement.Update(Domain, seconds);
+
+            Domain.Clean();
+
+            DomainState.Instance.Upload = JsonBuilder.createJsonString();
         }
 
         
-
         public override void draw(GameTime gameTime)
         {
             Renderer.RenderSprites(Domain, Camera);

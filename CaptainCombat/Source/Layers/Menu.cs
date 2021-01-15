@@ -179,8 +179,8 @@ namespace CaptainCombat.Source.MenuLayers
             int placement_Y = -180;
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
-                transform.Y = placement_Y;
-                transform.X = -70; 
+                transform.Position.X = -70; 
+                transform.Position.Y = placement_Y;
                 placement_Y += 25;
             });
         }

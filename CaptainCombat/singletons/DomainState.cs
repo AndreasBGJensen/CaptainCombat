@@ -34,7 +34,7 @@ namespace CaptainCombat.singletons
         public IEnumerable<ITuple> ClientScores { get => scores; set => scores = value; }
 
         public string Upload { get => upload; set => upload = value; }
-        public string Download { get => download; set => download = value; }
+        public IEnumerable<ITuple> Download { get; set; }
 
         public Domain Domain { get => domain; set => domain = value; }
     }

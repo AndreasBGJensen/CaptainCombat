@@ -18,8 +18,7 @@ namespace CaptainCombat.Source {
         private Transform transform;
         // May add movement component here
 
-        public double X { get => transform.X; set => transform.X = value; }
-        public double Y { get => transform.Y; set => transform.Y = value; }
+        public Vector Position { get => transform.Position; set => transform.Position = value; }
         public double Zoom { get => transform.ScaleX; set { transform.ScaleX = value; transform.ScaleY = value; } }
         public double Rotation { get => transform.Rotation; set => transform.Rotation = value; }
 
@@ -29,29 +28,13 @@ namespace CaptainCombat.Source {
         }
 
 
-        /// <summary>
-        /// Moves the camera's transform component relative to its
-        /// current direction, the world moves along the screen
-        /// x and y axis.
-        /// </summary>
-        public void MoveInRotationDirection(double x, double y) {
-            // TODO: Implemen this (if necessary)
-            throw new NotImplementedException();
-        }
-
-
         public Matrix GetMatrix() {
-            var translation = Matrix.CreateTranslation(-(float)transform.X, -(float)transform.Y, 0);
-            var rotation = Matrix.CreateRotationZ((float)(transform.Rotation * Math.PI / 180.0));
-            var zoom = Matrix.CreateScale((float)transform.ScaleX, (float)transform.ScaleX, 1.0f);
+            var translation = Matrix.CreateTranslation(-transform.Position);
+            var rotation = Matrix.CreateRotation(transform.Rotation);
+            var zoom = Matrix.CreateScale(transform.ScaleX, transform.ScaleY);
 
-            // TODO: Correct the screen size when that is in place
+            var center = Matrix.CreateTranslation(GameController.Graphics.PreferredBackBufferWidth / 2.0f, GameController.Graphics.PreferredBackBufferHeight / 2.0f);
 
-            var center = Matrix.CreateTranslation((float)GameController.Graphics.PreferredBackBufferWidth / 2.0f, (float)GameController.Graphics.PreferredBackBufferHeight / 2.0f, 0);
-            
-            // Apparently Matrix multiplication order is reversed in MonoGame,
-            // so that the transformation takes place from left to right
-            // (translation -> rotation -> centering)
             return translation * zoom * rotation * center;
         }
 

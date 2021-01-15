@@ -109,8 +109,8 @@ namespace CaptainCombat.Source.GameLayers
                 foreach (Entity playerName in playerNames)
                 {
                     var transform = playerName.GetComponent<Transform>();
-                    transform.X = -565;
-                    transform.Y = placement_Y;
+                    transform.Position.X = -565;
+                    transform.Position.Y = placement_Y;
                     placement_Y += 30;
                 }
             }
@@ -121,8 +121,8 @@ namespace CaptainCombat.Source.GameLayers
                 foreach (Entity icon in playerIcons)
                 {
                     var transform = icon.GetComponent<Transform>();
-                    transform.X = -585;
-                    transform.Y = placement_Y;
+                    transform.Position.X = -585;
+                    transform.Position.Y = placement_Y;
                     placement_Y += 30;
                 }
             }
@@ -134,8 +134,8 @@ namespace CaptainCombat.Source.GameLayers
                 foreach (Entity score in playerScores)
                 {
                     var transform = score.GetComponent<Transform>();
-                    transform.X = -625;
-                    transform.Y = placement_Y;
+                    transform.Position.X = -625;
+                    transform.Position.Y = placement_Y;
                     placement_Y += 30;
                 }
             }

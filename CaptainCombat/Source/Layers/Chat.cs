@@ -160,8 +160,8 @@ namespace CaptainCombat.Source.GameLayers
             int placement_Y = -230; 
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
-                transform.X = 385;
-                transform.Y = placement_Y;
+                transform.Position.X = 385;
+                transform.Position.Y = placement_Y;
                 placement_Y += 30; 
             });
             }
@@ -171,8 +171,8 @@ namespace CaptainCombat.Source.GameLayers
                 int placement_Y = -245;
                 Domain.ForMatchingEntities<Sprite, Transform>((entity) => {
                     var transform = entity.GetComponent<Transform>();
-                    transform.X = 365;
-                    transform.Y = placement_Y;
+                    transform.Position.X = 365;
+                    transform.Position.Y = placement_Y;
                     placement_Y += 30;
                 });
             }
@@ -182,8 +182,8 @@ namespace CaptainCombat.Source.GameLayers
             {
                 var transform = ChatBox.GetComponent<Transform>();
                 var sprite = ChatBox.GetComponent<Sprite>();
-                transform.X = 450;
-                transform.Y = 0;
+                transform.Position.X = 450;
+                transform.Position.Y = 0;
                 sprite.Height = 700;
                 sprite.Width = 300;
             }
@@ -199,7 +199,7 @@ namespace CaptainCombat.Source.GameLayers
             {
                 Domain.ForMatchingEntities<Sprite, Transform>((entity) => {
                     var transform = entity.GetComponent<Transform>();
-                    transform.Y = -1000;
+                    transform.Position.Y = -1000;
                 });
             }
 
@@ -207,8 +207,8 @@ namespace CaptainCombat.Source.GameLayers
             {
             var transform = ChatBox.GetComponent<Transform>();
             var sprite = ChatBox.GetComponent<Sprite>();
-            transform.X = 580;
-            transform.Y = 300;
+            transform.Position.X = 580;
+            transform.Position.Y = 300;
             sprite.Height = 40;
             sprite.Width = 40;
             }
@@ -216,7 +216,7 @@ namespace CaptainCombat.Source.GameLayers
             // Hide messages from view 
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
-                transform.Y = -1000; 
+                transform.Position.Y = -1000; 
             });
 
         }

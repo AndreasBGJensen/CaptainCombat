@@ -64,7 +64,7 @@ namespace RemoteServer.Collector
 
         private void UpdatorJToken(JToken serarchParam)
         {
-            var array = creator.CreateArray(serarchParam);
+            var array = creator.CreateArray(serarchParam,null);
             
             //Updating Tuple
             mySpace.Get("lock");

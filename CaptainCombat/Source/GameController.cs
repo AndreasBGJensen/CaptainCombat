@@ -1,12 +1,5 @@
-﻿using CaptainCombat.json;
-using CaptainCombat.network;
-using CaptainCombat.singletons;
-using CaptainCombat.Source;
-using CaptainCombat.Source.Components;
-using CaptainCombat.Source.Event;
+﻿using CaptainCombat.Source;
 using CaptainCombat.Source.Scenes;
-using CaptainCombat.Source.Utility;
-using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,16 +9,22 @@ using System;
 using System.Threading;
 using static ECS.Domain;
 
+using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
 using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
 
-namespace CaptainCombat
-{
+
+namespace CaptainCombat {
+
+
     public class GameController : Game {
 
         public static GameController Game { get; private set; }
         public static GraphicsDeviceManager Graphics { get; private set; }
+
+        public static CollisionController collisionController = new CollisionController();
         private StateManager Manager { get; set; }
 
+        
         public GameController() {
             Game = this;
             Graphics = new GraphicsDeviceManager(this);
@@ -36,8 +35,6 @@ namespace CaptainCombat
 
         protected override void Initialize() {
             base.Initialize();
-            for (uint i = 1; i < 5; i++)
-                EventController.Send(new HelloEvent($"Hello there from client {Connection.Instance.User_id}!", i));
         }
 
 
@@ -53,7 +50,7 @@ namespace CaptainCombat
             Manager = new StateManager(new Loading(Game));
 
             // Set asset loaders
-            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
+            Asset.SetLoader<Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
             });
 

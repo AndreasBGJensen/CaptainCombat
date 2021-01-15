@@ -50,8 +50,9 @@ namespace CaptainCombat.Source.Utility {
 
 
         public uint Get() {
-            if (readyIds.Count > 0)
-                return readyIds.Dequeue();
+            // TODO: Either remove this or come up with better solution
+            //if (readyIds.Count > 0)
+                //return readyIds.Dequeue();
             return nextId++;
         }
 
