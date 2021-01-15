@@ -50,7 +50,7 @@ namespace CaptainCombat {
             Manager = new StateManager(new Loading(Game));
 
             // Set asset loaders
-            Asset.SetLoader<Texture, MGTexture>((texture) => {
+            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
             });
 
