@@ -1,9 +1,10 @@
-﻿using CaptainCombat.Source.Components;
-using CaptainCombat.Source.Utility;
-using ECS;
+﻿using StaticGameLogic_Library.Source.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using StaticGameLogic_Library.Source.ECS;
+using CaptainCombat.Source.Utility;
+using StaticGameLogic_Library.Source;
 
 namespace CaptainCombat.Source {
 

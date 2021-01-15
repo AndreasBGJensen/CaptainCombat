@@ -3,11 +3,13 @@ using System;
 
 using MGVector = Microsoft.Xna.Framework.Vector2;
 using MGMatrix = Microsoft.Xna.Framework.Matrix;
-
+using StaticGameLogic_Library.Source;
 
 namespace CaptainCombat.Source.Utility {
 
     public static class VectorUtility {
+
+        // TODO: REmove old vector utility
 
         /// <summary>
         /// Constructs a new Vector2 with the same magnitude as this,
@@ -62,9 +64,6 @@ namespace CaptainCombat.Source.Utility {
         public static Vector ToVector(this MGVector vec) {
             return new Vector(vec.X, vec.Y);
         }
-
-
-
 
 
         public static MGMatrix ToMGMatrix(this Matrix matrix) {

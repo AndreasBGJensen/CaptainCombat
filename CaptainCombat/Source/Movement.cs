@@ -1,11 +1,10 @@
 ﻿
-
-using CaptainCombat.Source.Components;
-using ECS;
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Components;
+using StaticGameLogic_Library.Source.ECS;
+using System;
 
 namespace CaptainCombat.Source {
-
-
 
 
     public class Movement {
@@ -40,8 +39,6 @@ namespace CaptainCombat.Source {
 
 
         }
-
-
     }
 
 }

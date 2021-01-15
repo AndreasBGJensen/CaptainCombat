@@ -4,7 +4,9 @@ using Microsoft.Xna.Framework;
 
 using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
 using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
-
+using CaptainCombat.Source.Utility;
+using Source.EntityUtility;
+using StaticGameLogic_Library.Source;
 
 namespace CaptainCombat {
 
@@ -47,7 +49,7 @@ namespace CaptainCombat {
                 return Content.Load<MGTexture>(texture.Url);
             });
 
-            Asset.SetLoader<Source.Font, SpriteFont>((font) => {
+            Asset.SetLoader<Font, SpriteFont>((font) => {
                 return Content.Load<SpriteFont>(font.Url);
             });
 

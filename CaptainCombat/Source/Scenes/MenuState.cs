@@ -1,5 +1,5 @@
 ﻿using CaptainCombat.Source.MenuLayers;
-using ECS;
+using StaticGameLogic_Library.Source.ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;

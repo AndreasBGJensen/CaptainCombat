@@ -1,7 +1,8 @@
-﻿using CaptainCombat.Source.Components;
-using ECS;
+﻿using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Components;
+using StaticGameLogic_Library.Source.ECS;
 using System.Collections.Generic;
-using static ECS.Domain;
+using static StaticGameLogic_Library.Source.ECS.Domain;
 
 
 namespace CaptainCombat.Source {

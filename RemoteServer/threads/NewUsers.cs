@@ -12,7 +12,8 @@ namespace RemoteServer.threads
 {
     class NewUsers
     {
-        static int newId = 1; 
+        static int newId = 1;
+        //static int computer_AI_ID = 1;
         public NewUsers()
         {
 

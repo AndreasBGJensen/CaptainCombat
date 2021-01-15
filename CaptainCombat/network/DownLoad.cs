@@ -1,13 +1,14 @@
-﻿using CaptainCombat.singletons;
-using CaptainCombat.Diagnostics;
+﻿using CaptainCombat.Diagnostics;
 using System.Collections.Generic;
 using dotSpace.Interfaces.Space;
+using StaticGameLogic_Library.Singletons;
 
 namespace CaptainCombat.network
 {
+    
+    
     class DownLoad
     {
-
 
         StopWatch watch = new StopWatch("Downloading: ",50);
            

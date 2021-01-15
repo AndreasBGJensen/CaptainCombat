@@ -1,17 +1,4 @@
 ﻿
-using CaptainCombat.game;
-using CaptainCombat.singletons;
-using CaptainCombat.network;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using ECS;
-using static ECS.Domain;
-using CaptainCombat.json;
-
 namespace CaptainCombat.states
 {
     class Game : State

@@ -1,11 +1,8 @@
-﻿using CaptainCombat.singletons;
-using dotSpace.Interfaces.Space;
+﻿using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
+using StaticGameLogic_Library.Singletons;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tuple = dotSpace.Objects.Space.Tuple;
 
 namespace CaptainCombat.Source.protocols

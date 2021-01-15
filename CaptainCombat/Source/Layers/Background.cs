@@ -1,16 +1,15 @@
-﻿using CaptainCombat.json;
-using CaptainCombat.network;
-using CaptainCombat.singletons;
-using CaptainCombat.Source.Components;
-using CaptainCombat.Source.protocols;
+﻿using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
-using CaptainCombat.Source.Utility;
-using ECS;
+using StaticGameLogic_Library.Source.ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Linq;
-using static ECS.Domain;
-
+using static StaticGameLogic_Library.Source.ECS.Domain;
+using StaticGameLogic_Library.Singletons;
+using Source.EntityUtility;
+using StaticGameLogic_Library.Source.Components;
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.JsonBuilder;
 
 namespace CaptainCombat.Source.GameLayers
 {

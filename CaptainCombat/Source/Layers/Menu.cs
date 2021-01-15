@@ -1,16 +1,15 @@
-﻿using CaptainCombat.Source.Components;
-using CaptainCombat.Source.protocols;
+﻿using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
-using ECS;
+using StaticGameLogic_Library.Source.ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static ECS.Domain;
+using static StaticGameLogic_Library.Source.ECS.Domain;
+using Source.EntityUtility;
+using StaticGameLogic_Library.Source.Components;
+using StaticGameLogic_Library.Source;
 
 namespace CaptainCombat.Source.MenuLayers
 {

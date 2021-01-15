@@ -1,6 +1,15 @@
 ﻿using System;
-using CaptainCombat.singletons;
 using dotSpace.Objects.Network;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using dotSpace.Objects.Network;
+using dotSpace.Objects.Space;
+using StaticGameLogic_Library.Singletons;
+
+using Tuple = dotSpace.Objects.Space.Tuple;
 
 namespace CaptainCombat.states
 {

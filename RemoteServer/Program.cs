@@ -3,6 +3,8 @@ using System.Threading;
 using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
+using RemoteServer.Mapmaker;
+using RemoteServer.Mapmaker.EntityToAdd;
 using RemoteServer.singletons;
 using RemoteServer.threads;
 using Tuple = dotSpace.Objects.Space.Tuple;
@@ -40,6 +42,14 @@ namespace RemoteServer
             ClientScores newClientScoreProtocol = new ClientScores();
             Thread newClientScoreThread = new Thread(new ThreadStart(newClientScoreProtocol.RunProtocol));
             newClientScoreThread.Start();
+            
+
+            Game game = new Game();
+            IEntity entity = new Rocks(10);
+            game.ComputerInit += entity.OnComputerInit;
+
+            game.Init();
+
 
             Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));

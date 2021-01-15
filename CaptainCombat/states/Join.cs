@@ -8,7 +8,7 @@ using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using dotSpace.Interfaces.Space;
-using CaptainCombat.singletons;
+using StaticGameLogic_Library.Singletons;
 
 namespace CaptainCombat.states
 {
