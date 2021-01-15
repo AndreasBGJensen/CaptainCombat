@@ -37,12 +37,17 @@ namespace RemoteServer
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
 
+            ClientScores newClientScoreProtocol = new ClientScores();
+            Thread newClientScoreThread = new Thread(new ThreadStart(newClientScoreProtocol.RunProtocol));
+            newClientScoreThread.Start();
+
             Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
             serializationThread.Start();
+
             //serializationProtocol.RunProtocol();
         }
-       
+
         /*
         static void Main(string[] args)
         {
@@ -66,6 +71,6 @@ namespace RemoteServer
 
         }
         */
-        
+
     }
 }

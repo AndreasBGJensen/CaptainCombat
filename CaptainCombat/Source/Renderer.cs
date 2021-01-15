@@ -67,7 +67,60 @@ namespace CaptainCombat.Source {
             
         }
 
+        public static void RenderText(Domain domain, Camera camera)
+        {
+            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
+            //spriteBatch.Begin();
 
+            // Submit all entities which have a Sprite and Transform component
+            // to the sprite batch (for drawing)
+            domain.ForMatchingEntities<Text, Transform>((entity) => {
+
+                var text = entity.GetComponent<Text>();
+
+               
+
+                var transform = entity.GetComponent<Transform>();
+                var font = text.FONT.GetNative<SpriteFont>();
+
+                spriteBatch.DrawString(
+                    // Font 
+                    font,
+                    // Text 
+                    text.Message,
+                    // Position 
+                    transform.Position.ToMGVector(),
+                    // Color 
+                    Color.Black);
+            });
+            spriteBatch.End();
+        }
+
+        public static void RenderInput(Domain domain, Camera camera)
+        {
+            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
+            //spriteBatch.Begin();
+
+            // Submit all entities which have a Sprite and Transform component
+            // to the sprite batch (for drawing)
+            domain.ForMatchingEntities<Input, Transform>((entity) => {
+
+                var input = entity.GetComponent<Input>();
+                var transform = entity.GetComponent<Transform>();
+                var font = input.FONT.GetNative<SpriteFont>();
+
+                spriteBatch.DrawString(
+                    // Font 
+                    font,
+                    // Text 
+                    input.Message,
+                    // Position 
+                    transform.Position.ToMGVector(),
+                    // Color 
+                    Color.Black);
+            });
+            spriteBatch.End();
+        }
 
         /// <summary>
         /// Renders all Colliders to the screen

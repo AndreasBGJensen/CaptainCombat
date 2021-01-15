@@ -99,6 +99,8 @@ namespace ECS {
 
         public void update(IEnumerable<ITuple> gameData) {
 
+            // TODO: Clean up this method
+
             HashSet<GlobalId> updatedComponents = new HashSet<GlobalId>();
 
             Dictionary<uint, ulong> newIdMap = new Dictionary<uint, ulong>();

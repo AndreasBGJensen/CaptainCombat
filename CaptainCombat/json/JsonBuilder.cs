@@ -15,13 +15,13 @@ namespace CaptainCombat.json
 
             DomainState.Instance.Domain.ForLocalComponents((component) => {
                 if( component.SyncMode != Component.SynchronizationMode.NONE )
-                data.Add(new DataObject(
-                    component.GetTypeIdentifier(),
-                    (uint)Connection.Instance.User_id,
-                    component.Id.objectId,
-                    component.Entity.Id.objectId,
-                    component
-                ));
+                    data.Add(new DataObject(
+                        component.GetTypeIdentifier(),
+                        (uint)Connection.Instance.User_id,
+                        component.Id.objectId,
+                        component.Entity.Id.objectId,
+                        component
+                    ));
             });
 
             string json = JsonConvert.SerializeObject(data);
