@@ -1,8 +1,13 @@
 ﻿
 
 using CaptainCombat.Diagnostics;
-using CaptainCombat.singletons;
-
+using StaticGameLogic_Library.Singletons;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CaptainCombat.network {
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
-using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
-using RemoteServer.singletons;
+using RemoteServer.Mapmaker;
 using RemoteServer.threads;
-using Tuple = dotSpace.Objects.Space.Tuple;
+using StaticGameLogic_Library.Singletons;
+
 
 namespace RemoteServer
 {
@@ -41,36 +41,17 @@ namespace RemoteServer
             Thread newClientScoreThread = new Thread(new ThreadStart(newClientScoreProtocol.RunProtocol));
             newClientScoreThread.Start();
 
-            Serialization serializationProtocol = new Serialization();
-            Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
-            serializationThread.Start();
 
-            //serializationProtocol.RunProtocol();
-        }
+            Game game = new Game();
+            //IEntity entity = new Rocks(10);
+            //game.ComputerInit += entity.OnComputerInit;
 
-        /*
-        static void Main(string[] args)
-        {
-            //string uri = "tcp://127.0.0.1:5000?CONN";
-            string uri = "tcp://49.12.75.251:5000?CONN";
+            game.Init();
 
-            SpaceRepository repository = new SpaceRepository();
-            repository.AddGate(uri);
-            SequentialSpace space = new SequentialSpace();
-            repository.AddSpace("space", space);
-            Console.WriteLine("Start Gameserver");
-            Connection.Instance.Space = space;
-
-            NewUsers newUserProtocol = new NewUsers();
-            Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
-            newUserThread.Start();
 
             Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
             serializationThread.Start();
-
         }
-        */
-
     }
 }

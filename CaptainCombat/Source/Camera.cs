@@ -1,10 +1,8 @@
 ﻿
-
-using CaptainCombat.Source.Components;
-using ECS;
-using Microsoft.Xna.Framework;
-using System;
-using static ECS.Domain;
+using StaticGameLogic_Library.Source;
+using StaticGameLogic_Library.Source.Components;
+using StaticGameLogic_Library.Source.ECS;
+using static StaticGameLogic_Library.Source.ECS.Domain;
 
 namespace CaptainCombat.Source {
 

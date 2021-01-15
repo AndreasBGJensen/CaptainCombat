@@ -1,19 +1,12 @@
-﻿using CaptainCombat.json;
-using CaptainCombat.network;
-using CaptainCombat.singletons;
+﻿using CaptainCombat.network;
 using CaptainCombat.Source.GameLayers;
-using ECS;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CaptainCombat.Source.Scenes
 {
+
     class GameState : State
     {
         private List<Layer> Layers = new List<Layer>();

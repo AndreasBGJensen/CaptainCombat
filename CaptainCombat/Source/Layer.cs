@@ -1,4 +1,4 @@
-﻿using ECS;
+﻿using StaticGameLogic_Library.Source.ECS;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;

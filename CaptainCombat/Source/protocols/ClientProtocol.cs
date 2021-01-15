@@ -1,11 +1,8 @@
-﻿using CaptainCombat.singletons;
-using dotSpace.Interfaces.Space;
+﻿using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
+using StaticGameLogic_Library.Singletons;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tuple = dotSpace.Objects.Space.Tuple;
 
 namespace CaptainCombat.Source.protocols
@@ -19,7 +16,7 @@ namespace CaptainCombat.Source.protocols
 
             string uri = "tcp://127.0.0.1:5000/space?KEEP";
             //string uri = "tcp://49.12.75.251:5000/space?KEEP";
-            RemoteSpace space = new RemoteSpace(uri);
+            ISpace space = new RemoteSpace(uri);
             Connection connecting = Connection.Instance;
             connecting.Space = space;
         }
@@ -29,7 +26,7 @@ namespace CaptainCombat.Source.protocols
             List<string> allUsers = new List<string>(); 
             
             Connection connecting = Connection.Instance;
-            RemoteSpace space = connecting.Space;
+            ISpace space = connecting.Space;
 
             IEnumerable<ITuple> usersInServer = space.QueryAll("users", typeof(string));
 
@@ -59,7 +56,7 @@ namespace CaptainCombat.Source.protocols
         public static void AddMessageToServer(string message)
         {
             Connection connecting = Connection.Instance;
-            RemoteSpace space = connecting.Space;
+            ISpace space = connecting.Space;
             space.Put("chat", Connection.Instance.User_id, message);
         }
 
@@ -68,7 +65,7 @@ namespace CaptainCombat.Source.protocols
         {
             Console.WriteLine("Enter game");
             Connection connecting = Connection.Instance;
-            RemoteSpace space = connecting.Space;
+            ISpace space = connecting.Space;
             space.Put("user", username);
             Tuple results = (Tuple)space.Get("connected", typeof(int), typeof(string));
             Console.WriteLine(results[2]);
@@ -79,7 +76,7 @@ namespace CaptainCombat.Source.protocols
         public static void AddClientScoreToServer(int clientScore)
         {
             Connection connecting = Connection.Instance;
-            RemoteSpace space = connecting.Space;
+            ISpace space = connecting.Space;
             space.Put("score", Connection.Instance.User_id, clientScore);
         }
 
@@ -87,7 +84,7 @@ namespace CaptainCombat.Source.protocols
         public static bool isValidName(string username)
         {
             Connection connecting = Connection.Instance;
-            RemoteSpace space = connecting.Space;
+            ISpace space = connecting.Space;
 
             IEnumerable<ITuple> usersInServer = space.QueryAll("users", typeof(string));
 

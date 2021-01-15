@@ -1,15 +1,13 @@
-﻿using CaptainCombat.Source.Components;
-using CaptainCombat.Source.protocols;
+﻿using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
 using dotSpace.Interfaces.Space;
-using ECS;
+using StaticGameLogic_Library.Source.ECS;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ECS.Domain;
+using static StaticGameLogic_Library.Source.ECS.Domain;
+using StaticGameLogic_Library.Source.Components;
+using Source.EntityUtility;
 
 namespace CaptainCombat.Source.GameLayers
 {

@@ -2,16 +2,11 @@
 using CaptainCombat.Source.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using System;
-using System.Threading;
-using static ECS.Domain;
 
 using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
 using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
-
+using StaticGameLogic_Library.Source;
 
 namespace CaptainCombat {
 
@@ -50,11 +45,11 @@ namespace CaptainCombat {
             Manager = new StateManager(new Loading(Game));
 
             // Set asset loaders
-            Asset.SetLoader<Source.Texture, MGTexture>((texture) => {
+            Asset.SetLoader<Texture, MGTexture>((texture) => {
                 return Content.Load<MGTexture>(texture.Url);
             });
 
-            Asset.SetLoader<Source.Font, SpriteFont>((font) => {
+            Asset.SetLoader<Font, SpriteFont>((font) => {
                 return Content.Load<SpriteFont>(font.Url);
             });
 

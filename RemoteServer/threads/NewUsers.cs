@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using dotSpace.Objects.Network;
-using dotSpace.Objects.Space;
-using RemoteServer.singletons;
-using Tuple = dotSpace.Objects.Space.Tuple;
+﻿
+using dotSpace.Interfaces.Space;
+using StaticGameLogic_Library.Singletons;
+using System;
 
 namespace RemoteServer.threads
 {
     class NewUsers
     {
-        static int newId = 1; 
+        static int newId = 1;
+        //static int computer_AI_ID = 1;
         public NewUsers()
         {
 
@@ -22,7 +18,7 @@ namespace RemoteServer.threads
         {
             while (true)
             {
-                Tuple result = (Tuple)Connection.Instance.Space.Get("user", typeof(string));
+                ITuple result = Connection.Instance.Space.Get("user", typeof(string));
                 Console.WriteLine("User joined: " + result[1]);
                 int client_id = newId;
                 newId++;

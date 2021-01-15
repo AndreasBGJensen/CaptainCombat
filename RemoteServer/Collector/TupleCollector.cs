@@ -11,10 +11,10 @@ namespace RemoteServer.Collector
 {
      class TupleCollector : CollectorClass, ICollector
     {
-        private SequentialSpace mySpace;
+        private ISpace mySpace;
         private ArrayCreator creator;
 
-        public TupleCollector(ArrayCreator creator, SequentialSpace space)
+        public TupleCollector(ArrayCreator creator, ISpace space)
         {
             this.creator = creator;
             mySpace = space;
@@ -75,12 +75,12 @@ namespace RemoteServer.Collector
 
         public void PrintUpdateComponents()
         {
-            Console.WriteLine("Printing test components");
+            //Console.WriteLine("Printing test components");
             IEnumerable<ITuple> results3 = mySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
             foreach (ITuple tuple in results3)
             {
                 Console.WriteLine(tuple);
             }
-        }
+        }  
     }
 }
