@@ -8,6 +8,7 @@ using CaptainCombat.Source.Scenes;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -64,12 +65,21 @@ namespace CaptainCombat
                 return Content.Load<Song>(number.Url);
             });
 
+            Asset.SetLoader<Source.Sound, SoundEffect>((sound) => {
+                return Content.Load<SoundEffect>(sound.Url);
+            });
+
+
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
 
             // Load Song 
             Track track = Assets.Music.PirateSong;
             var song = track.GetNative<Song>();
+
+            // Load Song 
+            Sound soundEffect = Assets.Sounds.KanonSound; 
+            var effect = track.GetNative<Song>();
 
         }
 

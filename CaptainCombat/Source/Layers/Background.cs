@@ -6,6 +6,7 @@ using CaptainCombat.Source.Scenes;
 using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
@@ -178,8 +179,15 @@ namespace CaptainCombat.Source.GameLayers
                     playMusic = !playMusic;
                     MediaPlayer.Stop();
                 }
-                
             }
+            else if(key == Keys.L)
+            {
+                Sound sound = Assets.Sounds.KanonSound;
+                var effect = sound.GetNative<SoundEffect>();
+                effect.Play(); 
+            }
+
+
         }
     }
 }

@@ -79,7 +79,10 @@ namespace CaptainCombat.Source {
             public static readonly Track PirateSong = new Track(Collections.GLOBAL, "PirateSong", "music/song");
         }
 
-
+        public static class Sounds
+        {
+            public static readonly Sound KanonSound = new Sound(Collections.GLOBAL, "CannonSound", "sound/Cannon");
+        }
     }
 
 }
