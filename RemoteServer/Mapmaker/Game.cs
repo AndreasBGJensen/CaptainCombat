@@ -27,8 +27,11 @@ namespace RemoteServer.Mapmaker
             Connect();
             Join();
             DomainState.Instance.Domain = domain;
-            OnComputerInit();
+            //OnComputerInit();
 
+            IEntity entity = new Rocks(10);
+            entity.OnComputerInit();
+            //game.ComputerInit += entity.OnComputerInit;
 
 
 
@@ -37,11 +40,10 @@ namespace RemoteServer.Mapmaker
 
         public void Join()
         {
-            string username = "Genereating map...";
+            string username = "Server";
 
             Connection connecting = Connection.Instance;
             RemoteSpace space = connecting.Space;
-
 
             Console.Write("User in server: ");
 
@@ -50,11 +52,7 @@ namespace RemoteServer.Mapmaker
             foreach (ITuple user in users)
             {
                 Console.Write(user[1]);
-            }
-
-
-            
-            
+            }            
 
             space.Put("user", username);
 

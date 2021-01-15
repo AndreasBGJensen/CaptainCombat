@@ -45,8 +45,8 @@ namespace RemoteServer
             
 
             Game game = new Game();
-            IEntity entity = new Rocks(10);
-            game.ComputerInit += entity.OnComputerInit;
+            //IEntity entity = new Rocks(10);
+            //game.ComputerInit += entity.OnComputerInit;
 
             game.Init();
 

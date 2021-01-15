@@ -18,7 +18,7 @@ namespace RemoteServer.Mapmaker.EntityToAdd
             this.numberOfRocks = numberOfIslands;
         }
 
-        public void OnComputerInit(object source, EventArgs e)
+        public void OnComputerInit()
         {
             Domain domain = DomainState.Instance.Domain;
             RockElement rockElementContainer = new RockElement();
@@ -49,10 +49,10 @@ namespace RemoteServer.Mapmaker.EntityToAdd
            for (int i = 0; i < numberOfRocks; i++)
            {     
                 RockElement rock = new RockElement();
-                double x        = 0;// RandomFloatGenerator.GiveRandomeDouble(-10000, 10000.0);
-                double y        = 0;// RandomFloatGenerator.GiveRandomeDouble(-10000, 10000.0);
-                double scale    = 1;// RandomFloatGenerator.GiveRandomeDouble(0.1, 10);
-                double rotation = 0;// RandomFloatGenerator.GiveRandomeDouble(0, 360);
+                double x        = RandomFloatGenerator.GiveRandomeDouble(-1000, 1000.0);
+                double y        = RandomFloatGenerator.GiveRandomeDouble(-1000, 1000.0);
+                double scale    = RandomFloatGenerator.GiveRandomeDouble(0.1, 5);
+                double rotation = RandomFloatGenerator.GiveRandomeDouble(0, 360);
 
                 x += 10;
                 y += 10;
@@ -68,8 +68,6 @@ namespace RemoteServer.Mapmaker.EntityToAdd
                 rock.Add(rock);
            }
 
-
-
             foreach (RockElement rockElement in RockElement.rockElements)
             {
                 EntityUtility.CreateRock(domain, rockElement.x, rockElement.y, rockElement.scale, rockElement.rotation);
@@ -81,10 +79,9 @@ namespace RemoteServer.Mapmaker.EntityToAdd
             EntityUtility.CreateRock(domain, -300, 75, 1.4, 170);
             EntityUtility.CreateRock(domain, -100, -200, 1.2, 30);*/
 
-
             domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
-            Connection.Instance.Space.Put("components", DomainState.Instance.Upload);
+            Connection.Instance.Space.Put("components", "1", DomainState.Instance.Upload);
         }
 
 
