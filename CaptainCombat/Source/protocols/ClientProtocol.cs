@@ -85,6 +85,23 @@ namespace CaptainCombat.Source.protocols
             }
         }
 
+        public static bool isValidName(string username)
+        {
+            Connection connecting = Connection.Instance;
+            RemoteSpace space = connecting.Space;
+
+            IEnumerable<ITuple> usersInServer = space.QueryAll("users", typeof(string));
+
+            foreach (ITuple user in usersInServer)
+            {
+                if (((string)user[1]).Equals(username))
+                {
+                    return false; 
+                }
+            }
+            return true; 
+        }
+
 
     }
 }

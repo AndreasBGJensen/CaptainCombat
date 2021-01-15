@@ -116,26 +116,36 @@ namespace CaptainCombat.Source.MenuLayers
             }
             else if (key == Keys.Enter)
             {
-                // Disables keyboard
-                DisableKeyboard = !DisableKeyboard;
+                
 
-                // Adds player name to domain 
-                EntityUtility.CreateMessage(Domain, PlayerName, 0, 0, 16);
-
-                // Adds playername to server 
-                ClientProtocol.Join(PlayerName);
-
-                // Enablers state change after delay 
-                Task.Factory.StartNew(async () =>
+                if (ClientProtocol.isValidName(PlayerName) && PlayerName.Length > 0)
                 {
-                    await Task.Delay(2000);
-                    ChangeState = true; 
-                });
+                    // Disables keyboard
+                    DisableKeyboard = !DisableKeyboard;
 
-                // Display a message to the client 
-                PlayerName = "Game is staring...";
-                var input = InputBox.GetComponent<Input>();
-                input.Message = PlayerName;
+                    // Adds player name to domain 
+                    EntityUtility.CreateMessage(Domain, PlayerName, 0, 0, 16);
+
+                    // Adds playername to server 
+                    ClientProtocol.Join(PlayerName);
+
+                    // Enablers state change after delay 
+                    Task.Factory.StartNew(async () =>
+                    {
+                        await Task.Delay(2000);
+                        ChangeState = true;
+                    });
+
+                    // Display a message to the client 
+                    var input = InputBox.GetComponent<Input>();
+                    input.Message = "Game is staring...";
+                }
+                else
+                {
+                    PlayerName = string.Empty; 
+                    var input = InputBox.GetComponent<Input>();
+                    input.Message = "Invalid username";
+                }
             }
             else if (key == Keys.Back)
             {
