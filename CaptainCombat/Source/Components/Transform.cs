@@ -6,9 +6,8 @@ namespace CaptainCombat.Source.Components {
 
     public class Transform : Component {
 
-        public double X { get; set; } = 0;
-        public double Y { get; set; } = 0;
-
+        public Vector Position;
+        
         // Should be checked for negative scale
         private double scaleX = 1.0;
         public double ScaleX {
@@ -38,8 +37,7 @@ namespace CaptainCombat.Source.Components {
 
         public override void OnUpdate(Component component) {
             var c = (Transform)component;
-            X = c.X;
-            Y = c.Y;
+            Position = c.Position;
             ScaleX = c.ScaleX;
             ScaleY = c.ScaleY;
             Rotation = c.Rotation;

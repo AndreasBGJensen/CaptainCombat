@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using static ECS.Domain;
@@ -101,24 +99,6 @@ namespace CaptainCombat.Source.Components {
         [JsonIgnore]
         public BoxColliderPoints Points;
 
-        /// <summary>
-        /// Constructs the Points
-        /// </summary>
-        public void CalculatePoints(Transform transform) {
-            Matrix matrix =
-                   Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(Rotation + transform.Rotation))))
-                 * Matrix.CreateTranslation((float)transform.X, (float)transform.Y, 0);
-
-            float halfWidth = (float)(Width / 2.0);
-            float halfHeight = (float)(Height / 2.0);
-
-            Points.a = Vector2.Transform(new Vector2(-halfWidth, -halfHeight), matrix);
-            Points.b = Vector2.Transform(new Vector2(halfWidth, -halfHeight), matrix);
-            Points.c = Vector2.Transform(new Vector2(halfWidth, halfHeight), matrix);
-            Points.d = Vector2.Transform(new Vector2(-halfWidth, halfHeight), matrix);
-        }
-
-
         public override void OnUpdate(Component component) {
             base.OnUpdate(component);
 
@@ -127,13 +107,38 @@ namespace CaptainCombat.Source.Components {
             Height = c.Height;
             Rotation = c.Rotation;
         }
+
+        /// <summary>
+        /// Constructs the Points
+        /// </summary>
+        public void CalculatePoints(Transform transform) {
+            // TODO: Clean this up this method
+
+            Matrix matrix = Matrix.CreateRotation(Rotation + transform.Rotation) * Matrix.CreateTranslation(transform.Position);
+
+            //  Matrix.CreateRotationZ((float)(MathHelper.ToRadians((float)(box.Rotation + transform.Rotation))))
+            //* Matrix.CreateTranslation((float)transform.Position.X, (float)transform.Position.Y, 0);
+
+            float halfWidth = (float)(Width / 2.0);
+            float halfHeight = (float)(Height / 2.0);
+
+            Points.a = new Vector(-halfWidth, -halfHeight) * matrix;
+            Points.b = new Vector( halfWidth,  -halfHeight) * matrix;
+            Points.c = new Vector( halfWidth,   halfHeight) * matrix;
+            Points.c = new Vector(-halfWidth,  halfHeight) * matrix;
+
+            //box.Points.a = Vector2.Transform(new Vector2(-halfWidth, -halfHeight), matrix);
+            //box.Points.b = Vector2.Transform(new Vector2(halfWidth, -halfHeight), matrix);
+            //box.Points.c = Vector2.Transform(new Vector2(halfWidth, halfHeight), matrix);
+            //box.Points.d = Vector2.Transform(new Vector2(-halfWidth, halfHeight), matrix);
+        }
     }
 
     public struct BoxColliderPoints {
-        public Vector2 a;
-        public Vector2 b;
-        public Vector2 c;
-        public Vector2 d;
+        public Vector a;
+        public Vector b;
+        public Vector c;
+        public Vector d;
     }
 
 

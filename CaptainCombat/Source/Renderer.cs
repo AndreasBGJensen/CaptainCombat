@@ -19,8 +19,7 @@ namespace CaptainCombat.Source {
 
 
         public static void RenderSprites(Domain domain, Camera camera) {
-            spriteBatch.Begin(transformMatrix: camera.GetMatrix());
-
+            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
 
             // Submit all entities which have a Sprite and Transform component
             // to the sprite batch (for drawing)
@@ -35,14 +34,13 @@ namespace CaptainCombat.Source {
 
                 float width = (float)(sprite.Width * transform.ScaleX);
                 float height = (float)(sprite.Height * transform.ScaleY);
-          
+
                 // Draw the texture
                 spriteBatch.Draw(
                        texture,
 
                        // Render position and size
-                        new Vector2((float)transform.X, (float)transform.Y),
-                       //new Rectangle((int)transform.X, (int)transform.Y, (int)width, (int)height),
+                       transform.Position.ToMGVector(),
 
                        // "Texture Coordinates" (null for full texture)
                        null,
@@ -51,18 +49,18 @@ namespace CaptainCombat.Source {
                        Color.White,
 
                        // Rotation (radians)
-                       (float)((transform.Rotation+ sprite.Texture.Rotation) * Math.PI / 180), // Rotation
+                       (float)((transform.Rotation + sprite.Texture.Rotation) * Math.PI / 180), // Rotation
 
                        // Origin offset (relative to MG Texture)
                        new Vector2(texture.Width / 2.0f, texture.Height / 2.0f),
 
                        // Scale sprite size to the desired width and height
-                       new Vector2(width/texture.Width, height/texture.Height),
+                       new Vector2(width / texture.Width, height / texture.Height),
 
                        SpriteEffects.None,
 
                        1
-                );
+                );;
             });
 
             spriteBatch.End();
@@ -75,7 +73,7 @@ namespace CaptainCombat.Source {
         /// Renders all Colliders to the screen
         /// </summary>
         public static void RenderColliders(Domain domain, Camera camera) {
-            spriteBatch.Begin(transformMatrix: camera.GetMatrix());
+            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
 
             // Render box colliders
             domain.ForMatchingEntities<Transform, BoxCollider>((e) => {
@@ -92,7 +90,7 @@ namespace CaptainCombat.Source {
 
                 spriteBatch.Draw(
                        texture,
-                       new Vector2((float)transform.X, (float)transform.Y),
+                       transform.Position.ToMGVector(),
                        null,
                        color,
                        // Rotation (radians)
@@ -115,7 +113,7 @@ namespace CaptainCombat.Source {
                 var transform = e.GetComponent<Transform>();
                 var collider = e.GetComponent<CircleCollider>();
                 
-                var position = new Vector2((float)transform.X, (float)transform.Y); // Draw the texture
+                var position = transform.Position.ToMGVector(); // Draw the texture
 
                 var color =
                       collider.Collided ? Color.Red

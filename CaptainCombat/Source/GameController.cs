@@ -5,7 +5,6 @@ using CaptainCombat.Source;
 using CaptainCombat.Source.Components;
 using CaptainCombat.Source.Events;
 using CaptainCombat.Source.NetworkEvent;
-using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -191,9 +190,9 @@ namespace CaptainCombat {
                 var move = ship.GetComponent<Move>();
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space)) {
-                    move.Acceleration = move.Acceleration.WithMagnitude(30);
+                    move.Acceleration = new Vector(30, 0);
                 } else {
-                    move.Acceleration = new Vector2(0, 0);
+                    move.Acceleration = Vector.Zero;
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
@@ -209,9 +208,8 @@ namespace CaptainCombat {
 
             // Update camera to ship
             {
-                var transform = ship.GetComponent<Transform>();
-                camera.X = transform.X;
-                camera.Y = transform.Y;
+                var shipTransform = ship.GetComponent<Transform>();
+                camera.Position = shipTransform.Position;
             }
 
             Movement.Update(domain, seconds);

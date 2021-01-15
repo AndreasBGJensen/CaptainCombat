@@ -1,7 +1,5 @@
 ﻿
 
-using Microsoft.Xna.Framework;
-using Newtonsoft.Json.Linq;
 using static ECS.Domain;
 
 namespace CaptainCombat.Source.Components {
@@ -10,9 +8,9 @@ namespace CaptainCombat.Source.Components {
 
         public bool Enabled { get; set; } = true;
 
-        public Vector2 Velocity { get; set; } = new Vector2(0, 0);
+        public Vector Velocity { get; set; } = new Vector(0, 0);
 
-        public Vector2 Acceleration { get; set; } = new Vector2(0, 0);
+        public Vector Acceleration { get; set; } = new Vector(0, 0);
 
         public double Resistance { get; set; } = 0;
 

@@ -1,4 +1,5 @@
-﻿using CaptainCombat.states;
+﻿using CaptainCombat.Source;
+using CaptainCombat.states;
 using System;
 
 namespace CaptainCombat
@@ -14,6 +15,7 @@ namespace CaptainCombat
 
         [STAThread]
         static void Main(string[] args) {
+            //VectorTest.Start();
             Context context = new Context(new Connect());
         }
 

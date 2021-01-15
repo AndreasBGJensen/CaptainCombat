@@ -1,8 +1,6 @@
 ﻿
 using CaptainCombat.Source.Components;
-using CaptainCombat.Source.Utility;
 using ECS;
-using Microsoft.Xna.Framework;
 using static ECS.Domain;
 
 namespace CaptainCombat.Source {
@@ -16,8 +14,7 @@ namespace CaptainCombat.Source {
             var entity = new Entity(domain);
 
             var transform = entity.AddComponent(new Transform());
-            transform.X = x;
-            transform.Y = y;
+            transform.Position = new Vector(x, y);
             transform.ScaleX = scale;
             transform.ScaleY = scale;
             transform.Rotation = rotation;
@@ -44,18 +41,13 @@ namespace CaptainCombat.Source {
 
             var transform = cannonBall.AddComponent(new Transform());
 
-            var playerPosition = new Vector2((float)playerTransform.X, (float)playerTransform.Y);
-            var normPosition = playerPosition;
-            normPosition.Normalize();
-            var position = playerPosition + new Vector2(30.0f, 0.0f).WithDirection((float)playerTransform.Rotation);
-
-            transform.X = position.X;
-            transform.Y = position.Y;
+            var playerPosition = playerTransform.Position;
+            transform.Position = playerPosition + Vector.CreateDirection(playerTransform.Rotation) * 30;
             transform.Rotation = playerTransform.Rotation + 90;
             
             var move = cannonBall.AddComponent(new Move());
             move.ForwardVelocity = true;
-            move.Velocity = new Vector2(500, 0);
+            move.Velocity = new Vector(500, 0);
 
             var projectile = cannonBall.AddComponent(new Projectile());
 
