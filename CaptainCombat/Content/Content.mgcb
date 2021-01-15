@@ -69,6 +69,12 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/PirateFont.spritefont
 
+#begin music/song.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:music/song.mp3
+
 #begin Sprites/black_icon.png
 /importer:TextureImporter
 /processor:TextureProcessor

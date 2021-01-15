@@ -7,6 +7,7 @@ using CaptainCombat.Source.Utility;
 using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace CaptainCombat.Source.GameLayers
         private Camera Camera;
 
         private bool DisableKeyboard = false;
+        private bool playMusic = true;
         private Keys[] LastPressedKeys = new Keys[5];
 
         private Entity Ship;
@@ -30,6 +32,8 @@ namespace CaptainCombat.Source.GameLayers
 
         private State ParentState;
         Game Game;
+
+        
 
         public Background(Game game, State state)
         {
@@ -42,6 +46,7 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void init()
         {
+       
 
             // Create some test rocks
             int xOffset = -40;
@@ -157,6 +162,23 @@ namespace CaptainCombat.Source.GameLayers
             {
                 currentScore++;
                 ClientProtocol.AddClientScoreToServer(currentScore);
+            }else if (key == Keys.M)
+            {
+                if (playMusic)
+                {
+                    playMusic = !playMusic; 
+                    // Start song 
+                    Track track = Assets.Music.PirateSong;
+                    var song = track.GetNative<Song>();
+                    MediaPlayer.IsRepeating = true;
+                    MediaPlayer.Play(song);
+                }
+                else
+                {
+                    playMusic = !playMusic;
+                    MediaPlayer.Stop();
+                }
+                
             }
         }
     }

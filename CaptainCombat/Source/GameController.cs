@@ -10,6 +10,7 @@ using ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Threading;
 using static ECS.Domain;
@@ -59,8 +60,17 @@ namespace CaptainCombat
                 return Content.Load<SpriteFont>(font.Url);
             });
 
+            Asset.SetLoader<Source.Track, Song>((number) => {
+                return Content.Load<Song>(number.Url);
+            });
+
             // Loading global asset collection
             Assets.Collections.GLOBAL.Load();
+
+            // Load Song 
+            Track track = Assets.Music.PirateSong;
+            var song = track.GetNative<Song>();
+
         }
 
         protected override void Update(GameTime gameTime) {

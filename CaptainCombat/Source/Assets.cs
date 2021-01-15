@@ -8,7 +8,6 @@ namespace CaptainCombat.Source {
 
         public static class Collections {
             public static readonly Asset.AssetCollection GLOBAL = new Asset.AssetCollection();
-
         }
 
 
@@ -74,8 +73,13 @@ namespace CaptainCombat.Source {
             public static readonly Font PIRATE_FONT_18 = new Font(Collections.GLOBAL, "PIRATE_FONT_18", "fonts/Font_18");
             public static readonly Font PIRATE_FONT_20 = new Font(Collections.GLOBAL, "PIRATE_FONT_20", "fonts/Font_20");
         }
-        
-        
+
+        public static class Music
+        {
+            public static readonly Track PirateSong = new Track(Collections.GLOBAL, "PirateSong", "music/song");
+        }
+
+
     }
 
 }
