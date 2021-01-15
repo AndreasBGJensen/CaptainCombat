@@ -1,12 +1,11 @@
-﻿using dotSpace.Objects.Network;
+﻿using dotSpace.Interfaces.Space;
+using dotSpace.Objects.Network;
 
 namespace StaticGameLogic_Library.Singletons
 {
     public sealed class Connection
     {
 
-        private static readonly Connection instance = new Connection();
-        private RemoteSpace space = null;
         private string user = null;
      
         // TODO: Change this to uint
@@ -15,15 +14,10 @@ namespace StaticGameLogic_Library.Singletons
         private Connection()
         {
         }
-        public static Connection Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        public static Connection Instance { get; } = new Connection();
 
-        public RemoteSpace Space { get => space; set => space = value; }
+        public ISpace Space { get; set; }
+
         public string User { get => user; set => user = value; }
 
         public int User_id { get => user_id; set => user_id = value; }

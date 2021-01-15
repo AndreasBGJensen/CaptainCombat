@@ -1,11 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using dotSpace.Objects.Network;
-using dotSpace.Objects.Space;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using dotSpace.Interfaces.Space;
 using StaticGameLogic_Library.Singletons;
@@ -20,7 +15,7 @@ namespace CaptainCombat.states
         public override void Run()
         {
             Connection connecting = Connection.Instance;
-            RemoteSpace space = connecting.Space;
+            ISpace space = connecting.Space;
 
 
             Console.Write("User in server: ");

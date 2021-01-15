@@ -11,10 +11,10 @@ namespace RemoteServer.Collector
 {
      class TupleCollector : CollectorClass, ICollector
     {
-        private SequentialSpace mySpace;
+        private ISpace mySpace;
         private ArrayCreator creator;
 
-        public TupleCollector(ArrayCreator creator, SequentialSpace space)
+        public TupleCollector(ArrayCreator creator, ISpace space)
         {
             this.creator = creator;
             mySpace = space;
