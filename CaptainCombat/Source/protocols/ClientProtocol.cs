@@ -52,6 +52,10 @@ namespace CaptainCombat.Source.protocols
             return DomainState.Instance.Clients;
         }
 
+        public static IEnumerable<ITuple> GetAllClientScores()
+        {
+            return DomainState.Instance.ClientScores;
+        }
 
         public static IEnumerable<ITuple> GetAllUsersMessages()
         {
@@ -84,6 +88,14 @@ namespace CaptainCombat.Source.protocols
                 Console.WriteLine(e.Message);
             }
         }
+
+        public static void AddClientScoreToServer(int clientScore)
+        {
+            Connection connecting = Connection.Instance;
+            RemoteSpace space = connecting.Space;
+            space.Put("score", Connection.Instance.User_id, clientScore);
+        }
+
 
         public static bool isValidName(string username)
         {

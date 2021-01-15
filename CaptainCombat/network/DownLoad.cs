@@ -30,9 +30,12 @@ namespace CaptainCombat.network
                 IEnumerable<ITuple> gameData = Connection.Instance.Space.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string));
                 IEnumerable<ITuple> messageData = Connection.Instance.Space.QueryAll("chat", typeof(int),typeof(string));
                 IEnumerable<ITuple> clientsInGame = Connection.Instance.Space.QueryAll("usersInGame", typeof(int), typeof(string));
+                IEnumerable<ITuple> allClientScores = Connection.Instance.Space.QueryAll("allClientScores", typeof(int), typeof(int));
+
 
                 DomainState.Instance.Messages = messageData;
                 DomainState.Instance.Clients = clientsInGame;
+                DomainState.Instance.ClientScores = allClientScores;
 
                 DomainState.Instance.Domain.update(gameData);
                 watch.Stop();

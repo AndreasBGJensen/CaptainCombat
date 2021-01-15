@@ -1,6 +1,7 @@
 ﻿using CaptainCombat.network;
 using CaptainCombat.singletons;
 using CaptainCombat.Source.Components;
+using CaptainCombat.Source.protocols;
 using CaptainCombat.Source.Scenes;
 using CaptainCombat.Source.Utility;
 using ECS;
@@ -25,6 +26,7 @@ namespace CaptainCombat.Source.GameLayers
         private Keys[] LastPressedKeys = new Keys[5];
 
         private Entity Ship;
+        private int currentScore = 0;
 
         private State ParentState;
         Game Game;
@@ -151,6 +153,10 @@ namespace CaptainCombat.Source.GameLayers
             if (key == Keys.Tab)
             {
                 DisableKeyboard = !DisableKeyboard;
+            }else if(key == Keys.Add)
+            {
+                currentScore++;
+                ClientProtocol.AddClientScoreToServer(currentScore);
             }
         }
     }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ECS.Domain;
 
 namespace CaptainCombat.Source.GameLayers
 {
@@ -18,7 +19,10 @@ namespace CaptainCombat.Source.GameLayers
         private Domain Domain = new Domain(); 
         private Camera Camera;
         private Game Game;
-        private State ParentState; 
+        private State ParentState;
+        private List<Entity> playerNames = new List<Entity>();
+        private List<Entity> playerScores = new List<Entity>();
+        private List<Entity> playerIcons = new List<Entity>();
         public Score(Game game, State state)
         {
             ParentState = state; 
@@ -29,14 +33,14 @@ namespace CaptainCombat.Source.GameLayers
 
         public override void init()
         {
-           
+            ClientProtocol.AddClientScoreToServer(0); 
         }
 
         public override void update(GameTime gameTime)
         {
             Domain.Clean();
 
-            // Updates chat if new message is added to remote space on server 
+            // Updates player names and icons if player is added to remote space on server 
             int clientInDomain = 0;
             Domain.ForMatchingEntities<Sprite, Transform>((entity) => {
                 clientInDomain++;
@@ -47,22 +51,45 @@ namespace CaptainCombat.Source.GameLayers
             {
                 if (clientInDomain < AllClientsIngame.Count())
                 {
-                    Domain.ForMatchingEntities<Text, Transform>((entity) => {
-                        entity.Delete();
-                    });
-
-                    Domain.ForMatchingEntities<Sprite, Transform>((entity) =>
+                    foreach(Entity icon in playerIcons)
                     {
-                        entity.Delete();
-                    });
+                        icon.Delete(); 
+                    }
+                    foreach (Entity playerName in playerNames)
+                    {
+                        playerName.Delete();
+                    }
+                    playerIcons.Clear();
+                    playerNames.Clear(); 
 
                     foreach (ITuple client in AllClientsIngame)
                     {
-                        EntityUtility.CreateIcon(Domain, (int)client[1]);
-                        EntityUtility.CreateMessage(Domain, (string)client[2], 0, 0, 16);
+                        playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client[1])); 
+                        playerNames.Add(EntityUtility.CreateMessage(Domain, (string)client[2], 0, 0, 16)); 
                     }
                 }
             }
+
+            IEnumerable<ITuple> AllPlayerScores = ClientProtocol.GetAllClientScores();
+            if (AllPlayerScores != null)
+            {   
+                foreach (Entity score in playerScores)
+                {
+                    score.Delete();
+                }
+                playerScores.Clear();
+
+                AllPlayerScores = AllPlayerScores.OrderBy(client => (int)client[1]); 
+                foreach (ITuple client in AllPlayerScores)
+                {
+                    playerScores.Add(EntityUtility.CreateMessage(Domain, ((int)client[2]).ToString(), 0, 0, 16));
+                }
+               
+            }
+
+
+
+
 
             Display(); 
         }
@@ -79,24 +106,41 @@ namespace CaptainCombat.Source.GameLayers
             // Display client names
             {
                 int placement_Y = -245;
-                Domain.ForMatchingEntities<Text, Transform>((entity) => {
-                    var transform = entity.GetComponent<Transform>();
+                foreach (Entity playerName in playerNames)
+                {
+                    var transform = playerName.GetComponent<Transform>();
                     transform.X = -565;
                     transform.Y = placement_Y;
                     placement_Y += 30;
-                });
+                }
             }
 
             // Display client icons
             {
                 int placement_Y = -230;
-                Domain.ForMatchingEntities<Sprite, Transform>((entity) => {
-                    var transform = entity.GetComponent<Transform>();
+                foreach (Entity icon in playerIcons)
+                {
+                    var transform = icon.GetComponent<Transform>();
                     transform.X = -585;
                     transform.Y = placement_Y;
                     placement_Y += 30;
-                });
+                }
             }
+
+            // Display client scores
+            {
+                int placement_Y = -245;
+               
+                foreach (Entity score in playerScores)
+                {
+                    var transform = score.GetComponent<Transform>();
+                    transform.X = -625;
+                    transform.Y = placement_Y;
+                    placement_Y += 30;
+                }
+            }
+
+
         }
     }
 }
