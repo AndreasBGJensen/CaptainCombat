@@ -1,10 +1,11 @@
 ﻿
-namespace CaptainCombat.Common {
+namespace CaptainCombat.Common
+{
 
     public static class ConnectionInfo {
 
         // Set to 'true' to activate localhost server
-        public static readonly bool LOCAL_SERVER = true;
+        public static readonly bool LOCAL_SERVER = false;
 
         public static readonly uint PORT = 5000;
 
