@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaptainCombat", "CaptainCombat\CaptainCombat.csproj", "{6D3AEB20-2AAB-4EE7-A43D-E86F97EABB34}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteServer", "RemoteServer\RemoteServer.csproj", "{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{DC718910-E7DF-44D1-BB93-8CB40F9128C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingTester", "PingTester\PingTester.csproj", "{E0279C23-20E7-4A87-8997-A860213E9A25}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticGameLogic_Library", "StaticGameLogic_Library\StaticGameLogic_Library.csproj", "{CB358B63-1DDF-405F-B12F-281DAADFC1F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{CB358B63-1DDF-405F-B12F-281DAADFC1F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,18 +15,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6D3AEB20-2AAB-4EE7-A43D-E86F97EABB34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D3AEB20-2AAB-4EE7-A43D-E86F97EABB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D3AEB20-2AAB-4EE7-A43D-E86F97EABB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D3AEB20-2AAB-4EE7-A43D-E86F97EABB34}.Release|Any CPU.Build.0 = Release|Any CPU
 		{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{839B0ADA-EBA8-451E-B127-F5713FFB5DBA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0279C23-20E7-4A87-8997-A860213E9A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0279C23-20E7-4A87-8997-A860213E9A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0279C23-20E7-4A87-8997-A860213E9A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0279C23-20E7-4A87-8997-A860213E9A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC718910-E7DF-44D1-BB93-8CB40F9128C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC718910-E7DF-44D1-BB93-8CB40F9128C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC718910-E7DF-44D1-BB93-8CB40F9128C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC718910-E7DF-44D1-BB93-8CB40F9128C8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB358B63-1DDF-405F-B12F-281DAADFC1F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB358B63-1DDF-405F-B12F-281DAADFC1F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB358B63-1DDF-405F-B12F-281DAADFC1F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
