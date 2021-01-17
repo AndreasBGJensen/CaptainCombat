@@ -4,6 +4,8 @@ using CaptainCombat.Common.Singletons;
 using System;
 using System.Collections.Generic;
 using Tuple = dotSpace.Objects.Space.Tuple;
+using CaptainCombat.Common;
+using System.Net.Sockets;
 
 namespace CaptainCombat.Client.protocols
 {
@@ -12,13 +14,25 @@ namespace CaptainCombat.Client.protocols
 
         public static void Connect()
         {
-            Console.WriteLine("Connected to server");
+            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/" + ConnectionInfo.SPACE_NAME + "?KEEP";
+            Console.WriteLine($"Connecting to server at '{serverUrl}'...");
 
-            string uri = "tcp://127.0.0.1:5000/space?KEEP";
-            //string uri = "tcp://49.12.75.251:5000/space?KEEP";
-            ISpace space = new RemoteSpace(uri);
+            ISpace space = new RemoteSpace(serverUrl);
+
+            try {
+                // Connection is made first time some request is being made
+                space.QueryP("disregard this string content");
+            }
+            catch (SocketException e) {
+                // TODO: Handle connection issues here
+                Console.WriteLine("Connection to server failed\n");
+                throw e;
+            }
+
             Connection connecting = Connection.Instance;
             connecting.Space = space;
+
+            Console.WriteLine("Connection to server succeeded\n");
         }
 
         public static List<string> GetAllUsers()

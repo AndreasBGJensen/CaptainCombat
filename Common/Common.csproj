@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\ConnectionInfo.cs" />
     <Compile Include="Source\Game\DataObject.cs" />
     <Compile Include="Source\Singletons\Connection.cs" />
     <Compile Include="Source\Singletons\DomainState.cs" />

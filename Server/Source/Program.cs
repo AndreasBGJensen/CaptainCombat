@@ -5,33 +5,27 @@ using dotSpace.Objects.Space;
 using CaptainCombat.Server.Mapmaker;
 using CaptainCombat.Server.threads;
 using CaptainCombat.Common.Singletons;
+using CaptainCombat.Common;
 
 namespace CaptainCombat.Server
 {
 
     class Program
     {
-        private static bool test_mode = true;
-        static GlobalInfo info = new GlobalInfo();
         static void Main(string[] args)
         {
+            // TODO: Try to remove the "space"
+            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
 
-            string uri;
-            if (test_mode) {
-               
-                uri = info.test_URI;
-            }
-            else {
-                uri = info.server_URI;
-            }
-            Console.WriteLine(uri);
+            Console.WriteLine($"Launching server at '{serverUrl}'");
 
             SpaceRepository repository = new SpaceRepository();
-            repository.AddGate(uri);
+            repository.AddGate(serverUrl);
             SequentialSpace space = new SequentialSpace();
-            repository.AddSpace("space", space);
-            Console.WriteLine("Start Gameserver");
+            repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
             Connection.Instance.Space = space;
+
+            Console.WriteLine("Server started");
 
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));

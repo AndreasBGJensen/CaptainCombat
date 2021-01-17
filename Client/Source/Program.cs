@@ -7,8 +7,10 @@ namespace CaptainCombat.Client
         [STAThread]
         static void Main(string[] args) {
 
-            Console.ReadLine(); 
-
+            Console.WriteLine("Press any key to start client");
+            Console.ReadKey();
+            Console.WriteLine("Starting client\n");
+                
             using (var game = new GameController())
                 game.Run();
         }

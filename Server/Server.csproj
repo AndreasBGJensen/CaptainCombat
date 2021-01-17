@@ -54,7 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Collector\Helpers\ArrayCreator.cs" />
-    <Compile Include="Source\GlobalInfo.cs" />
     <Compile Include="Source\Collector\CollectorClass.cs" />
     <Compile Include="Source\Collector\TupleCollectorParallel.cs" />
     <Compile Include="Source\Collector\TupleCollector.cs" />
