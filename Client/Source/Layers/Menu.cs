@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
+using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.MenuLayers
 {
@@ -79,7 +80,7 @@ namespace CaptainCombat.Client.MenuLayers
             // Changes state when condition is true 
             if (ChangeState)
             {
-                ParentState._context.TransitionTo(new GameState(Game));
+                ParentState._context.TransitionTo(new LobbyState(Game));
             }
         }
 
