@@ -1,4 +1,8 @@
 ﻿using CaptainCombat.Common;
+using CaptainCombat.Server.Collector;
+using CaptainCombat.Server.Collector.Helpers;
+using CaptainCombat.Server.Source.threads;
+using CaptainCombat.Server.threads;
 using dotSpace.Interfaces.Space;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
@@ -17,7 +21,10 @@ namespace CaptainCombat.Server.Source.LobbyContent
         public string spaceID { get; set; }
         public string creator { get; set; }
 
-        private readonly int MAX_NUM_PLAYERS = 3;
+        private readonly int MAX_NUM_SUBSCRIBERS = 4;
+
+        private ClientScores clientScores;
+        private StreemComponents streemComponent;
 
         public Lobby(SpaceRepository repository)
         {
@@ -39,10 +46,9 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         private void CreateUrl(int user_id)
         {
-           
             //TODO: Because remoteSpace are only able to connect to a spase, contaning letters we converet the user_id to a char.
             //This only alows us to have 20 players
-            int unicode = user_id * 100;
+            int unicode = user_id + 100;
             char character = (char)unicode;
             spaceID = character.ToString();
             
@@ -58,16 +64,29 @@ namespace CaptainCombat.Server.Source.LobbyContent
         private void AddGameLobby()
         {
             lobby = new SequentialSpace();
-           ReservePlayersToSpace(lobby, MAX_NUM_PLAYERS);
+            ReservePlayersToSpace(lobby, MAX_NUM_SUBSCRIBERS);
             repository.AddSpace(spaceID, lobby);
+
+            //Initialize streeming components
+            clientScores = new ClientScores(lobby);
+            streemComponent = new StreemComponents(lobby);
         }
+
 
         private void ReservePlayersToSpace(SequentialSpace space, int players_to_reserve)
         {
             for(int i = 0;i < players_to_reserve; i++)
             {
-                space.Put("Player", typeof(int), typeof(string));
+                space.Put("lock");
+                space.Put("player", typeof(int), typeof(string));
             } 
+        }
+
+
+        public void RunProtocol()
+        {
+            clientScores.RunProtocol();
+            streemComponent.RunProtocol();
         }
     }
 }

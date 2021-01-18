@@ -10,6 +10,7 @@ using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
 using dotSpace.Interfaces.Space;
+using System;
 
 namespace CaptainCombat.Client.Source.Layers
 {
@@ -80,7 +81,9 @@ namespace CaptainCombat.Client.Source.Layers
             }
             lobbies.Clear();
 
-            IEnumerable<ITuple> serverLobbies = ClientProtocol.GetAllLobbys(); 
+            IEnumerable<ITuple> serverLobbies = ClientProtocol.GetAllLobbys();
+
+
             foreach (ITuple lobby in serverLobbies)
             {
                 lobbies.Add(EntityUtility.CreateMessage(Domain, "Test", 0, 0, 14));

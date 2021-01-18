@@ -30,32 +30,28 @@ namespace CaptainCombat.Server
 
              Console.WriteLine("Server started");
 
-
-
-            EntryLobby entry = new EntryLobby();
-
-
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
 
-           
+            EntryLobby entry = new EntryLobby();
 
-            ClientScores newClientScoreProtocol = new ClientScores();
+
+            /*ClientScores newClientScoreProtocol = new ClientScores();
             Thread newClientScoreThread = new Thread(new ThreadStart(newClientScoreProtocol.RunProtocol));
-            newClientScoreThread.Start();
+            newClientScoreThread.Start();*/
 
 
-            Game game = new Game();
+           // Game game = new Game();
             //IEntity entity = new Rocks(10);
             //game.ComputerInit += entity.OnComputerInit;
 
-            game.Init();
+           // game.Init();
 
 
-            Serialization serializationProtocol = new Serialization();
+           /* Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
-            serializationThread.Start();
+            serializationThread.Start();*/
         }
     }
 }

@@ -1,26 +1,34 @@
 ﻿using CaptainCombat.Common.Singletons;
 using dotSpace.Interfaces.Space;
+using dotSpace.Objects.Space;
+using System.Threading;
 
 namespace CaptainCombat.Server.threads
 {
     class ClientScores
     {
-        public ClientScores()
-        {
+        private SequentialSpace space;
 
+        public ClientScores(SequentialSpace lobbySpace)
+        {
+            this.space = lobbySpace;
         }
 
         public void RunProtocol()
         {
-            while (true)
+            new Thread(() =>
             {
-                // From client 
-                ITuple result = Connection.Instance.Space.Get("score", typeof(int), typeof(int));
+                while (true)
+                {
+                    // From client 
+                    ITuple result = space.Get("score", typeof(int), typeof(int));
 
-                // Update score in space 
-                ITuple clientScore = Connection.Instance.Space.GetP("allClientScores", (int)result[1], typeof(int));
-                Connection.Instance.Space.Put("allClientScores", (int)result[1], (int)result[2]);
-            }
+                    // Update score in space 
+                    ITuple clientScore = space.GetP("allClientScores", (int)result[1], typeof(int));
+                    space.Put("allClientScores", (int)result[1], (int)result[2]);
+                }
+            });
+           
         }
     }
 }

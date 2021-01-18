@@ -16,9 +16,10 @@ namespace CaptainCombat.Server.Source.LobbyContent
         
         public static bool AddLobby(Lobby lobbyToadd)
         {
-            if (lobbys.TryAdd(lobbyToadd.spaceID, lobbyToadd))
+            if (lobbys.TryAdd(lobbyToadd.lobbyUrl, lobbyToadd))
                 {
                 Connection.Instance.Space.Put("existingLobby", lobbyToadd.spaceID, lobbyToadd.creator, lobbyToadd.lobbyUrl);
+                Console.WriteLine(String.Format("Lobby created by: {0} is now open", lobbyToadd.creator));
                  return true;   
                 }
             return false;

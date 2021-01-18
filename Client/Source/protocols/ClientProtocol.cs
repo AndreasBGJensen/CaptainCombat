@@ -58,10 +58,11 @@ namespace CaptainCombat.Client.protocols
         public static IEnumerable<ITuple> GetAllLobbys()
         {
 
-
             return Connection.Instance.Space.QueryAll("existingLobby", typeof(string), typeof(string), typeof(string));
 
         }
+
+
         public static bool CreateLobby()
         {
             string username = Connection.Instance.User;
@@ -80,6 +81,53 @@ namespace CaptainCombat.Client.protocols
             Connection.Instance.Space = Connection.Instance.lobbySpace;
 
             return true;
+        }
+
+
+        public static void BeginMatch()
+        {
+            Connection.Instance.Space.Get("lock");
+            Connection.Instance.Space.Put("start");
+            Connection.Instance.Space.Put("lock");
+        }
+
+        public static bool SubscribeForLobby(string lobbyUrl)
+        {
+            RemoteSpace lobbySpace = new RemoteSpace(lobbyUrl);
+            lobbySpace.Get("lock");
+            ITuple playerTuple = lobbySpace.GetP("player", typeof(int), typeof(string));
+
+            //Means that that there is no sluts left in the lobby
+            if(playerTuple == null)
+            {
+                lobbySpace.Put("lock");
+                return false;
+            }
+
+            //Changing the space to the selected lobbyspace
+            Connection.Instance.lobbySpace = lobbySpace;
+            Connection.Instance.Space = Connection.Instance.lobbySpace;
+            lobbySpace.Put("lock");
+
+            return true;
+        }
+
+        public static int GetNumberOfSubscribersInALobby(string lobbyUrl)
+        {
+            RemoteSpace lobbySpace = new RemoteSpace(lobbyUrl);
+            IEnumerable<ITuple> subscriberTuple = lobbySpace.QueryAll("player", typeof(int), typeof(string));
+
+            //TODO: See if there is a better way
+            int count = 0;
+
+            foreach(ITuple subscriber in subscriberTuple)
+            {
+                count++;
+            }
+
+            //TODO: Find global state for max number of subscribers in a lobby
+            //The default is 4 and is set in the lobbyClass on the Server
+            return count;
         }
 
         public static IEnumerable<ITuple> GetAllClients()
@@ -141,7 +189,5 @@ namespace CaptainCombat.Client.protocols
             }
             return true; 
         }
-
-
     }
 }

@@ -154,9 +154,9 @@ namespace CaptainCombat.Client.Source.Layers
                     break;
                 case 1:
                     {
-                        IEnumerable<ITuple> allLobies = ClientProtocol.GetAllLobbys(); 
-
-                        if(allLobies.Count() != 0)
+                        IEnumerable<ITuple> allLobies = ClientProtocol.GetAllLobbys();
+                        
+                        if (allLobies.Count() != 0)
                         {
                             DisableKeyboard = !DisableKeyboard;
                             var info = clientInformation.GetComponent<Text>();
