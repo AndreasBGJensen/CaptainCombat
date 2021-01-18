@@ -25,6 +25,9 @@ namespace CaptainCombat.Server
             repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
             Connection.Instance.Space = space;
 
+            // TODO: Move this adding of lock to approriate place
+            space.Put("life-lock");
+
             Console.WriteLine("Server started");
 
             NewUsers newUserProtocol = new NewUsers();

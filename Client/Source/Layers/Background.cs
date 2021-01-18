@@ -12,6 +12,8 @@ using CaptainCombat.Common.JsonBuilder;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.NetworkEvent;
 using System;
+using System.Threading.Tasks;
+using CaptainCombat.Client.Source.Layers;
 
 namespace CaptainCombat.Client.GameLayers
 {
@@ -25,44 +27,105 @@ namespace CaptainCombat.Client.GameLayers
         private bool playMusic = true;
         private Keys[] LastPressedKeys = new Keys[5];
 
-        private Entity Ship;
+        private Entity ship;
         private int currentScore = 0;
+
+        private bool renderColliders = false;
+
+        private LifeController lifeController;
 
         private State ParentState;
         Game Game;
 
+        CollisionController collisionController = new CollisionController();
         
 
-        public Background(Game game, State state)
+        public Background(Game game, State state, LifeController lifeController)
         {
             ParentState = state; 
             Game = game; 
             Camera = new Camera(Domain);
+            this.lifeController = lifeController;
             DomainState.Instance.Domain = Domain; 
             init(); 
         }
 
-        public class TestEvent : Event {
-            public string msg = "";
-        }
 
         public override void init()
         {
-            EventController.AddListener<TestEvent>(e => {
-                Console.WriteLine("Received event: " + e.msg);
+
+            collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.ROCK, (ship, rock) => {
+                // Only detect this with own collision
+                if (ship != this.ship) return false;
+
+                var health = ship.GetComponent<ShipHealth>();
+                if (health.Current <= 0) return false;
+
+                health.Current = 0;
+                ship.GetComponent<Sprite>().Enabled = false;                
+                ship.GetComponent<BoxCollider>().Enabled = false;
+                ship.GetComponent<Move>().Enabled = false;
+
+                if( lifeController.GetOwnLives() > 1 )
+                    Respawn();
+
+                lifeController.DecrementLife();
+
                 return true;
             });
 
-            {
-                var e = new TestEvent();
-                e.Receiver = (uint)Connection.Instance.User_id;
-                e.msg = "Hello from client " + Connection.Instance.User_id;
-                EventController.Send(e);
-            }
+
+            //EventController.AddListener<ProjectileCollisionEvent>((e) => {
+            //    Console.WriteLine($"Collision event from Client {e.Sender}");
+
+            //    var projectile = domain.GetEntity(e.ProjectileId);
+            //    if (projectile == null) return false;
+
+            //    var projectileComp = projectile.GetComponent<Projectile>();
+            //    if (projectileComp.HasHit) return false;
+            //    projectileComp.HasHit = true;
+
+            //    Collider collider = projectile.GetComponent<BoxCollider>();
+            //    if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+            //    collider.Enabled = false;
+
+            //    projectile.Delete();
+            //    EventController.Send(new ProjectileEffectEvent(e.TargetId.clientId, e.TargetId, 100));
+
+            //    return true;
+            //});
+            
+
+            //EventController.AddListener<ProjectileEffectEvent>((e) => {
+            //    Console.WriteLine($"Damage event from client {e.Sender}: {e.Damage} damage on Entity {e.TargetId.objectId}");
+            //    return true;
+            //});
+
+
+            //collisionController.AddListener(Assets.ColliderTags.ROCK, Assets.ColliderTags.PROJECTILE, (rock, projectile) => {
+            //    if (projectile.IsLocal) projectile.Delete();
+            //    return true;
+            //});
+
+
+            //collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
+            //    if ((ship.IsLocal && !projectile.IsLocal) || (!ship.IsLocal && projectile.IsLocal)) {
+            //        Collider collider = projectile.GetComponent<BoxCollider>();
+            //        if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+            //        collider.Enabled = false;
+            //        projectile.GetComponent<Sprite>().Enabled = false;
+            //        projectile.GetComponent<Move>().Enabled = false;
+            //        EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
+            //        Console.WriteLine("Sent collision event");
+            //        return true;
+            //    }
+            //    return false;
+            //});
 
             EventController.Start();
             
-            Ship = EntityUtility.CreateShip(Domain, Connection.Instance.User_id, 1); 
+            ship = EntityUtility.CreateShip(Domain, Connection.Instance.User_id, 1);
+            SpawnShip();
         }
 
         public override void update(GameTime gameTime)
@@ -89,7 +152,7 @@ namespace CaptainCombat.Client.GameLayers
             if (!DisableKeyboard)
             {
                 {
-                    var move = Ship.GetComponent<Move>();
+                    var move = ship.GetComponent<Move>();
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     {
@@ -117,17 +180,54 @@ namespace CaptainCombat.Client.GameLayers
 
             // Update camera to ship
             {
-                var transform = Ship.GetComponent<Transform>();
-                Camera.Position = transform.Position;
+                var transform = ship.GetComponent<Transform>();
+                var difference = transform.Position - Camera.Position;
+                Camera.Position += difference * 0.05;
             }
 
 
             // Update movement in domain 
             Movement.Update(Domain, seconds);
+            collisionController.CheckCollisions(Domain);
 
             Domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
             EventController.Flush();
+
+        }
+        
+
+        private async void Respawn() {
+            await Task.Delay(4000);
+            SpawnShip();
+        }
+
+        /// <summary>
+        /// Spawns the Player's ship at some location (center for now)
+        /// </summary>
+        private void SpawnShip() {
+            // TODO: Change ship spawn
+
+
+            var health = ship.GetComponent<ShipHealth>();
+            health.Current = health.Max;
+            health.DeathHandled = false;
+
+            var transform = ship.GetComponent<Transform>();
+            transform.Position = Vector.Zero;
+            transform.Rotation = 0;
+
+            var move = ship.GetComponent<Move>();
+            move.Velocity = Vector.Zero;
+            move.RotationVelocity = 0;
+            move.Acceleration = Vector.Zero;
+            move.Enabled = true;
+
+            var sprite = ship.GetComponent<Sprite>();
+            sprite.Enabled = true;
+
+            var collider = ship.GetComponent<BoxCollider>();
+            collider.Enabled = true;
         }
 
         
@@ -135,6 +235,8 @@ namespace CaptainCombat.Client.GameLayers
         {
             Renderer.RenderSprites(Domain, Camera);
             Renderer.RenderText(Domain, Camera);
+            if (renderColliders)
+                Renderer.RenderColliders(Domain, Camera);
         }
 
         public void GetKeys()
@@ -186,6 +288,8 @@ namespace CaptainCombat.Client.GameLayers
                 effect.Play(); 
             }
 
+            if (key == Keys.C)
+                renderColliders = !renderColliders;
 
         }
     }

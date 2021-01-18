@@ -7,6 +7,8 @@ using System.Linq;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
+using CaptainCombat.Client.Source.Layers;
+using CaptainCombat.Common.Singletons;
 
 namespace CaptainCombat.Client.GameLayers
 {
@@ -15,15 +17,14 @@ namespace CaptainCombat.Client.GameLayers
 
         private Domain Domain = new Domain(); 
         private Camera Camera;
-        private Game Game;
-        private State ParentState;
         private List<Entity> playerNames = new List<Entity>();
         private List<Entity> playerScores = new List<Entity>();
         private List<Entity> playerIcons = new List<Entity>();
-        public Score(Game game, State state)
+        private LifeController lifeController;
+
+        public Score(Game game, State state, LifeController lifeController)
         {
-            ParentState = state; 
-            Game = game; 
+            this.lifeController = lifeController;
             Camera = new Camera(Domain);
             init();
         }
@@ -43,50 +44,36 @@ namespace CaptainCombat.Client.GameLayers
                 clientInDomain++;
             });
 
+            var currentLives = lifeController.GetLives();
+
+            //System.Console.WriteLine("Current lives: " + currentLives[(uint)Connection.Instance.User_id]);
+
             IEnumerable<ITuple> AllClientsIngame = ClientProtocol.GetAllClients();
             if (AllClientsIngame != null)
             {
-                if (clientInDomain < AllClientsIngame.Count())
-                {
-                    foreach(Entity icon in playerIcons)
-                    {
-                        icon.Delete(); 
-                    }
-                    foreach (Entity playerName in playerNames)
-                    {
-                        playerName.Delete();
-                    }
-                    playerIcons.Clear();
-                    playerNames.Clear(); 
-
-                    foreach (ITuple client in AllClientsIngame)
-                    {
-                        playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client[1])); 
-                        playerNames.Add(EntityUtility.CreateMessage(Domain, (string)client[2], 0, 0, 16)); 
-                    }
-                }
-            }
-
-            IEnumerable<ITuple> AllPlayerScores = ClientProtocol.GetAllClientScores();
-            if (AllPlayerScores != null)
-            {   
+                foreach(Entity icon in playerIcons)   
+                    icon.Delete(); 
+                foreach (Entity playerName in playerNames)
+                    playerName.Delete();
                 foreach (Entity score in playerScores)
-                {
                     score.Delete();
-                }
+
                 playerScores.Clear();
+                playerIcons.Clear();
+                playerNames.Clear(); 
 
-                AllPlayerScores = AllPlayerScores.OrderBy(client => (int)client[1]); 
-                foreach (ITuple client in AllPlayerScores)
+                foreach (ITuple client in AllClientsIngame)
                 {
-                    playerScores.Add(EntityUtility.CreateMessage(Domain, ((int)client[2]).ToString(), 0, 0, 16));
+                    var id = (uint)(int)client[1];
+                    var name = (string)client[2];
+                    var lives = currentLives.ContainsKey(id) ? currentLives[id] : 0;
+
+                    playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client[1])); 
+                    playerNames.Add(EntityUtility.CreateMessage(Domain, (string)client[2], 0, 0, 16));
+                    playerScores.Add(EntityUtility.CreateMessage(Domain, lives.ToString(), 0, 0, 16));
+
                 }
-               
             }
-
-
-
-
 
             Display(); 
         }
@@ -140,4 +127,6 @@ namespace CaptainCombat.Client.GameLayers
 
         }
     }
+
+
 }

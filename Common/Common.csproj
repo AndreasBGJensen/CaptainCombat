@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Components\ShipHealth.cs" />
     <Compile Include="Source\ConnectionInfo.cs" />
     <Compile Include="Source\Game\DataObject.cs" />
     <Compile Include="Source\Singletons\Connection.cs" />

@@ -23,7 +23,7 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
                 RockElement rock = new RockElement();
                 double x        = RandomGenerator.Double(-750, 750.0);
                 double y        = RandomGenerator.Double(-750, 750.0);
-                double scale    = RandomGenerator.Double(0.25, 2.5);
+                double scale    = RandomGenerator.Double(0.5, 1.5);
                 double rotation = RandomGenerator.Double(0, 360);
 
                 do

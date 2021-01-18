@@ -3,6 +3,7 @@ using CaptainCombat.Client.GameLayers;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Threading;
+using CaptainCombat.Client.Source.Layers;
 
 namespace CaptainCombat.Client.Scenes
 {
@@ -19,9 +20,10 @@ namespace CaptainCombat.Client.Scenes
 
         public GameState(Game game)
         {
-            Game = game; 
-            Layers.Add(new Background(game, this));
-            Layers.Add(new Score(game, this));
+            Game = game;
+            LifeController lifeController = new LifeController();
+            Layers.Add(new Background(game, this, lifeController));
+            Layers.Add(new Score(game, this, lifeController));
             Layers.Add(new Chat(game, this));
 
             Upload = new Upload();

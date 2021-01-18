@@ -140,8 +140,17 @@ namespace CaptainCombat.Common {
 
             var move = entity.AddComponent(new Move());
             move.Resistance = 0.25;
-            move.RotationResistance = 0.75;
+            move.RotationResistance = 0.80;
             move.ForwardVelocity = true;
+
+            var health = entity.AddComponent(new ShipHealth());
+            health.Max = 100;
+            health.Current = health.Max;
+
+            var collider = entity.AddComponent(new BoxCollider());
+            collider.Width = 40;
+            collider.Height = 80;
+            collider.Tag = Assets.ColliderTags.SHIP;
 
             AddSpriteToShip(entity, clientId, damageLevel); 
 

@@ -91,7 +91,6 @@ namespace CaptainCombat.Client.NetworkEvent {
         }
 
 
-
         /// <summary>
         /// The listener delegate which is called upon receiving
         /// an Event of the given type
