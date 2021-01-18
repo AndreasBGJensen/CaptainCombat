@@ -31,7 +31,8 @@ namespace CaptainCombat.Client.protocols
             }
 
             Connection connecting = Connection.Instance;
-            connecting.Space = space;
+            connecting.globalSpace = space;
+            connecting.Space = connecting.globalSpace;
 
             Console.WriteLine("Connection to server succeeded\n");
         }
@@ -56,7 +57,7 @@ namespace CaptainCombat.Client.protocols
         {
 
 
-            return Connection.Instance.Space.QueryAll("createdLubby", typeof(string), typeof(string), typeof(string));
+            return Connection.Instance.Space.QueryAll("existingLobby", typeof(string), typeof(string), typeof(string));
 
         }
         public static bool CreateLobby()
@@ -67,13 +68,15 @@ namespace CaptainCombat.Client.protocols
             
             Connection.Instance.Space.Put("createLobby", username, user_id);
             //Blocking because we want to know if the lobby have been created
-            ITuple response = Connection.Instance.Space.Get("createdLubby", user_id, typeof(string), typeof(string));
+            ITuple response = Connection.Instance.Space.Get("lobbyCreationResponse", user_id, typeof(string), typeof(string));
             string url = (string)response[3];
             if (!url.Contains("tcp"))
             {
                 return false;
             }
             Connection.Instance.lobbySpace = new RemoteSpace(url);
+            Connection.Instance.Space = Connection.Instance.lobbySpace;
+
             return true;
         }
 

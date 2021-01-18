@@ -14,7 +14,6 @@ namespace CaptainCombat.Server.Source.LobbyContent
 {
     class EntryLobby
     {
-        SpaceRepository repository;
         public EntryLobby()
         {
             InitEntry();
@@ -22,7 +21,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         public void InitEntry()
         {
-            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
+          /*  string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "?KEEP";
 
             Console.WriteLine($"Launching server at '{serverUrl}'");
             Console.WriteLine("Lobby is listening...");
@@ -32,9 +31,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
             repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
             Connection.Instance.Space = space;
 
-            Console.WriteLine("Server started");
-           
-            
+            Console.WriteLine("Server started");*/
             
             ListenForLobbyRequests();
         }
@@ -49,10 +46,11 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
                     if(lobbyReuests!= null)
                     {
-                        Lobby newLobby = new Lobby(repository);
+                        
                         Console.WriteLine("Handling lobby request");
                         foreach(ITuple request in lobbyReuests)
                         {
+                            Lobby newLobby = new Lobby(Connection.Instance.repository);
                             Connection.Instance.Space.Put(newLobby.CreateLobby((string)request[1], (int)request[2]));
 
 

@@ -1,4 +1,5 @@
 ﻿using dotSpace.Interfaces.Space;
+using dotSpace.Objects.Network;
 
 namespace CaptainCombat.Common.Singletons {
 
@@ -18,6 +19,10 @@ namespace CaptainCombat.Common.Singletons {
         public ISpace Space { get; set; }
 
         public ISpace lobbySpace { get; set; }
+
+        public ISpace globalSpace { get; set; }
+
+        public SpaceRepository repository { get; set; }
 
         public string User { get => user; set => user = value; }
 

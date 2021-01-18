@@ -18,7 +18,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
         {
             if (lobbys.TryAdd(lobbyToadd.spaceID, lobbyToadd))
                 {
-                Connection.Instance.Space.Put("createdLubby", lobbyToadd.spaceID, lobbyToadd.creator, lobbyToadd.lobbyUrl);
+                Connection.Instance.Space.Put("existingLobby", lobbyToadd.spaceID, lobbyToadd.creator, lobbyToadd.lobbyUrl);
                  return true;   
                 }
             return false;

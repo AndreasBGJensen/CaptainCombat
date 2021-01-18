@@ -15,7 +15,7 @@ namespace TestApp
     {
         static void Main(string[] args)
         {
-            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/" + ConnectionInfo.SPACE_NAME + "?KEEP";
+            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS  + "/space?KEEP";
             Console.WriteLine($"Connecting to server at '{serverUrl}'...");
 
             ISpace space = new RemoteSpace(serverUrl);
@@ -42,8 +42,18 @@ namespace TestApp
             connecting.Space.Put("createLobby", "Per", 2);
             connecting.Space.Put("createLobby", "Hans",3);
 
-            ITuple respons = connecting.Space.Get("lobbyResponse", 1, "Andreas", typeof(string));
+            ITuple respons = connecting.Space.Get("lobbyCreationResponse", 1, "Andreas", typeof(string));
+
+            string url = (string)respons[3];
+            if (!url.Contains("tcp"))
+            {
+                Console.WriteLine("No url");
+            }
             GetAllLobbys(connecting.Space);
+            Connection.Instance.lobbySpace = new RemoteSpace(url);
+            Connection.Instance.Space = Connection.Instance.lobbySpace;
+
+            IEnumerable<ITuple> players = Connection.Instance.Space.GetAll("Player", typeof(int), typeof(string));
 
 
             Console.ReadLine();
@@ -52,10 +62,10 @@ namespace TestApp
 
         static void GetAllLobbys(ISpace space)
         {
-            IEnumerable<ITuple> allLobbyes = space.QueryAll("createdLubby", typeof(string), typeof(string), typeof(string));
+            IEnumerable<ITuple> allLobbyes = space.QueryAll("existingLobby", typeof(string), typeof(string), typeof(string));
             foreach(ITuple x in allLobbyes)
             {
-                Console.WriteLine((string)x[1] + (string)x[2], (string)x[3]);
+                Console.WriteLine((string)x[1] + (string)x[2] + (string)x[3]);
             }
 
 

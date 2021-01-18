@@ -17,26 +17,29 @@ namespace CaptainCombat.Server
         static void Main(string[] args)
         {
             // TODO: Try to remove the "space"
-            /*string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
+            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
 
-            Console.WriteLine($"Launching server at '{serverUrl}'");
+             Console.WriteLine($"Launching server at '{serverUrl}'");
 
-            SpaceRepository repository = new SpaceRepository();
-            repository.AddGate(serverUrl);
-            SequentialSpace space = new SequentialSpace();
-            repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
-            Connection.Instance.Space = space;
+             SpaceRepository repository = new SpaceRepository();
+             repository.AddGate(serverUrl);
+             SequentialSpace space = new SequentialSpace();
+             repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
+             Connection.Instance.Space = space;
+            Connection.Instance.repository = repository;
 
-            Console.WriteLine("Server started");*/
+             Console.WriteLine("Server started");
+
+
 
             EntryLobby entry = new EntryLobby();
-
-
 
 
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
+
+           
 
             ClientScores newClientScoreProtocol = new ClientScores();
             Thread newClientScoreThread = new Thread(new ThreadStart(newClientScoreProtocol.RunProtocol));
