@@ -10,6 +10,8 @@ using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using CaptainCombat.Common.JsonBuilder;
 using static CaptainCombat.Common.Domain;
+using CaptainCombat.Client.NetworkEvent;
+using System;
 
 namespace CaptainCombat.Client.GameLayers
 {
@@ -40,8 +42,26 @@ namespace CaptainCombat.Client.GameLayers
             init(); 
         }
 
+        public class TestEvent : Event {
+            public string msg = "";
+        }
+
         public override void init()
         {
+            EventController.AddListener<TestEvent>(e => {
+                Console.WriteLine("Received event: " + e.msg);
+                return true;
+            });
+
+            {
+                var e = new TestEvent();
+                e.Receiver = (uint)Connection.Instance.User_id;
+                e.msg = "Hello from client " + Connection.Instance.User_id;
+                EventController.Send(e);
+            }
+
+            EventController.Start();
+            
             Ship = EntityUtility.CreateShip(Domain, Connection.Instance.User_id, 1); 
         }
 
@@ -106,8 +126,8 @@ namespace CaptainCombat.Client.GameLayers
             Movement.Update(Domain, seconds);
 
             Domain.Clean();
-
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
+            EventController.Flush();
         }
 
         

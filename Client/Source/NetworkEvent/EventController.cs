@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Threading;
+using dotSpace.Objects.Space;
+using dotSpace.Interfaces.Space;
 
 namespace CaptainCombat.Client.NetworkEvent {
 
@@ -18,12 +20,16 @@ namespace CaptainCombat.Client.NetworkEvent {
 
         private static Dictionary<Type, List<EventListenerConverter>> listenerMap = new Dictionary<Type, List<EventListenerConverter>>();
 
-        private static List<Event> outgoingEvents = new List<Event>();
+        // private static List<Event> outgoingEvents = new List<Event>();
+        private static SequentialSpace outgoingEvents = new SequentialSpace();
+
         private static bool sendEvents = false;
         private static AutoResetEvent senderWaitHandle = new AutoResetEvent(false);
         
-        private static List<Event> incomingEvents = new List<Event>();
+        //private static List<Event> incomingEvents = new List<Event>();
         private static bool receiveEvents = false;
+
+        private static SequentialSpace incomingEvents = new SequentialSpace();
 
         /// <summary>
         /// Starts the EventController by starting the receiver
@@ -47,23 +53,16 @@ namespace CaptainCombat.Client.NetworkEvent {
         private static void ReceiveEvents() {
             receiveEvents = true;
             while (receiveEvents) {
-                var eventTuples = Connection.Instance.Space.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
-                foreach (var eventTuple in eventTuples) {
-
-                    var typeIdentifier = (string)eventTuple.Fields[1];
-                    var sender = (uint)(int)eventTuple.Fields[2];
-                    var receiver = (uint)(int)eventTuple.Fields[3];
-                    var jsonData = (string)eventTuple.Fields[4];
-
-                    var e = CreateEvent(typeIdentifier, jsonData);
-                    e.Sender = sender;
-                    e.Receiver = receiver;
-
-                    // The lock ensures that no one is reading/updating
-                    // from the list, when adding the new event
-                    lock (incomingEvents) {
-                        incomingEvents.Add(e);
-                    }
+                
+                { // First get is blocking, and signals that some event exists
+                  // which prevents busy waiting
+                    var eventTuple = Connection.Instance.Space.Get("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                    incomingEvents.Put((string)eventTuple[1], (int)eventTuple[2], (string)eventTuple[4]);
+                }
+                { // Second Get(All) is flushes the existing events to receive
+                    var remainingTuples = Connection.Instance.Space.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                    foreach (var eventTuple in remainingTuples)
+                        incomingEvents.Put((string)eventTuple[1], (int)eventTuple[2], (string)eventTuple[4]);
                 }
             }
         }
@@ -72,23 +71,21 @@ namespace CaptainCombat.Client.NetworkEvent {
         private static void SendEvents() {
             sendEvents = true;
             while (sendEvents) {
-                senderWaitHandle.WaitOne();
+                // Wait for send signal
+                outgoingEvents.Get("send-signal");
+                // Get the batch of events to send
+                var eventTuples = outgoingEvents.GetAll(typeof(string), typeof(int), typeof(string));
 
-                var eventsCopy = new List<Event>();
-                lock (outgoingEvents) {
-                    foreach (var e in outgoingEvents)
-                        eventsCopy.Add(e);
-                    outgoingEvents.Clear();
-                }
-                foreach (var e in eventsCopy) {
-                    Connection.Instance.Space.Put(
-                            "event",
-                            e.GetType().FullName,
-                            (int) Connection.Instance.User_id,
-                            (int) e.Receiver,
-                            JsonConvert.SerializeObject(e)
-                    );
-
+                foreach(var eventTuple in eventTuples) {
+                    // TODO: Create some sort of thread pooling
+                    new Thread(() => {
+                        Connection.Instance.Space.Put("event",
+                            (string)eventTuple[0], // Event type identifier
+                            Connection.Instance.User_id, // Sender (local id)
+                            (int)eventTuple[1], // Receiver
+                            (string)eventTuple[2] // JSON data
+                        );
+                    }).Start();
                 }
             }
         }
@@ -129,26 +126,44 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// The event is sent asynchronously
         /// </summary>
         public static void Send(Event e) {
-            lock (outgoingEvents) {
-                outgoingEvents.Add(e);
-            }
-            senderWaitHandle.Set();
+            if (e.Receiver == 0)
+                throw new ArgumentException("Receiver was not set for event");
+
+            outgoingEvents.Put(
+                e.GetType().FullName,
+                (int)e.Receiver,
+                JsonConvert.SerializeObject(e)
+            );
         }
 
         /// <summary>
         /// Tells the controller to "dispatch" all Events,
         /// causing added listenes to be fired approriately
         /// </summary>
-        public static void HandleEvents() {
-            lock(incomingEvents) {
-                foreach(var e in incomingEvents) {
-                    Type type = e.GetType();
-                    if (listenerMap.ContainsKey(type)) {
-                        foreach (var listener in listenerMap[type])
-                            if (listener(e)) break;
-                    }
+        public static void Flush() {
+
+            // Signal events to be sent --------------
+            outgoingEvents.Put("send-signal");
+
+            // Trigger new events --------------------
+            var events = incomingEvents.GetAll(typeof(string), typeof(int), typeof(string));
+            foreach (var eventTuple in events) {
+
+                // Decode the event 
+                var typeIdentifier = (string)eventTuple.Fields[0];
+                var sender = (uint)(int)eventTuple.Fields[1];
+                var jsonData = (string)eventTuple.Fields[2];
+
+                var e = CreateEvent(typeIdentifier, jsonData);
+                e.Sender = sender;
+                e.Receiver = (uint)Connection.Instance.User_id;
+
+                // Fire the event
+                Type type = e.GetType();
+                if (listenerMap.ContainsKey(type)) {
+                    foreach (var listener in listenerMap[type])
+                        if (listener(e)) break;
                 }
-                incomingEvents.Clear();
             }
         }
 
