@@ -47,6 +47,8 @@ namespace CaptainCombat.Client.Source.Layers
         {
 
             // Static message to client 
+
+            EntityUtility.CreateMessage(Domain, "Players in current lobby", -70, -180, 16);
             if (Connection.Instance.Space_owner)
             {
                 menuItems.Add(EntityUtility.CreateMessage(Domain, "Start game", 0, 0, 20));
@@ -58,7 +60,6 @@ namespace CaptainCombat.Client.Source.Layers
             }
             
             
-
             // Background
             Entity backGround = new Entity(Domain);
             backGround.AddComponent(new Transform());
@@ -68,6 +69,7 @@ namespace CaptainCombat.Client.Source.Layers
             Entity Menu = new Entity(Domain);
             Menu.AddComponent(new Transform());
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
+            
 
             // pointer
             left_pointer = EntityUtility.MenuArrow(Domain, false);
@@ -79,34 +81,27 @@ namespace CaptainCombat.Client.Source.Layers
             // Clear domain 
             Domain.Clean();
 
-            IEnumerable<ITuple> AllClientsIngame = ClientProtocol.GetAllClients();
-            if (AllClientsIngame != null)
+            List<string> users = ClientProtocol.GetAllUsers();
+            foreach (string user in users)
             {
-                
-                foreach (Entity icon in playerIcons)
-                {
-                    icon.Delete();
-                }
                 foreach (Entity playerName in players)
                 {
                     playerName.Delete();
                 }
-                playerIcons.Clear();
                 players.Clear();
-
-                foreach (ITuple client in AllClientsIngame)
-                {
-                    playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client[1]));
-                    players.Add(EntityUtility.CreateMessage(Domain, (string)client[2], 0, 0, 16));
-                }
-                
+                players.Add(EntityUtility.CreateMessage(Domain, user, 0, 0, 14));
             }
 
             // Handles keyboard input
             GetKeys();
 
             // Displays list of all clients in server
-            displayCurrentIndex();
+            if (Connection.Instance.Space_owner)
+            {
+                displayCurrentIndex();
+            }
+            
+            Display(); 
 
 
             // Changes state when condition is true 
@@ -180,12 +175,12 @@ namespace CaptainCombat.Client.Source.Layers
         public void displayCurrentIndex()
         {
 
-            int placement_Y = -50;
+            int placement_Y = 100;
             for (int i = 0; i < menuItems.Count(); i++)
             {
                 {
                     var transform = menuItems[i].GetComponent<Transform>();
-                    transform.Position.X = -80;
+                    transform.Position.X = -70;
                     transform.Position.Y = placement_Y;
 
                 }
@@ -193,12 +188,12 @@ namespace CaptainCombat.Client.Source.Layers
                 {
                     {
                         var transform = left_pointer.GetComponent<Transform>();
-                        transform.Position.X = -110;
+                        transform.Position.X = -100;
                         transform.Position.Y = placement_Y + 20;
                     }
                     {
                         var transform = right_pointer.GetComponent<Transform>();
-                        transform.Position.X = 125;
+                        transform.Position.X = 100;
                         transform.Position.Y = placement_Y + 20;
                     }
                 }
@@ -211,27 +206,16 @@ namespace CaptainCombat.Client.Source.Layers
 
             // Display client names
             {
-                int placement_Y = -245;
+                int placement_Y = -160;
                 foreach (Entity playerName in players)
                 {
                     var transform = playerName.GetComponent<Transform>();
-                    transform.Position.X = -565;
+                    transform.Position.X = -70;
                     transform.Position.Y = placement_Y;
                     placement_Y += 30;
                 }
             }
 
-            // Display client icons
-            {
-                int placement_Y = -230;
-                foreach (Entity icon in playerIcons)
-                {
-                    var transform = icon.GetComponent<Transform>();
-                    transform.Position.X = -585;
-                    transform.Position.Y = placement_Y;
-                    placement_Y += 30;
-                }
-            }
         }
     }
 }

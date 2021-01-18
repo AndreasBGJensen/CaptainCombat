@@ -114,7 +114,7 @@ namespace CaptainCombat.Client.Source.Layers
             }
             else if (key == Keys.Enter)
             {
-                //DisableKeyboard = !DisableKeyboard;
+                DisableKeyboard = !DisableKeyboard;
                 RunCurrentselected();
                 /*
                 Task.Factory.StartNew(async () =>
@@ -143,7 +143,13 @@ namespace CaptainCombat.Client.Source.Layers
         public void RunCurrentselected()
         {
             var info = clientInformation.GetComponent<Text>();
-            info.Message = "Current lobby is full";
+            info.Message = "Connecting to lobby ";
+            Task.Factory.StartNew(async () =>
+            {
+                await Task.Delay(2000);
+                ParentState._context.TransitionTo(new GameLobbyState(Game));
+            });
+
         }
 
         public void displayCurrentIndex()

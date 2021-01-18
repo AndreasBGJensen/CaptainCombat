@@ -84,10 +84,6 @@ namespace CaptainCombat.Client.GameLayers
                
             }
 
-
-
-
-
             Display(); 
         }
 

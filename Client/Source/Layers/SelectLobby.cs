@@ -9,6 +9,7 @@ using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
+using CaptainCombat.Common.Singletons;
 
 namespace CaptainCombat.Client.Source.Layers
 {
@@ -112,15 +113,9 @@ namespace CaptainCombat.Client.Source.Layers
             }
             else if (key == Keys.Enter)
             {
-                //DisableKeyboard = !DisableKeyboard;
+                DisableKeyboard = !DisableKeyboard;
                 RunCurrentselected(); 
-                /*
-                Task.Factory.StartNew(async () =>
-                {
-                    await Task.Delay(2000);
-                    ChangeState = true;
-                });
-                */
+                
             }
             else if (key == Keys.Up)
             {
@@ -140,18 +135,31 @@ namespace CaptainCombat.Client.Source.Layers
 
         public void RunCurrentselected()
         {
+
             switch (currentIndex)
             {
                 case 0:
                     {
                         var info = clientInformation.GetComponent<Text>();
                         info.Message = "Creating new lobby";
+                        Connection.Instance.Space_owner = true; 
+                        Task.Factory.StartNew(async () =>
+                        {
+                            await Task.Delay(2000);
+                            ParentState._context.TransitionTo(new GameLobbyState(Game));
+                        });
                     }
                     break;
                 case 1:
                     {
                         var info = clientInformation.GetComponent<Text>();
-                        info.Message = "Joining existing lobby";
+                        info.Message = "Going to lobbies";
+                        Connection.Instance.Space_owner = false;
+                        Task.Factory.StartNew(async () =>
+                        {
+                            await Task.Delay(2000);
+                            ParentState._context.TransitionTo(new LobbyState(Game));
+                        });
                     }
                     break;
                 default:

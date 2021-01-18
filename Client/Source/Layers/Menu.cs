@@ -80,7 +80,7 @@ namespace CaptainCombat.Client.MenuLayers
             // Changes state when condition is true 
             if (ChangeState)
             {
-                ParentState._context.TransitionTo(new LobbyState(Game));
+                ParentState._context.TransitionTo(new SelectLobbyState(Game));
             }
         }
 
