@@ -41,14 +41,12 @@ namespace CaptainCombat.Server.Source.LobbyContent
         private void CreateUri(int user_id)
         {
             spaceID = "game" + user_id;
-           lobbyUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/"+ spaceID+ "?KEEP";
+            lobbyUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/"+ spaceID+ "?KEEP";
             
             if (!LobbyBookKeeping.AddLobby(this))
             {
                 throw new ArgumentException("Lobby Could not be saved in database");
             }
-            
-            
         }
 
 

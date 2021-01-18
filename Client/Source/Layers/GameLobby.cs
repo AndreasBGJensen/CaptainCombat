@@ -29,7 +29,6 @@ namespace CaptainCombat.Client.Source.Layers
         private int currentIndex = 0;
         private List<Entity> menuItems = new List<Entity>();
         private List<Entity> players = new List<Entity>();
-        private List<Entity> playerIcons = new List<Entity>();
         private Entity left_pointer;
         private Entity right_pointer;
         private Entity clientInformation;

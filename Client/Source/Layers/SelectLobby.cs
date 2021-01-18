@@ -10,6 +10,7 @@ using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
 using CaptainCombat.Common.Singletons;
+using dotSpace.Interfaces.Space;
 
 namespace CaptainCombat.Client.Source.Layers
 {
@@ -113,9 +114,7 @@ namespace CaptainCombat.Client.Source.Layers
             }
             else if (key == Keys.Enter)
             {
-                DisableKeyboard = !DisableKeyboard;
                 RunCurrentselected(); 
-                
             }
             else if (key == Keys.Up)
             {
@@ -140,9 +139,12 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 case 0:
                     {
+                        DisableKeyboard = !DisableKeyboard;
                         var info = clientInformation.GetComponent<Text>();
                         info.Message = "Creating new lobby";
-                        Connection.Instance.Space_owner = true; 
+                        Connection.Instance.Space_owner = true;
+                        ClientProtocol.CreateLobby();
+
                         Task.Factory.StartNew(async () =>
                         {
                             await Task.Delay(2000);
@@ -152,14 +154,26 @@ namespace CaptainCombat.Client.Source.Layers
                     break;
                 case 1:
                     {
-                        var info = clientInformation.GetComponent<Text>();
-                        info.Message = "Going to lobbies";
-                        Connection.Instance.Space_owner = false;
-                        Task.Factory.StartNew(async () =>
+                        IEnumerable<ITuple> allLobies = ClientProtocol.GetAllLobbys(); 
+
+                        if(allLobies.Count() != 0)
                         {
-                            await Task.Delay(2000);
-                            ParentState._context.TransitionTo(new LobbyState(Game));
-                        });
+                            DisableKeyboard = !DisableKeyboard;
+                            var info = clientInformation.GetComponent<Text>();
+                            info.Message = "Going to lobbies";
+                            Connection.Instance.Space_owner = false;
+                            ClientProtocol.CreateLobby();
+                            Task.Factory.StartNew(async () =>
+                            {
+                                await Task.Delay(2000);
+                                ParentState._context.TransitionTo(new LobbyState(Game));
+                            });
+                        }
+                        else
+                        {
+                            var info = clientInformation.GetComponent<Text>();
+                            info.Message = "No existing lobbies";
+                        }
                     }
                     break;
                 default:
