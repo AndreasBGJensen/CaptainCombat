@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using CaptainCombat.Common;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace CaptainCombat.Client.protocols
 {
@@ -53,6 +54,30 @@ namespace CaptainCombat.Client.protocols
             return allUsers; 
         }
 
+        public static IEnumerable<ITuple> GetAllLobbys()
+        {
+
+
+            return Connection.Instance.Space.QueryAll("createdLubby", typeof(string), typeof(string), typeof(string));
+
+        }
+        public static bool CreateLobby()
+        {
+            string username = Connection.Instance.User;
+            int user_id = Connection.Instance.User_id;
+
+            
+            Connection.Instance.Space.Put("createLobby", username, user_id);
+            //Blocking because we want to know if the lobby have been created
+            ITuple response = Connection.Instance.Space.Get("createdLubby", user_id, typeof(string), typeof(string));
+            string url = (string)response[3];
+            if (!url.Contains("tcp"))
+            {
+                return false;
+            }
+            Connection.Instance.lobbySpace = new RemoteSpace(url);
+            return true;
+        }
 
         public static IEnumerable<ITuple> GetAllClients()
         {

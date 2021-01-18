@@ -7,6 +7,8 @@ using CaptainCombat.Server.threads;
 using CaptainCombat.Common.Singletons;
 using CaptainCombat.Common;
 
+using CaptainCombat.Server.Source.LobbyContent;
+
 namespace CaptainCombat.Server
 {
 
@@ -15,7 +17,7 @@ namespace CaptainCombat.Server
         static void Main(string[] args)
         {
             // TODO: Try to remove the "space"
-            string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
+            /*string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
 
             Console.WriteLine($"Launching server at '{serverUrl}'");
 
@@ -25,7 +27,12 @@ namespace CaptainCombat.Server
             repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
             Connection.Instance.Space = space;
 
-            Console.WriteLine("Server started");
+            Console.WriteLine("Server started");*/
+
+            EntryLobby entry = new EntryLobby();
+
+
+
 
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
