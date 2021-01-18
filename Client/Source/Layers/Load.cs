@@ -57,7 +57,7 @@ namespace CaptainCombat.Client.Layers
 
         public void changeState()
         {
-            ParentState._context.TransitionTo(new MenuState(Game));
+            ParentState._context.TransitionTo(new JoinState(Game));
         }
 
 

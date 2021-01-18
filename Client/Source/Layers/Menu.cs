@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
+using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.MenuLayers
 {
@@ -45,9 +46,10 @@ namespace CaptainCombat.Client.MenuLayers
 
             // Creates a list of all clients in server
             List<string> users = ClientProtocol.GetAllUsers();
-            foreach (string user in users)
+
+            for(int i = 1; i < users.Count(); i++)
             {
-                EntityUtility.CreateMessage(Domain, user, 0, 0, 14);
+                EntityUtility.CreateMessage(Domain, users[i], 0, 0, 14);
             }
 
             // Background
@@ -79,7 +81,7 @@ namespace CaptainCombat.Client.MenuLayers
             // Changes state when condition is true 
             if (ChangeState)
             {
-                ParentState._context.TransitionTo(new GameState(Game));
+                ParentState._context.TransitionTo(new SelectLobbyState(Game));
             }
         }
 

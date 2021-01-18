@@ -37,6 +37,8 @@ namespace CaptainCombat.Client.protocols
             Console.WriteLine("Connection to server succeeded\n");
         }
 
+
+
         public static List<string> GetAllUsers()
         {
             List<string> allUsers = new List<string>(); 
