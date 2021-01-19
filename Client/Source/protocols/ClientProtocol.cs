@@ -187,16 +187,29 @@ namespace CaptainCombat.Client.protocols
         }
 
 
-        public static void Join(string username)
+        public static bool Join(string username)
         {
-            Console.WriteLine("Enter game");
-            Connection connecting = Connection.Instance;
-            ISpace space = connecting.Space;
+            Console.WriteLine("Validate username");
+            ISpace space = Connection.Instance.Space;
+
+            // Get lock 
+            space.Get("newuser_lock"); 
             space.Put("user", username);
-            Tuple results = (Tuple)space.Get("connected", typeof(int), typeof(string));
-            Console.WriteLine(results[2]);
-            Connection.Instance.User = username;
-            Connection.Instance.User_id = (int)results[1];
+            Tuple result = (Tuple)space.Get("connected", typeof(bool), typeof(int), typeof(string));
+
+            if ((bool)result[1])
+            {
+                Console.WriteLine("Join succesfull");
+                Connection.Instance.User = username;
+                Connection.Instance.User_id = (int)result[2];
+                space.Put("newuser_lock");
+                return true;
+            }
+            else
+            {
+                space.Put("newuser_lock");
+                return false; 
+            }
         }
 
         public static void AddClientScoreToServer(int clientScore)
@@ -205,22 +218,5 @@ namespace CaptainCombat.Client.protocols
             space.Put("score", Connection.Instance.User_id, clientScore);
         }
 
-
-        public static bool isValidName(string username)
-        {
-            Connection connecting = Connection.Instance;
-            ISpace space = connecting.Space;
-
-            IEnumerable<ITuple> usersInServer = space.QueryAll("users", typeof(string));
-
-            foreach (ITuple user in usersInServer)
-            {
-                if (((string)user[1]).Equals(username))
-                {
-                    return false; 
-                }
-            }
-            return true; 
-        }
     }
 }
