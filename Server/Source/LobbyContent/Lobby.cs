@@ -78,7 +78,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
             for(int i = 0;i < players_to_reserve; i++)
             {
                 space.Put("lock");
-                space.Put("player", typeof(int), typeof(string));
+                space.Put("player", 0, "No user");
             } 
         }
 

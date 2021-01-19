@@ -92,6 +92,11 @@ namespace CaptainCombat.Client.protocols
             }
             Connection.Instance.lobbySpace = new RemoteSpace(url);
             Connection.Instance.Space = Connection.Instance.lobbySpace;
+            Connection.Instance.Space.Get("lock");
+            Connection.Instance.Space.GetP("player",typeof(int),typeof(string));
+            Connection.Instance.Space.Put("player", user_id, username);
+            Connection.Instance.Space.Put("lock");
+
             return true;
         }
 
@@ -105,17 +110,20 @@ namespace CaptainCombat.Client.protocols
 
         public static bool SubscribeForLobby(string lobbyUrl)
         {
+            string username = Connection.Instance.User;
+            int user_id = Connection.Instance.User_id;
+
             RemoteSpace lobbySpace = new RemoteSpace(lobbyUrl);
             lobbySpace.Get("lock");
-            ITuple playerTuple = lobbySpace.GetP("player", typeof(int), typeof(string));
-
+            ITuple playerTuple = lobbySpace.GetP("player", 0, "No user");
+            
             //Means that that there is no sluts left in the lobby
-            if(playerTuple == null)
+            if (playerTuple == null)
             {
                 lobbySpace.Put("lock");
                 return false;
             }
-
+            lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
             Connection.Instance.lobbySpace = lobbySpace;
             Connection.Instance.Space = Connection.Instance.lobbySpace;
@@ -134,7 +142,11 @@ namespace CaptainCombat.Client.protocols
 
             foreach(ITuple subscriber in subscriberTuple)
             {
-                count++;
+                if((int)subscriber[1] > 0 && (string)subscriber[2] != "No user")
+                {
+                    count++;
+                }
+                
             }
 
             //TODO: Find global state for max number of subscribers in a lobby
