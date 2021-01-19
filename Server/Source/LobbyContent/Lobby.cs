@@ -1,6 +1,7 @@
 ﻿using CaptainCombat.Common;
 using CaptainCombat.Server.Collector;
 using CaptainCombat.Server.Collector.Helpers;
+using CaptainCombat.Server.Mapmaker;
 using CaptainCombat.Server.Source.threads;
 using CaptainCombat.Server.threads;
 using dotSpace.Interfaces.Space;
@@ -85,8 +86,11 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         public void RunProtocol()
         {
+            Game game = new Game();
+            game.Init(lobby);
             clientScores.RunProtocol();
             streemComponent.RunProtocol();
+            
         }
     }
 }

@@ -29,10 +29,11 @@ namespace CaptainCombat.Server.Source.threads
             Console.WriteLine("Starting game data upload");
             new Thread(() =>
             {
+                space.Query("start");
+                Console.WriteLine("Start Collecting");
                 while (true)
                 {
-                    //space.Get("lock");
-                    space.Get("start");
+                                        
                     collector.BeginCollect();
                     //collector.PrintUpdateComponents();
 

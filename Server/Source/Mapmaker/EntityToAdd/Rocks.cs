@@ -3,16 +3,19 @@ using CaptainCombat.Common.Singletons;
 using CaptainCombat.Common;
 using System;
 using System.Collections.Generic;
+using dotSpace.Objects.Space;
 
 namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 {
     class Rocks : IEntity
     {
         private int numRocks;
+        private SequentialSpace lobbySpace;
 
-        public Rocks(int numRocks)
+        public Rocks(int numRocks, SequentialSpace space)
         {
             this.numRocks = numRocks;
+            this.lobbySpace = space;
         }
 
         public void OnComputerInit()
@@ -49,7 +52,7 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 
             domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
-            Connection.Instance.Space.Put("components", "1", DomainState.Instance.Upload);
+            lobbySpace.Put("components", "1", DomainState.Instance.Upload);
         }
 
 
