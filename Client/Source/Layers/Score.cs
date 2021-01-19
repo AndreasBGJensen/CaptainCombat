@@ -122,8 +122,6 @@ namespace CaptainCombat.Client.GameLayers
                     placement_Y += 30;
                 }
             }
-
-
         }
     }
 

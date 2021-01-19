@@ -3,16 +3,19 @@ using CaptainCombat.Common.Singletons;
 using CaptainCombat.Common;
 using System;
 using System.Collections.Generic;
+using dotSpace.Objects.Space;
 
 namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 {
     class Rocks : IEntity
     {
         private uint numRocks;
+        private SequentialSpace lobbySpace;
 
-        public Rocks(uint numRocks)
+        public Rocks(uint numRocks, SequentialSpace space)
         {
             this.numRocks = numRocks;
+            this.lobbySpace = space;
         }
 
         public void OnComputerInit()
@@ -62,9 +65,13 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 
             domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
+<<<<<<< HEAD
 
             // TODO: Fix this uploading from server side
             Connection.Instance.Space.Put("components", "1", DomainState.Instance.Upload);
+=======
+            lobbySpace.Put("components", "1", DomainState.Instance.Upload);
+>>>>>>> origin/master
         }
 
 

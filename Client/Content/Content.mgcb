@@ -105,6 +105,18 @@
 /processorParam:Quality=Best
 /build:sound/Cannon.mp3
 
+#begin Sprites/arrow_trans.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/arrow_trans.png
+
 #begin Sprites/black_icon.png
 /importer:TextureImporter
 /processor:TextureProcessor

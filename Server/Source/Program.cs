@@ -7,6 +7,8 @@ using CaptainCombat.Server.threads;
 using CaptainCombat.Common.Singletons;
 using CaptainCombat.Common;
 
+using CaptainCombat.Server.Source.LobbyContent;
+
 namespace CaptainCombat.Server
 {
 
@@ -17,16 +19,14 @@ namespace CaptainCombat.Server
             // TODO: Try to remove the "space"
             string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/space?KEEP";
 
-            Console.WriteLine($"Launching server at '{serverUrl}'");
+             Console.WriteLine($"Launching server at '{serverUrl}'");
 
-            SpaceRepository repository = new SpaceRepository();
-            repository.AddGate(serverUrl);
-            SequentialSpace space = new SequentialSpace();
-            repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
-            Connection.Instance.Space = space;
-
-            // TODO: Move this adding of lock to approriate place
-            space.Put("life-lock");
+             SpaceRepository repository = new SpaceRepository();
+             repository.AddGate(serverUrl);
+             SequentialSpace space = new SequentialSpace();
+             repository.AddSpace(ConnectionInfo.SPACE_NAME, space);
+             Connection.Instance.Space = space;
+            Connection.Instance.repository = repository;
 
             Console.WriteLine("Server started");
 
@@ -34,21 +34,24 @@ namespace CaptainCombat.Server
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
 
-            ClientScores newClientScoreProtocol = new ClientScores();
+            EntryLobby entry = new EntryLobby();
+
+
+            /*ClientScores newClientScoreProtocol = new ClientScores();
             Thread newClientScoreThread = new Thread(new ThreadStart(newClientScoreProtocol.RunProtocol));
-            newClientScoreThread.Start();
+            newClientScoreThread.Start();*/
 
 
-            Game game = new Game();
+           // Game game = new Game();
             //IEntity entity = new Rocks(10);
             //game.ComputerInit += entity.OnComputerInit;
 
-            game.Init();
+           // game.Init();
 
 
-            Serialization serializationProtocol = new Serialization();
+           /* Serialization serializationProtocol = new Serialization();
             Thread serializationThread = new Thread(new ThreadStart(serializationProtocol.RunProtocol));
-            serializationThread.Start();
+            serializationThread.Start();*/
         }
     }
 }

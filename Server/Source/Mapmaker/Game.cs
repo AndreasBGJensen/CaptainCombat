@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using CaptainCombat.Common;
 using CaptainCombat.Common.Singletons;
+using dotSpace.Objects.Space;
 
 namespace CaptainCombat.Server.Mapmaker
 {
@@ -14,15 +15,15 @@ namespace CaptainCombat.Server.Mapmaker
         Domain domain = new Domain();
         public delegate void InitCmponent(object source, EventArgs e);
         public event InitCmponent ComputerInit;
+        private SequentialSpace lobbySpace;
 
-        public void Init()
+        public void Init(SequentialSpace lobbySpace)
         {
 
             DomainState.Instance.Domain = domain;
-            Join();
+            //Join();
             
-
-            IEntity entity = new Rocks(Settings.NUM_ROCKS);
+            IEntity entity = new Rocks(Settings.NUM_ROCKS, lobbySpace);
             entity.OnComputerInit();
             //game.ComputerInit += entity.OnComputerInit;
 

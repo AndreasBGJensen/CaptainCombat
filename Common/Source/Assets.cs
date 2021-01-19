@@ -13,6 +13,8 @@ namespace CaptainCombat.Common {
 
         public static class Textures {
             public static readonly Texture SHIP = new Texture(Collections.GLOBAL, "ship", "Sprites/ShipRed", rotation: 180 );
+            public static readonly Texture Arrow_left = new Texture(Collections.GLOBAL, "Arrow_left", "Sprites/arrow_trans", rotation: 180);
+            public static readonly Texture Arrow_right = new Texture(Collections.GLOBAL, "Arrow_right", "Sprites/arrow_trans");
 
             public static readonly Texture CANNON_BALL = new Texture(Collections.GLOBAL, "cannon_ball", "Sprites/CannonBall");
 

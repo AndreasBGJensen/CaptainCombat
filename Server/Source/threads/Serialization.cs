@@ -19,8 +19,6 @@ namespace CaptainCombat.Server.threads
             
             while (true)
             {
-            
-
                     collector.BeginCollect();
                     //collector.PrintUpdateComponents();
                    

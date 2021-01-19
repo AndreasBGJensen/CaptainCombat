@@ -56,11 +56,11 @@ namespace CaptainCombat.Client.NetworkEvent {
                 
                 { // First get is blocking, and signals that some event exists
                   // which prevents busy waiting
-                    var eventTuple = Connection.Instance.Space.Get("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                    var eventTuple = Connection.Instance.lobbySpace.Get("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
                     incomingEvents.Put((string)eventTuple[1], (int)eventTuple[2], (string)eventTuple[4]);
                 }
                 { // Second Get(All) is flushes the existing events to receive
-                    var remainingTuples = Connection.Instance.Space.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                    var remainingTuples = Connection.Instance.lobbySpace.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
                     foreach (var eventTuple in remainingTuples)
                         incomingEvents.Put((string)eventTuple[1], (int)eventTuple[2], (string)eventTuple[4]);
                 }
@@ -79,7 +79,7 @@ namespace CaptainCombat.Client.NetworkEvent {
                 foreach(var eventTuple in eventTuples) {
                     // TODO: Create some sort of thread pooling
                     new Thread(() => {
-                        Connection.Instance.Space.Put("event",
+                        Connection.Instance.lobbySpace.Put("event",
                             (string)eventTuple[0], // Event type identifier
                             Connection.Instance.User_id, // Sender (local id)
                             (int)eventTuple[1], // Receiver

@@ -77,6 +77,26 @@ namespace CaptainCombat.Common {
             return null;
         }
 
+        public static Entity MenuArrow(Domain domain, bool left)
+        {
+
+            var entity = new Entity(domain);
+            entity.AddComponent(new Transform());
+            int width = 50;
+            int height = 25; 
+            if (left)
+            {
+                entity.AddComponent(new Sprite(Assets.Textures.Arrow_left, width, height));
+            }
+            else
+            {
+                entity.AddComponent(new Sprite(Assets.Textures.Arrow_right, width, height));
+            }
+            return entity;
+        }
+
+
+
         public static Entity CreateMessage(Domain domain, string message, double x, double y, int size)
         {
             var entity = new Entity(domain);
