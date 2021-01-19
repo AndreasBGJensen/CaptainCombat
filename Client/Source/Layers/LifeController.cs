@@ -8,6 +8,7 @@ using System.Threading;
 
 namespace CaptainCombat.Client.Layers {
 
+
     class LifeController {
 
         private SequentialSpace localSpace = new SequentialSpace();
@@ -19,15 +20,15 @@ namespace CaptainCombat.Client.Layers {
 
         public LifeController() {
             // TODO: Revert this
-            lifeUpdateThread = new Thread(UpdateLives);
-            lifeUpdateThread.Priority = ThreadPriority.Highest; 
-            lifeUpdateThread.Start();
+            //lifeUpdateThread = new Thread(UpdateLives);
+            //lifeUpdateThread.Priority = ThreadPriority.Highest; 
+            //lifeUpdateThread.Start();
 
             localSpace.Put("lock");
 
-            gameFinishThread = new Thread(GameFinish);
-            gameFinishThread.Priority = ThreadPriority.Highest;
-            gameFinishThread.Start();
+            //gameFinishThread = new Thread(GameFinish);
+            //gameFinishThread.Priority = ThreadPriority.Highest;
+            //gameFinishThread.Start();
         }
         
 
@@ -121,9 +122,9 @@ namespace CaptainCombat.Client.Layers {
 
         public int GetOwnLives() {
             // TODO: Revert this
-            //return 10;
-            var lives = GetLives();
-            return lives[(uint)Connection.Instance.User_id];    
+            return 10;
+            //var lives = GetLives();
+            //return lives[(uint)Connection.Instance.User_id];    
         }
 
         public Dictionary<uint, int> GetLives() {
