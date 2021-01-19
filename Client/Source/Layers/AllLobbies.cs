@@ -4,13 +4,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
 using dotSpace.Interfaces.Space;
-using System;
+
 
 namespace CaptainCombat.Client.Source.Layers
 {

@@ -9,7 +9,7 @@ using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using Microsoft.Xna.Framework.Input;
 using CaptainCombat.Common.Singletons;
-using CaptainCombat.Client.Source.Scenes;
+
 
 namespace CaptainCombat.Client.Source.Layers
 {
