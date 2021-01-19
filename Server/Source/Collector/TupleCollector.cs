@@ -1,4 +1,4 @@
-﻿using dotSpace.Interfaces.Space;
+﻿    using dotSpace.Interfaces.Space;
 using Newtonsoft.Json;
 using CaptainCombat.Server.Collector.Helpers;
 using System.Collections.Generic;

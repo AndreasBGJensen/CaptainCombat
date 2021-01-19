@@ -18,15 +18,15 @@ namespace CaptainCombat.Client.Layers {
 
 
         public LifeController() {
-            lifeUpdateThread = new Thread(UpdateLives);
+           /* lifeUpdateThread = new Thread(UpdateLives);
             lifeUpdateThread.Priority = ThreadPriority.Highest; 
-            lifeUpdateThread.Start();
+            lifeUpdateThread.Start();*/
 
             localSpace.Put("lock");
 
-            gameFinishThread = new Thread(GameFinish);
+            /*gameFinishThread = new Thread(GameFinish);
             gameFinishThread.Priority = ThreadPriority.Highest;
-            gameFinishThread.Start();
+            gameFinishThread.Start();*/
         }
 
         public void Stop() {
