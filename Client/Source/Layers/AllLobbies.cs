@@ -103,7 +103,7 @@ namespace CaptainCombat.Client.Source.Layers
             // Changes state when condition is true 
             if (ChangeState)
             {
-                ParentState._context.TransitionTo(new LobbyState(Game));
+                ParentState._context.TransitionTo(new GameLobbyState(Game));
             }
         }
 
@@ -164,11 +164,7 @@ namespace CaptainCombat.Client.Source.Layers
                 
                 var info = clientInformation.GetComponent<Text>();
                 info.Message = "Connecting to lobby ";
-                Task.Factory.StartNew(async () =>
-                {
-                    await Task.Delay(2000);
-                    ParentState._context.TransitionTo(new GameLobbyState(Game));
-                });
+                ChangeState = true; 
             }
             else
             {

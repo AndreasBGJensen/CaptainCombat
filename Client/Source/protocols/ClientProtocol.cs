@@ -124,9 +124,10 @@ namespace CaptainCombat.Client.protocols
                 lobbySpace.Put("lock");
                 return false;
             }
+            Connection.Instance.lobbySpace = lobbySpace;
             lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
-            Connection.Instance.lobbySpace = lobbySpace;
+            
             lobbySpace.Put("lock");
 
             return true;
