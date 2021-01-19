@@ -16,7 +16,7 @@ namespace CaptainCombat.Client.Source.Scenes
         public SelectLobbyState(Game game)
         {
             Game = game;
-            layers.Add(new SelectLobby(game, this));
+            layers.Add(new Select(game, this));
         }
 
         public override void onEnter()

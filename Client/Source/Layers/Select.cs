@@ -9,12 +9,12 @@ using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
+using CaptainCombat.Common.Singletons;
 using dotSpace.Interfaces.Space;
-using System;
 
 namespace CaptainCombat.Client.Source.Layers
 {
-    class Lobby : Layer
+    class Select : Layer
     {
 
         private Camera Camera;
@@ -24,17 +24,17 @@ namespace CaptainCombat.Client.Source.Layers
         private bool ChangeState = false;
 
         private Keys[] LastPressedKeys = new Keys[5];
-
+        
         private State ParentState;
         private Game Game;
         private int currentIndex = 0;
-        private List<Entity> lobbies = new List<Entity>();
+        private List<Entity> menuItems = new List<Entity>();
         private Entity left_pointer;
         private Entity right_pointer;
-        private Entity clientInformation;
+        private Entity clientInformation; 
 
 
-        public Lobby(Game game, State state)
+        public Select(Game game, State state)
         {
             ParentState = state;
             Game = game;
@@ -46,14 +46,9 @@ namespace CaptainCombat.Client.Source.Layers
         {
 
             // Static message to client 
-            /*
-            lobbies.Add(EntityUtility.CreateMessage(Domain, "Lobby 1: 1-4", 0, 0, 16));
-            lobbies.Add(EntityUtility.CreateMessage(Domain, "Lobby 2: 1-4", 0, 0, 16));
-            lobbies.Add(EntityUtility.CreateMessage(Domain, "Lobby 3: 1-4", 0, 0, 16));
-            */
+            menuItems.Add(EntityUtility.CreateMessage(Domain, "Create new Lobby", 0, 0, 20));
+            menuItems.Add(EntityUtility.CreateMessage(Domain, "Join existing lobby", 0, 0, 20));
             clientInformation = EntityUtility.CreateMessage(Domain, "", -70, 150, 16);
-
-            EntityUtility.CreateMessage(Domain, "Select lobby", -70, -180, 16);
 
             // Background
             Entity backGround = new Entity(Domain);
@@ -75,25 +70,11 @@ namespace CaptainCombat.Client.Source.Layers
             // Clear domain 
             Domain.Clean();
 
-            foreach (Entity lobby in lobbies)
-            {
-                lobby.Delete();
-            }
-            lobbies.Clear();
-
-            IEnumerable<ITuple> serverLobbies = ClientProtocol.GetAllLobbys();
-
-
-            foreach (ITuple lobby in serverLobbies)
-            {
-                lobbies.Add(EntityUtility.CreateMessage(Domain, "Test", 0, 0, 14));
-            }
-
             // Handles keyboard input
             GetKeys();
 
             // Displays list of all clients in server
-            displayCurrentIndex();
+            displayCurrentIndex(); 
 
 
             // Changes state when condition is true 
@@ -133,15 +114,7 @@ namespace CaptainCombat.Client.Source.Layers
             }
             else if (key == Keys.Enter)
             {
-                DisableKeyboard = !DisableKeyboard;
-                RunCurrentselected();
-                /*
-                Task.Factory.StartNew(async () =>
-                {
-                    await Task.Delay(2000);
-                    ChangeState = true;
-                });
-                */
+                RunCurrentselected(); 
             }
             else if (key == Keys.Up)
             {
@@ -152,7 +125,7 @@ namespace CaptainCombat.Client.Source.Layers
             }
             else if (key == Keys.Down)
             {
-                if (!(currentIndex == lobbies.Count - 1))
+                if (!(currentIndex == menuItems.Count - 1))
                 {
                     currentIndex++;
                 }
@@ -161,44 +134,80 @@ namespace CaptainCombat.Client.Source.Layers
 
         public void RunCurrentselected()
         {
-            var info = clientInformation.GetComponent<Text>();
-            info.Message = "Connecting to lobby ";
-            Task.Factory.StartNew(async () =>
-            {
-                await Task.Delay(2000);
-                ParentState._context.TransitionTo(new GameLobbyState(Game));
-            });
 
+            switch (currentIndex)
+            {
+                case 0:
+                    {
+                        DisableKeyboard = !DisableKeyboard;
+                        var info = clientInformation.GetComponent<Text>();
+                        info.Message = "Creating new lobby";
+                        Connection.Instance.Space_owner = true;
+                        ClientProtocol.CreateLobby();
+
+                        Task.Factory.StartNew(async () =>
+                        {
+                            await Task.Delay(2000);
+                            ParentState._context.TransitionTo(new GameLobbyState(Game));
+                        });
+                    }
+                    break;
+                case 1:
+                    {
+                        IEnumerable<ITuple> allLobies = ClientProtocol.GetAllLobbys();
+                        
+                        if (allLobies.Count() != 0)
+                        {
+                            DisableKeyboard = !DisableKeyboard;
+                            var info = clientInformation.GetComponent<Text>();
+                            info.Message = "Going to lobbies";
+                            Connection.Instance.Space_owner = false;
+                            Task.Factory.StartNew(async () =>
+                            {
+                                await Task.Delay(1000);
+                                ParentState._context.TransitionTo(new LobbyState(Game));
+                            });
+                        }
+                        else
+                        {
+                            var info = clientInformation.GetComponent<Text>();
+                            info.Message = "No existing lobbies";
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void displayCurrentIndex()
         {
-
-            int placement_Y = -140;
-            for (int i = 0; i < lobbies.Count(); i++)
+           
+            int placement_Y = -50;
+            for (int i = 0; i < menuItems.Count(); i++)
             {
                 {
-                    var transform = lobbies[i].GetComponent<Transform>();
-                    transform.Position.X = -70;
+                    var transform = menuItems[i].GetComponent<Transform>();
+                    transform.Position.X = -80;
                     transform.Position.Y = placement_Y;
-
+                    
                 }
                 if (i == currentIndex)
                 {
                     {
                         var transform = left_pointer.GetComponent<Transform>();
-                        transform.Position.X = -120;
-                        transform.Position.Y = placement_Y + 10;
+                        transform.Position.X = -110;
+                        transform.Position.Y = placement_Y + 20;
                     }
                     {
                         var transform = right_pointer.GetComponent<Transform>();
-                        transform.Position.X = 115;
-                        transform.Position.Y = placement_Y + 10;
+                        transform.Position.X = 125;
+                        transform.Position.Y = placement_Y + 20;
                     }
                 }
-                placement_Y += 50;
+                placement_Y += 70;
             }
         }
     }
-}
 
+}

@@ -37,6 +37,21 @@ namespace CaptainCombat.Client.protocols
             Console.WriteLine("Connection to server succeeded\n");
         }
 
+        public static List<string> GetAllClientInLobby()
+        {
+            List<string> allUsers = new List<string>();
+
+            Connection connecting = Connection.Instance;
+            ISpace space = connecting.lobbySpace;
+
+            IEnumerable<ITuple> usersInServer = space.QueryAll("users", typeof(string));
+
+            foreach (ITuple user in usersInServer)
+            {
+                allUsers.Add((string)user[1]);
+            }
+            return allUsers;
+        }
 
 
         public static List<string> GetAllUsers()
@@ -57,9 +72,7 @@ namespace CaptainCombat.Client.protocols
 
         public static IEnumerable<ITuple> GetAllLobbys()
         {
-
             return Connection.Instance.Space.QueryAll("existingLobby", typeof(string), typeof(string), typeof(string));
-
         }
 
 
@@ -79,7 +92,6 @@ namespace CaptainCombat.Client.protocols
             }
             Connection.Instance.lobbySpace = new RemoteSpace(url);
             Connection.Instance.Space = Connection.Instance.lobbySpace;
-
             return true;
         }
 

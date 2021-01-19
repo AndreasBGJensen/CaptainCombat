@@ -80,7 +80,7 @@ namespace CaptainCombat.Client.Source.Layers
             // Clear domain 
             Domain.Clean();
 
-            List<string> users = ClientProtocol.GetAllUsers();
+            List<string> users = ClientProtocol.GetAllClientInLobby();
             foreach (string user in users)
             {
                 foreach (Entity playerName in players)
