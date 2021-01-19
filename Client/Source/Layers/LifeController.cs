@@ -6,14 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace CaptainCombat.Client.Source.Layers {
+namespace CaptainCombat.Client.Layers {
 
     class LifeController {
 
-        public delegate void OnGameFinishCallback(uint winnerId);
-        public OnGameFinishCallback OnGameFinish { get; set; } = null;
-
-        private SequentialSpace localLives = new SequentialSpace();
+        private SequentialSpace localSpace = new SequentialSpace();
         private Thread lifeUpdateThread;
         private Thread gameFinishThread;
 
@@ -25,7 +22,7 @@ namespace CaptainCombat.Client.Source.Layers {
             lifeUpdateThread.Priority = ThreadPriority.Highest; 
             lifeUpdateThread.Start();
 
-            localLives.Put("lock");
+            localSpace.Put("lock");
 
             gameFinishThread = new Thread(GameFinish);
             gameFinishThread.Priority = ThreadPriority.Highest;
@@ -38,9 +35,15 @@ namespace CaptainCombat.Client.Source.Layers {
         }
 
 
+        public uint GetWinner() {
+            var tuple = localSpace.GetP("winner", typeof(int));
+            if (tuple == null) return 0;
+            return (uint)(int)tuple[1];
+        }
+
         public void GameFinish() {                                                // Winner id
             var tuple = Connection.Instance.Space.Get("winner", typeof(int));
-            OnGameFinish?.Invoke((uint)(int)tuple[1]);
+            localSpace.Put(tuple);
         }
 
         private void UpdateLives() {
@@ -51,16 +54,16 @@ namespace CaptainCombat.Client.Source.Layers {
 
                 var livesTuples = Connection.Instance.Space.QueryAll("lives", typeof(int), typeof(int));
                 System.Console.WriteLine("Get lock");
-                localLives.Get("lock");
+                localSpace.Get("lock");
 
 
                 // Update opponents' lives
-                localLives.GetAll("lives", typeof(int), typeof(int));
+                localSpace.GetAll("lives", typeof(int), typeof(int));
                 var ownLives = 0;
                 var clientsAlive = new Dictionary<uint, int>();
                 foreach (var livesTuple in livesTuples)
                     if ((uint)(int)livesTuple[1] != Connection.Instance.User_id) {
-                        localLives.Put(livesTuple);
+                        localSpace.Put(livesTuple);
                         if ((int)livesTuple[2] > 1)
                             clientsAlive[(uint)(int)livesTuple[1]] = (int)livesTuple[1];
                     }
@@ -70,7 +73,7 @@ namespace CaptainCombat.Client.Source.Layers {
 
                 // Update own lives
                 var livesLost = 0;
-                foreach (var t in localLives.GetAll("decrement"))
+                foreach (var t in localSpace.GetAll("decrement"))
                     livesLost++;
 
                 uint winner = 0;
@@ -84,8 +87,8 @@ namespace CaptainCombat.Client.Source.Layers {
                     }
                 }
 
-                localLives.Put("lives", Connection.Instance.User_id, ownLives);
-                localLives.Put("lock");
+                localSpace.Put("lives", Connection.Instance.User_id, ownLives);
+                localSpace.Put("lock");
 
                 if (livesLost > 0) {
                     // Update remote (only if lives were updated)
@@ -109,7 +112,7 @@ namespace CaptainCombat.Client.Source.Layers {
 
 
         public void DecrementLife() {
-            localLives.Put("decrement");
+            localSpace.Put("decrement");
         }
 
 
@@ -119,10 +122,10 @@ namespace CaptainCombat.Client.Source.Layers {
         }
 
         public Dictionary<uint, int> GetLives() {
-            localLives.Get("lock");
+            localSpace.Get("lock");
             //System.Console.WriteLine("Got lock");
-            var tuples = localLives.QueryAll("lives", typeof(int), typeof(int));
-            localLives.Put("lock");
+            var tuples = localSpace.QueryAll("lives", typeof(int), typeof(int));
+            localSpace.Put("lock");
 
             currentLives.Clear();
             foreach (var tuple in tuples)

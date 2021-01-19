@@ -13,13 +13,17 @@ using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.NetworkEvent;
 using System;
 using System.Threading.Tasks;
-using CaptainCombat.Client.Source.Layers;
+using CaptainCombat.Client.Layers;
 
 namespace CaptainCombat.Client.GameLayers
 {
 
     class Background : Layer
     {
+
+        public bool UpdateEnabled { get; set; } = true;
+        public bool DrawEnabled { get; set; } = true;
+
         private Domain Domain = new Domain();
         private Camera Camera;
 
@@ -34,19 +38,13 @@ namespace CaptainCombat.Client.GameLayers
 
         private LifeController lifeController;
 
-        private State ParentState;
-        Game Game;
-
         CollisionController collisionController = new CollisionController();
         
 
         public Background(Game game, State state, LifeController lifeController)
         {
-            ParentState = state; 
-            Game = game; 
             Camera = new Camera(Domain);
             this.lifeController = lifeController;
-            lifeController.OnGameFinish = (winner) => Console.WriteLine("Winner is " + winner);
             DomainState.Instance.Domain = Domain; 
             init(); 
         }
@@ -131,6 +129,7 @@ namespace CaptainCombat.Client.GameLayers
 
         public override void update(GameTime gameTime)
         {
+            if (!UpdateEnabled) return;
 
             if (DomainState.Instance.Download != null) {
                 Domain.update(DomainState.Instance.Download);
@@ -234,6 +233,8 @@ namespace CaptainCombat.Client.GameLayers
         
         public override void draw(GameTime gameTime)
         {
+            if (!DrawEnabled) return;
+
             Renderer.RenderSprites(Domain, Camera);
             Renderer.RenderText(Domain, Camera);
             if (renderColliders)

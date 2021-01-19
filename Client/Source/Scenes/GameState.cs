@@ -3,7 +3,8 @@ using CaptainCombat.Client.GameLayers;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Threading;
-using CaptainCombat.Client.Source.Layers;
+using System;
+using CaptainCombat.Client.Layers;
 
 namespace CaptainCombat.Client.Scenes
 {
@@ -12,6 +13,8 @@ namespace CaptainCombat.Client.Scenes
     {
         private List<Layer> Layers = new List<Layer>();
         private Game Game;
+        private Background background;
+        private LifeController lifeController;
 
         Upload Upload;
         Thread UploadThread;
@@ -21,8 +24,11 @@ namespace CaptainCombat.Client.Scenes
         public GameState(Game game)
         {
             Game = game;
-            LifeController lifeController = new LifeController();
-            Layers.Add(new Background(game, this, lifeController));
+            
+            lifeController = new LifeController();
+
+            background = new Background(game, this, lifeController);
+            Layers.Add(background);
             Layers.Add(new Score(game, this, lifeController));
             Layers.Add(new Chat(game, this));
 
@@ -47,6 +53,10 @@ namespace CaptainCombat.Client.Scenes
 
         public override void update(GameTime gameTime)
         {
+            var winner = lifeController.GetWinner();
+            if ( winner != 0 )
+                GameFinished(winner);
+
             foreach (Layer layer in Layers)
             {
                 layer.update(gameTime);
@@ -60,6 +70,12 @@ namespace CaptainCombat.Client.Scenes
             {
                 layer.draw(gameTime);
             }
+        }
+
+        private void GameFinished(uint winnerId) {
+            Console.WriteLine("Winner is " + winnerId);
+            background.UpdateEnabled = false;
+            Layers.Add(new Finish(winnerId));
         }
     }
 }

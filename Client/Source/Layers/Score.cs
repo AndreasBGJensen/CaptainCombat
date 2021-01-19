@@ -7,8 +7,7 @@ using System.Linq;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
-using CaptainCombat.Client.Source.Layers;
-using CaptainCombat.Common.Singletons;
+using CaptainCombat.Client.Layers;
 
 namespace CaptainCombat.Client.GameLayers
 {

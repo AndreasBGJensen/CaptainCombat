@@ -34,6 +34,13 @@ namespace CaptainCombat.Common.Components {
             }
         }
 
+        public Transform() { }
+
+        public Transform(double x, double y) {
+            Position.X = x;
+            Position.Y = y;
+        }
+
 
         public override void OnUpdate(Component component) {
             var c = (Transform)component;
