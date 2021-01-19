@@ -37,20 +37,12 @@ namespace CaptainCombat.Client.protocols
             Console.WriteLine("Connection to server succeeded\n");
         }
 
-        public static List<string> GetAllClientInLobby()
+        public static IEnumerable<ITuple> GetAllClientInLobby()
         {
-            List<string> allUsers = new List<string>();
-
             Connection connecting = Connection.Instance;
             ISpace space = connecting.lobbySpace;
-
-            IEnumerable<ITuple> usersInServer = space.QueryAll("users", typeof(string));
-
-            foreach (ITuple user in usersInServer)
-            {
-                allUsers.Add((string)user[1]);
-            }
-            return allUsers;
+            IEnumerable<ITuple> usersInServer = space.QueryAll("player", typeof(int), typeof(string));
+            return usersInServer; 
         }
 
 
@@ -91,11 +83,10 @@ namespace CaptainCombat.Client.protocols
                 return false;
             }
             Connection.Instance.lobbySpace = new RemoteSpace(url);
-            Connection.Instance.Space = Connection.Instance.lobbySpace;
-            Connection.Instance.Space.Get("lock");
-            Connection.Instance.Space.GetP("player",typeof(int),typeof(string));
-            Connection.Instance.Space.Put("player", user_id, username);
-            Connection.Instance.Space.Put("lock");
+            Connection.Instance.lobbySpace.Get("lock");
+            Connection.Instance.lobbySpace.GetP("player",typeof(int),typeof(string));
+            Connection.Instance.lobbySpace.Put("player", user_id, username);
+            Connection.Instance.lobbySpace.Put("lock");
 
             return true;
         }
@@ -126,7 +117,6 @@ namespace CaptainCombat.Client.protocols
             lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
             Connection.Instance.lobbySpace = lobbySpace;
-            Connection.Instance.Space = Connection.Instance.lobbySpace;
             lobbySpace.Put("lock");
 
             return true;

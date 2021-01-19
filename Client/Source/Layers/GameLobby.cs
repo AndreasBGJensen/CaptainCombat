@@ -80,15 +80,24 @@ namespace CaptainCombat.Client.Source.Layers
             // Clear domain 
             Domain.Clean();
 
-            List<string> users = ClientProtocol.GetAllClientInLobby();
-            foreach (string user in users)
+            foreach (Entity playerName in players)
             {
-                foreach (Entity playerName in players)
+                playerName.Delete();
+            }
+            players.Clear();
+
+            IEnumerable<ITuple> users = ClientProtocol.GetAllClientInLobby();
+            foreach (ITuple user in users)
+            {
+                if (((string)user[2]).Contains("No user"))
                 {
-                    playerName.Delete();
+                    players.Add(EntityUtility.CreateMessage(Domain, "---------------", 0, 0, 14));
                 }
-                players.Clear();
-                players.Add(EntityUtility.CreateMessage(Domain, user, 0, 0, 14));
+                else
+                {
+                    players.Add(EntityUtility.CreateMessage(Domain, (string)user[2], 0, 0, 14));
+                }
+               
             }
 
             // Handles keyboard input
