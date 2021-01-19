@@ -18,7 +18,7 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
         public void OnComputerInit()
         {
 
-            var mapSize = 1000;
+            var mapSize = Settings.MAP_SIZE;
             var boundarySize = 800;
             var boundaryPosition = mapSize*0.5 + boundarySize * 0.5;
 
@@ -30,12 +30,15 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
                 EntityUtility.CreateBoundary(domain,  0,  boundaryPosition, mapSize*2, boundarySize);
             }
 
+
+            var rockMargin = 0.1;
+            var halfMapSize = mapSize * (0.5-rockMargin);
             
             for (int i = 0; i < numRocks; i++)
             {   
                 RockElement rock = new RockElement();
-                double x        = RandomGenerator.Double(-750, 750.0);
-                double y        = RandomGenerator.Double(-750, 750.0);
+                double x        = RandomGenerator.Double( -halfMapSize, halfMapSize );
+                double y        = RandomGenerator.Double( -halfMapSize, halfMapSize );
                 double scale    = RandomGenerator.Double(0.5, 1.5);
                 double rotation = RandomGenerator.Double(0, 360);
 
