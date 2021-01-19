@@ -27,7 +27,6 @@ namespace CaptainCombat.network
                 watch.Stop();
                 watch.PrintTimer();
             }
-           
         }
     }
 }
