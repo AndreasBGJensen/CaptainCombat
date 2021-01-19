@@ -141,6 +141,16 @@ namespace CaptainCombat.Client.protocols
             return count;
         }
 
+        public static IEnumerable<ITuple> GetSubscribersInALobby(string lobbyUrl)
+        {
+            RemoteSpace lobbySpace = new RemoteSpace(lobbyUrl);
+            IEnumerable<ITuple> subscriberTuple = lobbySpace.QueryAll("player", typeof(int), typeof(string));
+
+            return subscriberTuple;
+
+        }
+
+
         public static IEnumerable<ITuple> GetAllClients()
         {
             return DomainState.Instance.Clients;
