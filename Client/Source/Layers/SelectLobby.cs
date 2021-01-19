@@ -162,7 +162,7 @@ namespace CaptainCombat.Client.Source.Layers
                             var info = clientInformation.GetComponent<Text>();
                             info.Message = "Going to lobbies";
                             Connection.Instance.Space_owner = false;
-                            ClientProtocol.CreateLobby();
+                           // ClientProtocol.CreateLobby();
                             Task.Factory.StartNew(async () =>
                             {
                                 await Task.Delay(2000);
