@@ -93,7 +93,7 @@ namespace CaptainCombat.Client.protocols
 
         public static bool ListenForMatchBegin()
         {
-            ITuple response = Connection.Instance.Space.Query("start");
+            ITuple response = Connection.Instance.lobbySpace.QueryP("start");
             if (response != null)
             {
                 return true; 
@@ -124,9 +124,10 @@ namespace CaptainCombat.Client.protocols
                 lobbySpace.Put("lock");
                 return false;
             }
+            Connection.Instance.lobbySpace = lobbySpace;
             lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
-            Connection.Instance.lobbySpace = lobbySpace;
+            
             lobbySpace.Put("lock");
 
             return true;

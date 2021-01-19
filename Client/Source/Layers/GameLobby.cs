@@ -116,6 +116,7 @@ namespace CaptainCombat.Client.Source.Layers
             Display();
 
             // No host
+           
             if (!Connection.Instance.Space_owner)
             {
                 if (ClientProtocol.ListenForMatchBegin())
@@ -123,6 +124,7 @@ namespace CaptainCombat.Client.Source.Layers
                     ChangeState = true; 
                 }
             }
+       
 
             // Changes state when condition is true 
             if (ChangeState)
