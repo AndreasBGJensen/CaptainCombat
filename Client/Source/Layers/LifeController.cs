@@ -26,7 +26,8 @@ namespace CaptainCombat.Client.Layers {
         public Player Winner { get; set; } = null;
         public bool WinnerFound { get => Winner != null; }
 
-        public LifeController() {
+            
+        public void Start(){
 
             foreach (var client in GameInfo.Current.Clients)
                 lives[client.Id] = Settings.LIVES;
@@ -65,8 +66,8 @@ namespace CaptainCombat.Client.Layers {
             settingWinner = true;
 
             var t = new Thread((e) => {
-                Connection.Instance.lobbySpace.Get("winner-lock");
-                Connection.Instance.lobbySpace.Put("winner", (int)winnerId);
+                Connection.Instance.LobbySpace.Get("winner-lock");
+                Connection.Instance.LobbySpace.Put("winner", (int)winnerId);
             });
             t.Priority = ThreadPriority.Highest;
             t.Start();
@@ -75,7 +76,7 @@ namespace CaptainCombat.Client.Layers {
 
         private void ListenForWinner() {
             var t = new Thread((e) => {
-                var tuple = Connection.Instance.lobbySpace.Query("winner", typeof(int));
+                var tuple = Connection.Instance.LobbySpace.Query("winner", typeof(int));
                 Winner = GameInfo.Current.GetPlayer((uint)(int)tuple[1]);
             });
             t.Priority = ThreadPriority.Highest;

@@ -39,7 +39,7 @@ namespace CaptainCombat.Client.GameLayers
         {
             // Input box 
             InputBox = EntityUtility.CreateInput(Domain, "", 360, 200, 14);
-
+                
             // Chat layout
             ChatBox = new Entity(Domain);
             ChatBox.AddComponent(new Transform());

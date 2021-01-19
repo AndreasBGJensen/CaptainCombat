@@ -19,7 +19,7 @@ namespace CaptainCombat.Common.Singletons {
 
         public ISpace Space { get; set; }
 
-        public ISpace lobbySpace { get; set; }
+        public ISpace LobbySpace { get; set; }
 
         public ISpace globalSpace { get; set; }
 

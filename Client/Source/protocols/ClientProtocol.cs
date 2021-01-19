@@ -40,7 +40,7 @@ namespace CaptainCombat.Client.protocols
 
         public static IEnumerable<ITuple> GetClientsInLobby()
         {
-            return Connection.Instance.lobbySpace.QueryAll("player", typeof(int), typeof(string));
+            return Connection.Instance.LobbySpace.QueryAll("player", typeof(int), typeof(string));
         }
 
 
@@ -81,18 +81,18 @@ namespace CaptainCombat.Client.protocols
             {
                 return false;
             }
-            Connection.Instance.lobbySpace = new RemoteSpace(url);
-            Connection.Instance.lobbySpace.Get("lock");
-            Connection.Instance.lobbySpace.GetP("player",typeof(int),typeof(string));
-            Connection.Instance.lobbySpace.Put("player", user_id, username);
-            Connection.Instance.lobbySpace.Put("lock");
+            Connection.Instance.LobbySpace = new RemoteSpace(url);
+            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.GetP("player",typeof(int),typeof(string));
+            Connection.Instance.LobbySpace.Put("player", user_id, username);
+            Connection.Instance.LobbySpace.Put("lock");
 
             return true;
         }
 
         public static bool ListenForMatchBegin()
         {
-            ITuple response = Connection.Instance.lobbySpace.QueryP("start");
+            ITuple response = Connection.Instance.LobbySpace.QueryP("start");
             if (response != null)
             {
                 return true; 
@@ -103,9 +103,9 @@ namespace CaptainCombat.Client.protocols
 
         public static void BeginMatch()
         {
-            Connection.Instance.lobbySpace.Get("lock");
-            Connection.Instance.lobbySpace.Put("start");
-            Connection.Instance.lobbySpace.Put("lock");
+            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.Put("start");
+            Connection.Instance.LobbySpace.Put("lock");
         }
 
         public static bool SubscribeForLobby(string lobbyUrl)
@@ -123,7 +123,7 @@ namespace CaptainCombat.Client.protocols
                 lobbySpace.Put("lock");
                 return false;
             }
-            Connection.Instance.lobbySpace = lobbySpace;
+            Connection.Instance.LobbySpace = lobbySpace;
             lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
             
@@ -181,7 +181,7 @@ namespace CaptainCombat.Client.protocols
 
         public static void AddMessageToServer(string message)
         {
-            ISpace space = Connection.Instance.lobbySpace ;
+            ISpace space = Connection.Instance.LobbySpace ;
             space.Put("chat", Connection.Instance.User_id, message);
         }
 
@@ -213,7 +213,7 @@ namespace CaptainCombat.Client.protocols
 
         public static void AddClientScoreToServer(int clientScore)
         {
-            ISpace space = Connection.Instance.lobbySpace;
+            ISpace space = Connection.Instance.LobbySpace;
             space.Put("score", Connection.Instance.User_id, clientScore);
         }
 

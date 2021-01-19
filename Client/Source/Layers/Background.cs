@@ -15,6 +15,7 @@ using System;
 using System.Threading.Tasks;
 using CaptainCombat.Client.Layers;
 using CaptainCombat.Source.Events;
+using CaptainCombat.network;
 
 namespace CaptainCombat.Client.GameLayers
 {
@@ -32,6 +33,8 @@ namespace CaptainCombat.Client.GameLayers
         private bool playMusic = true;
         private Keys[] LastPressedKeys = new Keys[5];
 
+        private bool gameStarted = false;
+
         private Entity ship;
         private int currentScore = 0;
 
@@ -41,16 +44,17 @@ namespace CaptainCombat.Client.GameLayers
         private static double fireCooldownCurrent = 0.0;
 
         private LifeController lifeController;
+        private GameDataUploader gameDataUploader = new GameDataUploader();
+        private GameDataDownloader gameDataDownloader = new GameDataDownloader();
 
         CollisionController collisionController = new CollisionController();
-        
+
 
         public Background(Game game, State state, LifeController lifeController)
         {
             Camera = new Camera(Domain);
             this.lifeController = lifeController;
-            DomainState.Instance.Domain = Domain; 
-            init(); 
+            DomainState.Instance.Domain = Domain;
         }
 
 
@@ -140,83 +144,92 @@ namespace CaptainCombat.Client.GameLayers
                 return false;
             });
 
-            EventController.Start();
             
             ship = EntityUtility.CreateShip(Domain, Connection.Instance.User_id, 1);
             SpawnShip();
         }
 
+
+        public void Start() {
+            gameStarted = true;
+            gameDataUploader.Start();
+            gameDataDownloader.Start();
+            EventController.Start();
+        }
+
+
         public override void update(GameTime gameTime)
         {
+            double seconds = gameTime.ElapsedGameTime.TotalSeconds;
+
             if (!UpdateEnabled) return;
 
-            if (DomainState.Instance.Download != null) {
-                Domain.update(DomainState.Instance.Download);
-                DomainState.Instance.Download = null;
+            { // Update Domain to remote data
+                var data = gameDataDownloader.GetData();
+                if (data != null)
+                    Domain.update(data);
+            }
+
+            if( gameStarted)
+            {
+                EventController.Flush();
             }
 
             Domain.Clean();
             // Clear domain
 
-            // Handles keyboard input 
-            GetKeys();
+            if( gameStarted ) {
 
-            // Update ship movement
-            double seconds = gameTime.ElapsedGameTime.TotalSeconds;
+                // Handles keyboard input 
+                GetKeys();
 
-            if (fireCooldownCurrent > 0)
-                fireCooldownCurrent -= seconds;
+                // Update ship movement
 
-            if (!DisableKeyboard)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.E)) {
-                    if (fireCooldownCurrent <= 0) {
-                        EntityUtility.FireCannonBall(ship);
-                        fireCooldownCurrent = FIRE_COOLDOWN;
+                if (fireCooldownCurrent > 0)
+                    fireCooldownCurrent -= seconds;
+
+                if (gameStarted && !DisableKeyboard) {
+                    if (Keyboard.GetState().IsKeyDown(Keys.E)) {
+                        if (fireCooldownCurrent <= 0) {
+                            EntityUtility.FireCannonBall(ship);
+                            fireCooldownCurrent = FIRE_COOLDOWN;
+                        }
+                    }
+
+                    var move = ship.GetComponent<Move>();
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Space)) {
+                        move.Acceleration = new Vector(30, 0);
+                    }
+                    else {
+                        move.Acceleration = new Vector(0, 0);
+                    }
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
+                        move.RotationAcceleration = 270;
+                    }
+                    else if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
+                        move.RotationAcceleration = -270;
+                    }
+                    else {
+                        move.RotationAcceleration = 0;
                     }
                 }
 
-                var move = ship.GetComponent<Move>();
-
-                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                // Update camera to ship
                 {
-                    move.Acceleration = new Vector(30, 0);
-                }
-                else
-                {
-                    move.Acceleration = new Vector(0, 0);
-                }
-
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                {
-                    move.RotationAcceleration = 270;
-                }
-                else if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                {
-                    move.RotationAcceleration = -270;
-                }
-                else
-                {
-                    move.RotationAcceleration = 0;
+                    var transform = ship.GetComponent<Transform>();
+                    var difference = transform.Position - Camera.Position;
+                    Camera.Position += difference * 0.05;
                 }
             }
-
-            // Update camera to ship
-            {
-                var transform = ship.GetComponent<Transform>();
-                var difference = transform.Position - Camera.Position;
-                Camera.Position += difference * 0.05;
-            }
-
 
             // Update movement in domain 
             Movement.Update(Domain, seconds);
             collisionController.CheckCollisions(Domain);
 
             Domain.Clean();
-            DomainState.Instance.Upload = JsonBuilder.createJsonString();
-            EventController.Flush();
-
+            gameDataUploader.UploadData(JsonBuilder.createJsonString());
         }
         
 
@@ -254,11 +267,9 @@ namespace CaptainCombat.Client.GameLayers
             if (key == Keys.Tab)
             {
                 DisableKeyboard = !DisableKeyboard;
-            }else if(key == Keys.Add)
-            {
-                currentScore++;
-                ClientProtocol.AddClientScoreToServer(currentScore);
-            }else if (key == Keys.M)
+            }
+            
+            if (key == Keys.M)
             {
                 if (playMusic)
                 {
@@ -275,7 +286,8 @@ namespace CaptainCombat.Client.GameLayers
                     MediaPlayer.Stop();
                 }
             }
-            else if(key == Keys.L)
+            
+            if(key == Keys.L)
             {
                 Sound sound = Assets.Sounds.KanonSound;
                 var effect = sound.GetNative<SoundEffect>();
@@ -290,7 +302,7 @@ namespace CaptainCombat.Client.GameLayers
 
 
         private async void Respawn() {
-            await Task.Delay(4000);
+            await Task.Delay((int)(Settings.RESPAWN_DELAY*1000));
             SpawnShip();
         }
 

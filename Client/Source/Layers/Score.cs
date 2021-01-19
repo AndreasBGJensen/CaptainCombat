@@ -21,6 +21,8 @@ namespace CaptainCombat.Client.GameLayers
         private List<Entity> playerIcons = new List<Entity>();
         private LifeController lifeController;
 
+        private bool started = false;
+
         public Score(Game game, State state, LifeController lifeController)
         {
             this.lifeController = lifeController;
@@ -31,8 +33,14 @@ namespace CaptainCombat.Client.GameLayers
         {
         }
 
+        public void Start() {
+            started = true;
+        }
+
         public override void update(GameTime gameTime)
         {
+            if (!started) return;
+
             Domain.Clean();
 
             // Updates player names and icons if player is added to remote space on server 

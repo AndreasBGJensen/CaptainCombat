@@ -6,6 +6,8 @@ namespace CaptainCombat.Common {
     /// </summary>
     public static class Settings {
 
+        public static readonly double RESPAWN_DELAY = 4.0; // Seconds
+
         public static readonly uint NUM_ROCKS = 20;
 
         public static readonly int LIVES = 3;
