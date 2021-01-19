@@ -193,7 +193,7 @@ namespace CaptainCombat.Client.protocols
             ISpace space = Connection.Instance.Space;
 
             // Get lock 
-            space.Get("login_lock"); 
+            space.Get("newuser_lock"); 
             space.Put("user", username);
             Tuple result = (Tuple)space.Get("connected", typeof(bool), typeof(int), typeof(string));
 
@@ -202,12 +202,12 @@ namespace CaptainCombat.Client.protocols
                 Console.WriteLine("Join succesfull");
                 Connection.Instance.User = username;
                 Connection.Instance.User_id = (int)result[2];
-                space.Put("login_lock");
+                space.Put("newuser_lock");
                 return true;
             }
             else
             {
-                space.Put("login_lock");
+                space.Put("newuser_lock");
                 return false; 
             }
         }

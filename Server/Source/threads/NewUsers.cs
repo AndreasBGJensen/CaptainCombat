@@ -12,7 +12,7 @@ namespace CaptainCombat.Server.threads
         //static int computer_AI_ID = 1;
         public NewUsers()
         {
-            Connection.Instance.Space.Put("login_lock");
+            Connection.Instance.Space.Put("newuser_lock");
         }
 
         public void RunProtocol()
