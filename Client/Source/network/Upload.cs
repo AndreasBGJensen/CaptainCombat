@@ -26,7 +26,7 @@ namespace CaptainCombat.network {
                     // TODO: Set Upload to null
                     UpdateCount++;
                     watch.Start();
-                    Connection.Instance.Space.Put("components", UpdateCount.ToString(), DomainState.Instance.Upload);
+                    Connection.Instance.lobbySpace.Put("components", UpdateCount.ToString(), DomainState.Instance.Upload);
                     watch.Stop();
                     watch.PrintTimer();
                 }

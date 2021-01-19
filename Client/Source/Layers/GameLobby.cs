@@ -113,13 +113,21 @@ namespace CaptainCombat.Client.Source.Layers
                 displayCurrentIndex();
             }
             
-            Display(); 
+            Display();
 
+            // No host
+            if (!Connection.Instance.Space_owner)
+            {
+                if (ClientProtocol.ListenForMatchBegin())
+                {
+                    ChangeState = true; 
+                }
+            }
 
             // Changes state when condition is true 
             if (ChangeState)
             {
-                ParentState._context.TransitionTo(new LobbyState(Game));
+                ParentState._context.TransitionTo(new GameState(Game));
             }
         }
 
@@ -157,15 +165,6 @@ namespace CaptainCombat.Client.Source.Layers
                 {
                     RunCurrentselected();
                 }
-                //DisableKeyboard = !DisableKeyboard;
-                
-                /*
-                Task.Factory.StartNew(async () =>
-                {
-                    await Task.Delay(2000);
-                    ChangeState = true;
-                });
-                */
             }
         }
 
@@ -175,8 +174,11 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 case 0:
                     {
+                        DisableKeyboard = !DisableKeyboard;
+                        ClientProtocol.BeginMatch(); 
                         var info = clientInformation.GetComponent<Text>();
                         info.Message = "Starting game";
+                        ChangeState = true;
                     }
                     break;
                 default:
