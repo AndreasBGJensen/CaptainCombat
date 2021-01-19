@@ -1,6 +1,4 @@
 ﻿using CaptainCombat.Common;
-using CaptainCombat.Server.Collector;
-using CaptainCombat.Server.Collector.Helpers;
 using CaptainCombat.Server.Mapmaker;
 using CaptainCombat.Server.Source.threads;
 using CaptainCombat.Server.threads;
@@ -66,7 +64,6 @@ namespace CaptainCombat.Server.Source.LobbyContent
         {
             space = new SequentialSpace();
             ReservePlayersToSpace(space, MAX_NUM_SUBSCRIBERS);
-            space.Put("lock");
 
             // TODO: Move this adding of lock to approriate place
             space.Put("life-lock");
@@ -83,6 +80,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
         {
             for(int i = 0;i < players_to_reserve; i++)
             {
+                space.Put("lock");
                 space.Put("player", 0, "No user");
             } 
         }
