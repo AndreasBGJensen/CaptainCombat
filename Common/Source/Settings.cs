@@ -5,7 +5,8 @@ namespace CaptainCombat.Common {
     /// Contains global settings for the game
     /// </summary>
     public static class Settings {
-    
+
+        public static readonly uint NUM_ROCKS = 20;
     
         public static readonly double MAP_SIZE = 1250;
 

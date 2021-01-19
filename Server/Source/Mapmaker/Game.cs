@@ -22,7 +22,7 @@ namespace CaptainCombat.Server.Mapmaker
             Join();
             
 
-            IEntity entity = new Rocks(10);
+            IEntity entity = new Rocks(Settings.NUM_ROCKS);
             entity.OnComputerInit();
             //game.ComputerInit += entity.OnComputerInit;
 

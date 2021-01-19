@@ -145,6 +145,7 @@ namespace CaptainCombat.Common {
             return entity;
         }
 
+
         public static Entity CreateShip(Domain domain, int clientId, int damage)
         {
             List<int> levels = new List<int> { 1, 2, 3, 4 };
@@ -171,6 +172,7 @@ namespace CaptainCombat.Common {
 
             return entity;
         }
+
 
         public static void AddSpriteToShip(Entity entity, int clientId, int damageLevel)
         {

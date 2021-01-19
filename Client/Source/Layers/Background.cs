@@ -221,38 +221,7 @@ namespace CaptainCombat.Client.GameLayers
         }
         
 
-        private async void Respawn() {
-            await Task.Delay(4000);
-            SpawnShip();
-        }
-
-        /// <summary>
-        /// Spawns the Player's ship at some location (center for now)
-        /// </summary>
-        private void SpawnShip() {
-            // TODO: Change ship spawn
-
-
-            var health = ship.GetComponent<ShipHealth>();
-            health.Current = health.Max;
-            health.DeathHandled = false;
-
-            var transform = ship.GetComponent<Transform>();
-            transform.Position = Vector.Zero;
-            transform.Rotation = 0;
-
-            var move = ship.GetComponent<Move>();
-            move.Velocity = Vector.Zero;
-            move.RotationVelocity = 0;
-            move.Acceleration = Vector.Zero;
-            move.Enabled = true;
-
-            var sprite = ship.GetComponent<Sprite>();
-            sprite.Enabled = true;
-
-            var collider = ship.GetComponent<BoxCollider>();
-            collider.Enabled = true;
-        }
+        
 
         
         public override void draw(GameTime gameTime)
@@ -317,6 +286,40 @@ namespace CaptainCombat.Client.GameLayers
             if (key == Keys.C)
                 renderColliders = !renderColliders;
 
+        }
+
+
+        private async void Respawn() {
+            await Task.Delay(4000);
+            SpawnShip();
+        }
+
+        /// <summary>
+        /// Spawns the Player's ship at some location (center for now)
+        /// </summary>
+        private void SpawnShip() {
+            // TODO: Change ship spawn position
+
+            var health = ship.GetComponent<ShipHealth>();
+            health.Current = health.Max;
+            health.DeathHandled = false;
+
+            var transform = ship.GetComponent<Transform>();
+            transform.Position = Vector.Zero;
+            transform.Rotation = 0;
+
+            var move = ship.GetComponent<Move>();
+            move.Velocity = Vector.Zero;
+            move.RotationVelocity = 0;
+            move.Acceleration = Vector.Zero;
+            move.Enabled = true;
+
+            var sprite = ship.GetComponent<Sprite>();
+            sprite.Enabled = true;
+            sprite.Depth = 0.5f;
+
+            var collider = ship.GetComponent<BoxCollider>();
+            collider.Enabled = true;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace CaptainCombat.Client {
 
 
         public static void RenderSprites(Domain domain, Camera camera) {
-            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
+            spriteBatch.Begin(SpriteSortMode.BackToFront, transformMatrix: camera.GetMatrix().ToMGMatrix());
 
             // Submit all entities which have a Sprite and Transform component
             // to the sprite batch (for drawing)
@@ -60,8 +60,8 @@ namespace CaptainCombat.Client {
 
                        SpriteEffects.None,
 
-                       1
-                );;
+                       sprite.Depth
+                );
             });
 
             spriteBatch.End();

@@ -7,9 +7,11 @@ namespace CaptainCombat.Common.Components {
 
         public bool   Enabled { get; set; } = true;
         public string TextureTag { get; set; }
+        public float Depth { get; set; } = 1;
         public double Width { get; set; }
         public double Height { get; set; }
         public Color Color { get; set; }
+
 
         [JsonIgnore]
         public Texture Texture { get => Asset.GetAsset<Texture>(TextureTag); }

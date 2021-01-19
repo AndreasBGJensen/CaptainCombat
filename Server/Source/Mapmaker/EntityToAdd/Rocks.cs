@@ -8,9 +8,9 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 {
     class Rocks : IEntity
     {
-        private int numRocks;
+        private uint numRocks;
 
-        public Rocks(int numRocks)
+        public Rocks(uint numRocks)
         {
             this.numRocks = numRocks;
         }
@@ -32,23 +32,22 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 
 
             var rockMargin = 0.1;
-            var halfMapSize = mapSize * (0.5-rockMargin);
+            var rockSpawnBoundary = mapSize * (0.5-rockMargin);
             
-            for (int i = 0; i < numRocks; i++)
+            for (uint i = 0; i < numRocks; i++)
             {   
                 RockElement rock = new RockElement();
-                double x        = RandomGenerator.Double( -halfMapSize, halfMapSize );
-                double y        = RandomGenerator.Double( -halfMapSize, halfMapSize );
-                double scale    = RandomGenerator.Double(0.5, 1.5);
+                double x = RandomGenerator.Double(-rockSpawnBoundary, rockSpawnBoundary);
+                double y = RandomGenerator.Double(-rockSpawnBoundary, rockSpawnBoundary);
+                double scale = RandomGenerator.Double(0.5, 1.5);
                 double rotation = RandomGenerator.Double(0, 360);
+                rock.SetAttributes(x, y, scale, rotation);
 
-                do
-                {
-                    // TODO: Improve this distribution algorithm
+                while (!rock.CheckDistance()) {
                     x += 10;
                     y += 10;
                     rock.SetAttributes(x, y, scale, rotation);
-                } while (!rock.CheckDistance());
+                }
 
                 RockElement.all.Add(rock);
             }
