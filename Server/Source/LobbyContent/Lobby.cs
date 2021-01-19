@@ -17,7 +17,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
     {
 
         private SpaceRepository repository;
-        private SequentialSpace lobby;
+        private SequentialSpace space;
         public string lobbyUrl { get; set; }
         public string spaceID { get; set; }
         public string creator { get; set; }
@@ -64,18 +64,18 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         private void AddGameLobby()
         {
-            lobby = new SequentialSpace();
-            ReservePlayersToSpace(lobby, MAX_NUM_SUBSCRIBERS);
+            space = new SequentialSpace();
+            ReservePlayersToSpace(space, MAX_NUM_SUBSCRIBERS);
             space.Put("lock");
 
             // TODO: Move this adding of lock to approriate place
-            lobby.Put("life-lock");
+            space.Put("life-lock");
 
-            repository.AddSpace(spaceID, lobby);
+            repository.AddSpace(spaceID, space);
 
             //Initialize streeming components
-            clientScores = new ClientScores(lobby);
-            streemComponent = new StreemComponents(lobby);
+            clientScores = new ClientScores(space);
+            streemComponent = new StreemComponents(space);
         }
 
 
@@ -91,7 +91,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
         public void RunProtocol()
         {
             Game game = new Game();
-            game.Init(lobby);
+            game.Init(space);
             clientScores.RunProtocol();
             streemComponent.RunProtocol();
             

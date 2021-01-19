@@ -39,7 +39,7 @@ namespace CaptainCombat.Client.Source.Scenes
 
         public override void draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(Color.Black);
+            Game.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
             foreach (Layer layer in layers)
             {
                 layer.draw(gameTime);

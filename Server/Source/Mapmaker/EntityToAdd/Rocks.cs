@@ -65,13 +65,9 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 
             domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
-<<<<<<< HEAD
 
             // TODO: Fix this uploading from server side
-            Connection.Instance.Space.Put("components", "1", DomainState.Instance.Upload);
-=======
             lobbySpace.Put("components", "1", DomainState.Instance.Upload);
->>>>>>> origin/master
         }
 
 

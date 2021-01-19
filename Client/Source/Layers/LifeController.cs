@@ -42,17 +42,18 @@ namespace CaptainCombat.Client.Layers {
         }
 
         public void GameFinish() {                                                // Winner id
-            var tuple = Connection.Instance.Space.Get("winner", typeof(int));
+            var tuple = Connection.Instance.lobbySpace.Get("winner", typeof(int));
             localSpace.Put(tuple);
         }
 
         private void UpdateLives() {
             Console.Error.WriteLine("Thread is " + Thread.CurrentThread.Name);
             while (true) {
+                Thread.Sleep(100);
                 Console.WriteLine("Get life-lock");
-                Connection.Instance.Space.Get("life-lock");
+                Connection.Instance.lobbySpace.Get("life-lock");
 
-                var livesTuples = Connection.Instance.Space.QueryAll("lives", typeof(int), typeof(int));
+                var livesTuples = Connection.Instance.lobbySpace.QueryAll("lives", typeof(int), typeof(int));
                 System.Console.WriteLine("Get lock");
                 localSpace.Get("lock");
 
@@ -92,18 +93,18 @@ namespace CaptainCombat.Client.Layers {
 
                 if (livesLost > 0) {
                     // Update remote (only if lives were updated)
-                    Connection.Instance.Space.Get("lives", Connection.Instance.User_id, typeof(int));
-                    Connection.Instance.Space.Put("lives", Connection.Instance.User_id, ownLives);
+                    Connection.Instance.lobbySpace.Get("lives", Connection.Instance.User_id, typeof(int));
+                    Connection.Instance.lobbySpace.Put("lives", Connection.Instance.User_id, ownLives);
                 }
 
                 if ( winner == 0 ) {
                     System.Console.WriteLine("Releasing lock");
                     // Don't unlock scores if a winner was found
-                    Connection.Instance.Space.Put("life-lock");
+                    Connection.Instance.lobbySpace.Put("life-lock");
                     System.Console.WriteLine("Released lock");
                 }
                 else {
-                    Connection.Instance.Space.Put("winner", (int)winner);
+                    Connection.Instance.lobbySpace.Put("winner", (int)winner);
                 }
 
             }
