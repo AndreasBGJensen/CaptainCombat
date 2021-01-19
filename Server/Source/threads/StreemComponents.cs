@@ -31,7 +31,7 @@ namespace CaptainCombat.Server.Source.threads
             {
                 while (true)
                 {
-                    space.Get("lock");
+                    //space.Get("lock");
                     space.Get("start");
                     collector.BeginCollect();
                     //collector.PrintUpdateComponents();
