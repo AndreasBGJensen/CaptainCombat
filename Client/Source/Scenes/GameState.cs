@@ -33,7 +33,7 @@ namespace CaptainCombat.Client.Scenes
                 var clientId = (uint)(int)tuple[1];
                 var clientName = (string)tuple[2];
                 if( clientId != 0 )
-                    GameInfo.Current.AddClient(new Client(clientId, clientName));
+                    GameInfo.Current.AddClient(new Player(clientId, clientName));
             }
 
             // TODO: Remove this
@@ -89,10 +89,11 @@ namespace CaptainCombat.Client.Scenes
             }
         }
 
-        private void GameFinished(uint winnerId) {
-            Console.WriteLine("Winner is " + winnerId);
+        private void GameFinished(Player winner) {
+            // TODO: Toggle off winner
+            Console.WriteLine("Winner is " + winner.Name);
             background.UpdateEnabled = false;
-            Layers.Add(new Finish(winnerId));
+            Layers.Add(new Finish(winner));
         }
     }
 }

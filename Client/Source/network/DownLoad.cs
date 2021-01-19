@@ -16,10 +16,8 @@ namespace CaptainCombat.network
 
                 watch.Start();
                 DomainState.Instance.Download = Connection.Instance.lobbySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(string));
-                //IEnumerable<ITuple> messageData = Connection.Instance.lobbySpace.QueryAll("chat", typeof(int),typeof(string));
+                DomainState.Instance.Messages = Connection.Instance.lobbySpace.QueryAll("chat", typeof(int),typeof(string));
                 //IEnumerable<ITuple> clientsInGame = Connection.Instance.lobbySpace.QueryAll("usersInGame", typeof(int), typeof(string));
-
-                //DomainState.Instance.Messages = messageData;
                 //DomainState.Instance.Clients = clientsInGame;
 
                 watch.Stop();

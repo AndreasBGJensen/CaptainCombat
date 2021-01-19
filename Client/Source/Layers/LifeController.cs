@@ -23,8 +23,8 @@ namespace CaptainCombat.Client.Layers {
 
         private bool settingWinner = false;
         
-        public uint Winner { get; set; } = 0;
-        public bool WinnerFound { get => Winner != 0; }
+        public Player Winner { get; set; } = null;
+        public bool WinnerFound { get => Winner != null; }
 
         public LifeController() {
 
@@ -58,7 +58,6 @@ namespace CaptainCombat.Client.Layers {
         }
 
 
-
         private void UploadWinner(uint winnerId) {
             // To ensure that the client isn't attempting to set
             // 2 winners at the same time
@@ -77,7 +76,7 @@ namespace CaptainCombat.Client.Layers {
         private void ListenForWinner() {
             var t = new Thread((e) => {
                 var tuple = Connection.Instance.lobbySpace.Query("winner", typeof(int));
-                Winner = (uint)(int)tuple[1];
+                Winner = GameInfo.Current.GetPlayer((uint)(int)tuple[1]);
             });
             t.Priority = ThreadPriority.Highest;
             t.Start();
