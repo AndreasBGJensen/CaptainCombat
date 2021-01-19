@@ -29,6 +29,8 @@ namespace CaptainCombat.Client.Source.Layers
         private Game Game;
         private int currentIndex = 0;
         private List<Entity> lobbies = new List<Entity>();
+        private List<string> allURLs = new List<string>();
+
         private Entity left_pointer;
         private Entity right_pointer;
         private Entity clientInformation;
@@ -86,8 +88,11 @@ namespace CaptainCombat.Client.Source.Layers
 
             foreach (ITuple lobby in serverLobbies)
             {
-
-                lobbies.Add(EntityUtility.CreateMessage(Domain, lobby[], 0, 0, 14));
+                
+                string url = (string)lobby[3];
+                allURLs.Add(url);
+                int numberOfPlayers = ClientProtocol.GetNumberOfSubscribersInALobby(url); 
+                lobbies.Add(EntityUtility.CreateMessage(Domain, "Players in lobby: "+numberOfPlayers+"-4", 0, 0, 14));
             }
 
             // Handles keyboard input
@@ -136,13 +141,6 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 DisableKeyboard = !DisableKeyboard;
                 RunCurrentselected();
-                /*
-                Task.Factory.StartNew(async () =>
-                {
-                    await Task.Delay(2000);
-                    ChangeState = true;
-                });
-                */
             }
             else if (key == Keys.Up)
             {
@@ -164,6 +162,7 @@ namespace CaptainCombat.Client.Source.Layers
         {
             var info = clientInformation.GetComponent<Text>();
             info.Message = "Connecting to lobby ";
+            ClientProtocol.SubscribeForLobby(allURLs[currentIndex]); 
             Task.Factory.StartNew(async () =>
             {
                 await Task.Delay(2000);

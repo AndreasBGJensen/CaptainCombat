@@ -144,7 +144,6 @@ namespace CaptainCombat.Client.Source.Layers
                         info.Message = "Creating new lobby";
                         Connection.Instance.Space_owner = true;
                         ClientProtocol.CreateLobby();
-
                         Task.Factory.StartNew(async () =>
                         {
                             await Task.Delay(2000);
