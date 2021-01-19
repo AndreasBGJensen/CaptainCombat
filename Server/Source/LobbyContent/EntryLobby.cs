@@ -40,7 +40,6 @@ namespace CaptainCombat.Server.Source.LobbyContent
                             Thread lobbyThread = new Thread(new ThreadStart(newLobby.RunProtocol));
                             lobbyThread.Start();
 
-
                         }
                     }  
             }         
