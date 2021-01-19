@@ -46,6 +46,7 @@ namespace CaptainCombat.Client.GameLayers
             Game = game; 
             Camera = new Camera(Domain);
             this.lifeController = lifeController;
+            lifeController.OnGameFinish = (winner) => Console.WriteLine("Winner is " + winner);
             DomainState.Instance.Domain = Domain; 
             init(); 
         }

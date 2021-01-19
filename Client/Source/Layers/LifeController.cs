@@ -3,25 +3,44 @@ using CaptainCombat.Common.Singletons;
 using dotSpace.Objects.Space;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace CaptainCombat.Client.Source.Layers {
 
-    public class LifeController {
+    class LifeController {
+
+        public delegate void OnGameFinishCallback(uint winnerId);
+        public OnGameFinishCallback OnGameFinish { get; set; } = null;
+
         private SequentialSpace localLives = new SequentialSpace();
-        private Thread thread;
+        private Thread lifeUpdateThread;
+        private Thread gameFinishThread;
 
         private Dictionary<uint, int> currentLives = new Dictionary<uint, int>();
 
 
         public LifeController() {
-            thread = new Thread(UpdateLives);
-            thread.Start();
+            lifeUpdateThread = new Thread(UpdateLives);
+            lifeUpdateThread.Priority = ThreadPriority.Highest; 
+            lifeUpdateThread.Start();
+
             localLives.Put("lock");
+
+            gameFinishThread = new Thread(GameFinish);
+            gameFinishThread.Priority = ThreadPriority.Highest;
+            gameFinishThread.Start();
         }
 
         public void Stop() {
-            thread.Abort();
+            lifeUpdateThread.Abort();
+            gameFinishThread.Abort();
+        }
+
+
+        public void GameFinish() {                                                // Winner id
+            var tuple = Connection.Instance.Space.Get("winner", typeof(int));
+            OnGameFinish?.Invoke((uint)(int)tuple[1]);
         }
 
         private void UpdateLives() {
@@ -54,26 +73,17 @@ namespace CaptainCombat.Client.Source.Layers {
                 foreach (var t in localLives.GetAll("decrement"))
                     livesLost++;
 
-                var winnerFound = false;
+                uint winner = 0;
                 if (ownLives > 0) {
                     ownLives -= livesLost;
                     if (ownLives <= 0) {
                         ownLives = 0;
                         if (clientsAlive.Count == 1) {
-                            winnerFound = true;
-
-                            uint winner = 0;
-                            foreach (var client in clientsAlive.Keys) {
-                                if (client != Connection.Instance.User_id) {
-                                    winner = client;
-                                    break;
-                                }
-                            }
-
-                            System.Console.WriteLine("Found winner: " + winner);
+                            winner = clientsAlive.First().Key;
                         }
                     }
                 }
+
                 localLives.Put("lives", Connection.Instance.User_id, ownLives);
                 localLives.Put("lock");
 
@@ -83,11 +93,14 @@ namespace CaptainCombat.Client.Source.Layers {
                     Connection.Instance.Space.Put("lives", Connection.Instance.User_id, ownLives);
                 }
 
-                if (!winnerFound) {
+                if ( winner == 0 ) {
                     System.Console.WriteLine("Releasing lock");
                     // Don't unlock scores if a winner was found
                     Connection.Instance.Space.Put("life-lock");
                     System.Console.WriteLine("Released lock");
+                }
+                else {
+                    Connection.Instance.Space.Put("winner", (int)winner);
                 }
 
             }
