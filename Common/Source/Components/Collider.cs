@@ -99,6 +99,14 @@ namespace CaptainCombat.Common.Components {
         [JsonIgnore]
         public BoxColliderPoints Points;
 
+        public BoxCollider() { }
+
+        public BoxCollider(ColliderTag tag, double width, double height, double rotation=0) {
+            Width = width;
+            Height = height;
+            Tag = tag;
+        }
+
         public override void OnUpdate(Component component) {
             base.OnUpdate(component);
 

@@ -2,8 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using CaptainCombat.Client.Utility;
 using CaptainCombat.Common;
+
+using MGColor = Microsoft.Xna.Framework.Color;
 
 namespace CaptainCombat.Client {
 
@@ -46,7 +47,7 @@ namespace CaptainCombat.Client {
                        null,
 
                        // Tint (not implemented in Sprite component yet
-                       Color.White,
+                       sprite.Color.ToMGColor(),
 
                        // Rotation (radians)
                        (float)((transform.Rotation + sprite.Texture.Rotation) * Math.PI / 180), // Rotation
@@ -91,7 +92,7 @@ namespace CaptainCombat.Client {
                     // Position 
                     transform.Position.ToMGVector(),
                     // Color 
-                    Color.Black);
+                    MGColor.Black);
             });
             spriteBatch.End();
         }
@@ -117,7 +118,7 @@ namespace CaptainCombat.Client {
                     // Position 
                     transform.Position.ToMGVector(),
                     // Color 
-                    Color.Black);
+                    MGColor.Black);
             });
             spriteBatch.End();
         }
@@ -135,9 +136,9 @@ namespace CaptainCombat.Client {
 
                 // Color of collider box
                 var color =
-                      collider.Collided ? Color.Red
-                    : collider.Enabled ? Color.Yellow
-                    : new Color(0.75f, 0.75f, 0.75f);
+                      collider.Collided ? MGColor.Red
+                    : collider.Enabled ? MGColor.Yellow
+                    : new MGColor(0.75f, 0.75f, 0.75f);
 
                 var texture = Assets.Textures.LINE_SQUARE.GetNative<Texture2D>();
 
@@ -169,9 +170,9 @@ namespace CaptainCombat.Client {
                 var position = transform.Position.ToMGVector(); // Draw the texture
 
                 var color =
-                      collider.Collided ? Color.Red
-                    : collider.Enabled ? Color.Yellow
-                    : new Color(0.75f, 0.75f, 0.75f, 1.0f);
+                      collider.Collided ? MGColor.Red
+                    : collider.Enabled ? MGColor.Yellow
+                    : new MGColor(0.75f, 0.75f, 0.75f, 1.0f);
                 
                 var texture = Assets.Textures.LINE_CIRCLE.GetNative<Texture2D>();
 

@@ -9,7 +9,22 @@ namespace CaptainCombat.Common {
 
     // Temporary (probably) utility functions
     // for constructing some simple entities
-    public static class EntityUtility {       
+    public static class EntityUtility {
+
+        public static Entity CreateBoundary(Domain domain, double x, double y, double width, double height) {
+
+            var entity = new Entity(domain);
+            entity.AddComponent(new Transform(x, y));
+
+            entity.AddComponent(new Sprite(Assets.Textures.SQUARE, width, height, Settings.BOUNDARY_COLOR));
+
+            entity.AddComponent(new BoxCollider(Assets.ColliderTags.ROCK, width, height));
+
+            entity.SetSyncMode(Component.SynchronizationMode.CREATE);
+
+            return entity;
+        }
+
 
         public static Entity CreateRock(Domain domain, double x, double y, double scale = 0, double rotation = 0) {
             var entity = new Entity(domain);

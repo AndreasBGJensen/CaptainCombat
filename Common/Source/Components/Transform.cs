@@ -36,9 +36,10 @@ namespace CaptainCombat.Common.Components {
 
         public Transform() { }
 
-        public Transform(double x, double y) {
+        public Transform(double x, double y, double rotation = 0) {
             Position.X = x;
             Position.Y = y;
+            Rotation = rotation;
         }
 
 

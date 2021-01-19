@@ -17,6 +17,19 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 
         public void OnComputerInit()
         {
+
+            var mapSize = 1000;
+            var boundarySize = 800;
+            var boundaryPosition = mapSize*0.5 + boundarySize * 0.5;
+
+            Domain domain = DomainState.Instance.Domain;
+            {
+                EntityUtility.CreateBoundary(domain, -boundaryPosition, 0,  boundarySize, mapSize*2);
+                EntityUtility.CreateBoundary(domain,  boundaryPosition, 0,  boundarySize, mapSize*2);
+                EntityUtility.CreateBoundary(domain,  0, -boundaryPosition, mapSize*2, boundarySize);
+                EntityUtility.CreateBoundary(domain,  0,  boundaryPosition, mapSize*2, boundarySize);
+            }
+
             
             for (int i = 0; i < numRocks; i++)
             {   
@@ -39,16 +52,16 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 
 
 
-            Domain domain = DomainState.Instance.Domain;
-
             foreach (RockElement rockElement in RockElement.all)
             {
                 EntityUtility.CreateRock(domain, rockElement.x, rockElement.y, rockElement.scale, rockElement.rotation);
             }
-            Console.WriteLine(String.Format("Number of Rocks: {0}", RockElement.all.Count));
+            Console.WriteLine($"Number of Rocks: {RockElement.all.Count}");
 
             domain.Clean();
             DomainState.Instance.Upload = JsonBuilder.createJsonString();
+
+            // TODO: Fix this uploading from server side
             Connection.Instance.Space.Put("components", "1", DomainState.Instance.Upload);
         }
 

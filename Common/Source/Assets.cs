@@ -11,7 +11,6 @@ namespace CaptainCombat.Common {
             public static readonly AssetCollection GLOBAL = new AssetCollection();
         }
 
-
         public static class Textures {
             public static readonly Texture SHIP = new Texture(Collections.GLOBAL, "ship", "Sprites/ShipRed", rotation: 180 );
 
@@ -19,6 +18,8 @@ namespace CaptainCombat.Common {
 
             public static readonly Texture LINE_SQUARE = new Texture(Collections.GLOBAL, "line_square", "Misc/LineSquare");
             public static readonly Texture LINE_CIRCLE = new Texture(Collections.GLOBAL, "line_circle", "Misc/LineCircle");
+
+            public static readonly Texture SQUARE = new Texture(Collections.GLOBAL, "square", "Sprites/Square");
 
             public static readonly Texture SHIP_BLUE = new Texture(Collections.GLOBAL, "ship_blue", "Sprites/ShipBlue");
             public static readonly Texture ROCK = new Texture(Collections.GLOBAL, "rock1", "Sprites/Rock1");

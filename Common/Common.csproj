@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Primitives\Color.cs" />
+    <Compile Include="Source\Primitives\Matrix.cs" />
+    <Compile Include="Source\Settings.cs" />
     <Compile Include="Source\Components\ShipHealth.cs" />
     <Compile Include="Source\ConnectionInfo.cs" />
     <Compile Include="Source\Game\DataObject.cs" />
@@ -74,7 +77,7 @@
     <Compile Include="Source\EntityUtility.cs" />
     <Compile Include="Source\RandomGenerator.cs" />
     <Compile Include="Source\IdGenerator.cs" />
-    <Compile Include="Source\Vector.cs" />
+    <Compile Include="Source\Primitives\Vector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
