@@ -47,7 +47,7 @@ namespace CaptainCombat.Client.NetworkEvent {
         private static void ReceiveEvents() {
             receiveEvents = true;
             while (receiveEvents) {
-                var eventTuples = Connection.Instance.Space.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                var eventTuples = Connection.Instance.lobbySpace.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
                 foreach (var eventTuple in eventTuples) {
 
                     var typeIdentifier = (string)eventTuple.Fields[1];
@@ -81,7 +81,7 @@ namespace CaptainCombat.Client.NetworkEvent {
                     outgoingEvents.Clear();
                 }
                 foreach (var e in eventsCopy) {
-                    Connection.Instance.Space.Put(
+                    Connection.Instance.lobbySpace.Put(
                             "event",
                             e.GetType().FullName,
                             (int) Connection.Instance.User_id,

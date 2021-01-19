@@ -91,12 +91,22 @@ namespace CaptainCombat.Client.protocols
             return true;
         }
 
+        public static bool ListenForMatchBegin()
+        {
+            ITuple response = Connection.Instance.Space.Query("start");
+            if (response != null)
+            {
+                return true; 
+            }
+            return false; 
+        }
+
 
         public static void BeginMatch()
         {
-            Connection.Instance.Space.Get("lock");
-            Connection.Instance.Space.Put("start");
-            Connection.Instance.Space.Put("lock");
+            Connection.Instance.lobbySpace.Get("lock");
+            Connection.Instance.lobbySpace.Put("start");
+            Connection.Instance.lobbySpace.Put("lock");
         }
 
         public static bool SubscribeForLobby(string lobbyUrl)
@@ -171,8 +181,7 @@ namespace CaptainCombat.Client.protocols
 
         public static void AddMessageToServer(string message)
         {
-            Connection connecting = Connection.Instance;
-            ISpace space = connecting.Space;
+            ISpace space = Connection.Instance.lobbySpace ;
             space.Put("chat", Connection.Instance.User_id, message);
         }
 
@@ -191,8 +200,7 @@ namespace CaptainCombat.Client.protocols
 
         public static void AddClientScoreToServer(int clientScore)
         {
-            Connection connecting = Connection.Instance;
-            ISpace space = connecting.Space;
+            ISpace space = Connection.Instance.lobbySpace;
             space.Put("score", Connection.Instance.User_id, clientScore);
         }
 
