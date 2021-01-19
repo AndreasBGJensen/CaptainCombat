@@ -38,7 +38,7 @@ namespace CaptainCombat.Server.Source.threads
                     //collector.PrintUpdateComponents();
 
                 }
-            });
+            }).Start();
            
         }
     }
