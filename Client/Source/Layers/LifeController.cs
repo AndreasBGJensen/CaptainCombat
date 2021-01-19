@@ -30,8 +30,8 @@ namespace CaptainCombat.Client.Layers {
         }
 
         public void Stop() {
-            lifeUpdateThread.Abort();
-            gameFinishThread.Abort();
+            //lifeUpdateThread.Abort();
+            //gameFinishThread.Abort();
         }
 
 
@@ -118,8 +118,10 @@ namespace CaptainCombat.Client.Layers {
 
 
         public int GetOwnLives() {
-            var lives = GetLives();
-            return lives[(uint)Connection.Instance.User_id];    
+            // TODO: Revert this
+            return 10;
+            //var lives = GetLives();
+            //return lives[(uint)Connection.Instance.User_id];    
         }
 
         public Dictionary<uint, int> GetLives() {
