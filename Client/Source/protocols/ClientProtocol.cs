@@ -37,12 +37,10 @@ namespace CaptainCombat.Client.protocols
             Console.WriteLine("Connection to server succeeded\n");
         }
 
-        public static IEnumerable<ITuple> GetAllClientInLobby()
+
+        public static IEnumerable<ITuple> GetClientsInLobby()
         {
-            Connection connecting = Connection.Instance;
-            ISpace space = connecting.lobbySpace;
-            IEnumerable<ITuple> usersInServer = space.QueryAll("player", typeof(int), typeof(string));
-            return usersInServer; 
+            return Connection.Instance.lobbySpace.QueryAll("player", typeof(int), typeof(string));
         }
 
 
@@ -70,6 +68,7 @@ namespace CaptainCombat.Client.protocols
 
         public static bool CreateLobby()
         {
+            
             string username = Connection.Instance.User;
             int user_id = Connection.Instance.User_id;
 

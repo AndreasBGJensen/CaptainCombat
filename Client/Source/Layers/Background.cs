@@ -69,10 +69,10 @@ namespace CaptainCombat.Client.GameLayers
                 ship.GetComponent<BoxCollider>().Enabled = false;
                 ship.GetComponent<Move>().Enabled = false;
 
-                if( lifeController.GetOwnLives() > 1 )
-                    Respawn();
 
-                lifeController.DecrementLife();
+                var numLives = lifeController.DecrementLocalLives();
+                if (numLives > 0)
+                    Respawn();
 
                 return true;
             });
@@ -112,10 +112,9 @@ namespace CaptainCombat.Client.GameLayers
                 ship.GetComponent<BoxCollider>().Enabled = false;
                 ship.GetComponent<Move>().Enabled = false;
 
-                if (lifeController.GetOwnLives() > 1)
+                var numLives = lifeController.DecrementLocalLives();
+                if (numLives > 0)
                     Respawn();
-
-                lifeController.DecrementLife();
 
                 return true;
             });

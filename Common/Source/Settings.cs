@@ -7,6 +7,8 @@ namespace CaptainCombat.Common {
     public static class Settings {
 
         public static readonly uint NUM_ROCKS = 20;
+
+        public static readonly int LIVES = 3;
     
         public static readonly double MAP_SIZE = 1250;
 

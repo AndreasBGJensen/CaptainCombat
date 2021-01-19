@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System;
 using CaptainCombat.Client.Layers;
+using CaptainCombat.Client.protocols;
+using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.Scenes
 {
@@ -24,7 +26,21 @@ namespace CaptainCombat.Client.Scenes
         public GameState(Game game)
         {
             Game = game;
-            
+
+            // TODO: Make a proper init section
+            GameInfo.Current = new GameInfo();
+            foreach (var tuple in ClientProtocol.GetClientsInLobby()) {
+                var clientId = (uint)(int)tuple[1];
+                var clientName = (string)tuple[2];
+                if( clientId != 0 )
+                    GameInfo.Current.AddClient(new Client(clientId, clientName));
+            }
+
+            // TODO: Remove this
+            Console.WriteLine("Clients in game:");
+            foreach( var client in GameInfo.Current.Clients)
+                Console.WriteLine($"  {client.Id}:{client.Name}");
+
             lifeController = new LifeController();
 
             background = new Background(game, this, lifeController);
@@ -39,11 +55,13 @@ namespace CaptainCombat.Client.Scenes
             DownloadThread = new Thread(new ThreadStart(Download.RunProtocol));
         }
 
+
         public override void onEnter()
         {
             UploadThread.Start();
             DownloadThread.Start();
         }
+
 
         public override void onExit()
         {
@@ -53,9 +71,8 @@ namespace CaptainCombat.Client.Scenes
 
         public override void update(GameTime gameTime)
         {
-            var winner = lifeController.GetWinner();
-            if ( winner != 0 )
-                GameFinished(winner);
+            if ( lifeController.WinnerFound )
+                GameFinished(lifeController.Winner);
 
             foreach (Layer layer in Layers)
             {

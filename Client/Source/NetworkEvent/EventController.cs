@@ -8,7 +8,6 @@ using System.Data;
 using System.Reflection;
 using System.Threading;
 using dotSpace.Objects.Space;
-using dotSpace.Interfaces.Space;
 
 namespace CaptainCombat.Client.NetworkEvent {
 
@@ -16,6 +15,7 @@ namespace CaptainCombat.Client.NetworkEvent {
     /// Controller which listens for incoming event tuples in the remote space, and
     /// sends outgoing events
     /// </summary>
+    // TODO: Make event controller to non-static class
     public class EventController {
 
         private static Dictionary<Type, List<EventListenerConverter>> listenerMap = new Dictionary<Type, List<EventListenerConverter>>();
@@ -77,15 +77,16 @@ namespace CaptainCombat.Client.NetworkEvent {
                 var eventTuples = outgoingEvents.GetAll(typeof(string), typeof(int), typeof(string));
 
                 foreach(var eventTuple in eventTuples) {
-                    // TODO: Create some sort of thread pooling
-                    new Thread(() => {
-                        Connection.Instance.lobbySpace.Put("event",
-                            (string)eventTuple[0], // Event type identifier
-                            Connection.Instance.User_id, // Sender (local id)
-                            (int)eventTuple[1], // Receiver
-                            (string)eventTuple[2] // JSON data
-                        );
-                    }).Start();
+                    Connection.Instance.lobbySpace.Put("event",
+                        (string)eventTuple[0], // Event type identifier
+                        Connection.Instance.User_id, // Sender (local id)
+                        (int)eventTuple[1], // Receiver
+                        (string)eventTuple[2] // JSON data
+                    );
+                    //// TODO: Create some sort of thread pooling
+                    //new Thread(() => {
+                        
+                    //}).Start();
                 }
             }
         }

@@ -65,8 +65,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
             space = new SequentialSpace();
             ReservePlayersToSpace(space, MAX_NUM_SUBSCRIBERS);
 
-            // TODO: Move this adding of lock to approriate place
-            space.Put("life-lock");
+            space.Put("winner-lock");
 
             repository.AddSpace(spaceID, space);
 
@@ -78,7 +77,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         private void ReservePlayersToSpace(SequentialSpace space, int players_to_reserve)
         {
-            for(int i = 0;i < players_to_reserve; i++)
+            for(int i = 0; i < players_to_reserve; i++)
             {
                 space.Put("lock");
                 space.Put("player", 0, "No user");
