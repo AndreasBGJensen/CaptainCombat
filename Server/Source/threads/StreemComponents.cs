@@ -30,13 +30,12 @@ namespace CaptainCombat.Server.Source.threads
             new Thread(() =>
             {
                 space.Query("start");
-                Console.WriteLine("Start Collecting");
+                space.Get("lock");
                 while (true)
                 {
-                                        
+                    //space.Get("lock");
                     collector.BeginCollect();
                     //collector.PrintUpdateComponents();
-
                 }
             }).Start();
            

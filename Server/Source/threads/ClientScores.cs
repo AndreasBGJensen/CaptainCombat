@@ -27,7 +27,7 @@ namespace CaptainCombat.Server.threads
                     ITuple clientScore = space.GetP("allClientScores", (int)result[1], typeof(int));
                     space.Put("allClientScores", (int)result[1], (int)result[2]);
                 }
-            });
+            }).Start();
            
         }
     }
