@@ -116,16 +116,13 @@ namespace CaptainCombat.Client.MenuLayers
             {
                 
 
-                if (ClientProtocol.isValidName(PlayerName) && PlayerName.Length > 0)
+                if (ClientProtocol.Join(PlayerName))
                 {
                     // Disables keyboard
                     DisableKeyboard = !DisableKeyboard;
 
                     // Adds player name to domain 
                     EntityUtility.CreateMessage(Domain, PlayerName, 0, 0, 16);
-
-                    // Adds playername to server 
-                    ClientProtocol.Join(PlayerName);
 
                     // Enablers state change after delay 
                     Task.Factory.StartNew(async () =>
@@ -136,7 +133,7 @@ namespace CaptainCombat.Client.MenuLayers
 
                     // Display a message to the client 
                     var input = InputBox.GetComponent<Input>();
-                    input.Message = "Game is staring...";
+                    input.Message = "Joined server succesful";
                 }
                 else
                 {
