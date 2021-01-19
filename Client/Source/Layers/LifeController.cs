@@ -18,20 +18,22 @@ namespace CaptainCombat.Client.Layers {
 
 
         public LifeController() {
-           /* lifeUpdateThread = new Thread(UpdateLives);
+            // TODO: Revert this
+            lifeUpdateThread = new Thread(UpdateLives);
             lifeUpdateThread.Priority = ThreadPriority.Highest; 
-            lifeUpdateThread.Start();*/
+            lifeUpdateThread.Start();
 
             localSpace.Put("lock");
 
-            /*gameFinishThread = new Thread(GameFinish);
+            gameFinishThread = new Thread(GameFinish);
             gameFinishThread.Priority = ThreadPriority.Highest;
-            gameFinishThread.Start();*/
+            gameFinishThread.Start();
         }
+        
 
         public void Stop() {
-            //lifeUpdateThread.Abort();
-            //gameFinishThread.Abort();
+            lifeUpdateThread.Abort();
+            gameFinishThread.Abort();
         }
 
 
@@ -119,9 +121,9 @@ namespace CaptainCombat.Client.Layers {
 
         public int GetOwnLives() {
             // TODO: Revert this
-            return 10;
-            //var lives = GetLives();
-            //return lives[(uint)Connection.Instance.User_id];    
+            //return 10;
+            var lives = GetLives();
+            return lives[(uint)Connection.Instance.User_id];    
         }
 
         public Dictionary<uint, int> GetLives() {

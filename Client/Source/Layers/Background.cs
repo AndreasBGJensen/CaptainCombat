@@ -289,6 +289,7 @@ namespace CaptainCombat.Client.GameLayers
         }
 
 
+
         private async void Respawn() {
             await Task.Delay(4000);
             SpawnShip();
@@ -302,7 +303,7 @@ namespace CaptainCombat.Client.GameLayers
 
             var health = ship.GetComponent<ShipHealth>();
             health.Current = health.Max;
-            health.DeathHandled = false;
+            health.DeathHandled = false;    
 
             var transform = ship.GetComponent<Transform>();
             transform.Position = Vector.Zero;
