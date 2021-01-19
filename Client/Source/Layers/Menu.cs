@@ -46,8 +46,7 @@ namespace CaptainCombat.Client.MenuLayers
 
             // Creates a list of all clients in server
             List<string> users = ClientProtocol.GetAllUsers();
-
-            for(int i = 1; i < users.Count(); i++)
+            for(int i = 0; i < users.Count(); i++)
             {
                 EntityUtility.CreateMessage(Domain, users[i], 0, 0, 14);
             }

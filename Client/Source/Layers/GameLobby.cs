@@ -68,11 +68,15 @@ namespace CaptainCombat.Client.Source.Layers
             Entity Menu = new Entity(Domain);
             Menu.AddComponent(new Transform());
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
-            
+
 
             // pointer
-            left_pointer = EntityUtility.MenuArrow(Domain, false);
-            right_pointer = EntityUtility.MenuArrow(Domain, true);
+            if (Connection.Instance.Space_owner)
+            {
+                left_pointer = EntityUtility.MenuArrow(Domain, false);
+                right_pointer = EntityUtility.MenuArrow(Domain, true);
+            }
+               
         }
 
         public override void update(GameTime gameTime)

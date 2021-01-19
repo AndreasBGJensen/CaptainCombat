@@ -84,8 +84,6 @@ namespace CaptainCombat.Client.Source.Layers
             lobbies.Clear();
 
             IEnumerable<ITuple> serverLobbies = ClientProtocol.GetAllLobbys();
-
-
             foreach (ITuple lobby in serverLobbies)
             {
                 
@@ -160,15 +158,25 @@ namespace CaptainCombat.Client.Source.Layers
 
         public void RunCurrentselected()
         {
-            var info = clientInformation.GetComponent<Text>();
-            info.Message = "Connecting to lobby ";
-            ClientProtocol.SubscribeForLobby(allURLs[currentIndex]); 
-            Task.Factory.StartNew(async () =>
+            
+            if (ClientProtocol.SubscribeForLobby(allURLs[currentIndex]))
             {
-                await Task.Delay(2000);
-                ParentState._context.TransitionTo(new GameLobbyState(Game));
-            });
-
+                
+                var info = clientInformation.GetComponent<Text>();
+                info.Message = "Connecting to lobby ";
+                Task.Factory.StartNew(async () =>
+                {
+                    await Task.Delay(2000);
+                    ParentState._context.TransitionTo(new GameLobbyState(Game));
+                });
+            }
+            else
+            {
+                DisableKeyboard = !DisableKeyboard;
+                var info = clientInformation.GetComponent<Text>();
+                info.Message = "Connecting failed";
+            }
+            
         }
 
         public void displayCurrentIndex()
