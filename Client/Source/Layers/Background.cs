@@ -14,6 +14,7 @@ using CaptainCombat.Client.NetworkEvent;
 using System;
 using System.Threading.Tasks;
 using CaptainCombat.Client.Layers;
+using CaptainCombat.Source.Events;
 
 namespace CaptainCombat.Client.GameLayers
 {
@@ -35,6 +36,9 @@ namespace CaptainCombat.Client.GameLayers
         private int currentScore = 0;
 
         private bool renderColliders = false;
+
+        private const double FIRE_COOLDOWN = 0.25;
+        private static double fireCooldownCurrent = 0.0;
 
         private LifeController lifeController;
 
@@ -74,52 +78,68 @@ namespace CaptainCombat.Client.GameLayers
             });
 
 
-            //EventController.AddListener<ProjectileCollisionEvent>((e) => {
-            //    Console.WriteLine($"Collision event from Client {e.Sender}");
+            EventController.AddListener<ProjectileCollisionEvent>((e) => {
+                Console.WriteLine($"Collision event from Client {e.Sender}");
 
-            //    var projectile = domain.GetEntity(e.ProjectileId);
-            //    if (projectile == null) return false;
+                var projectile = Domain.GetEntity(e.ProjectileId);
+                if (projectile == null) return false;
 
-            //    var projectileComp = projectile.GetComponent<Projectile>();
-            //    if (projectileComp.HasHit) return false;
-            //    projectileComp.HasHit = true;
+                var projectileComp = projectile.GetComponent<Projectile>();
+                if (projectileComp.HasHit) return false;
+                projectileComp.HasHit = true;
 
-            //    Collider collider = projectile.GetComponent<BoxCollider>();
-            //    if (collider == null) collider = projectile.GetComponent<CircleCollider>();
-            //    collider.Enabled = false;
+                Collider collider = projectile.GetComponent<BoxCollider>();
+                if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+                collider.Enabled = false;
 
-            //    projectile.Delete();
-            //    EventController.Send(new ProjectileEffectEvent(e.TargetId.clientId, e.TargetId, 100));
+                projectile.Delete();
+                EventController.Send(new ProjectileEffectEvent(e.TargetId.clientId, e.TargetId, 34));
 
-            //    return true;
-            //});
-            
-
-            //EventController.AddListener<ProjectileEffectEvent>((e) => {
-            //    Console.WriteLine($"Damage event from client {e.Sender}: {e.Damage} damage on Entity {e.TargetId.objectId}");
-            //    return true;
-            //});
+                return true;
+            });
 
 
-            //collisionController.AddListener(Assets.ColliderTags.ROCK, Assets.ColliderTags.PROJECTILE, (rock, projectile) => {
-            //    if (projectile.IsLocal) projectile.Delete();
-            //    return true;
-            //});
+            EventController.AddListener<ProjectileEffectEvent>((e) => {
+                Console.WriteLine($"Damage event from client {e.Sender}: {e.Damage} damage on Entity {e.TargetId.objectId}");
+                var health = ship.GetComponent<ShipHealth>();
+                if (health.Current <= 0) return false;
+
+                health.Current -= e.Damage;
+
+                if (health.Current > 0) return true;
+
+                ship.GetComponent<Sprite>().Enabled = false;
+                ship.GetComponent<BoxCollider>().Enabled = false;
+                ship.GetComponent<Move>().Enabled = false;
+
+                if (lifeController.GetOwnLives() > 1)
+                    Respawn();
+
+                lifeController.DecrementLife();
+
+                return true;
+            });
 
 
-            //collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
-            //    if ((ship.IsLocal && !projectile.IsLocal) || (!ship.IsLocal && projectile.IsLocal)) {
-            //        Collider collider = projectile.GetComponent<BoxCollider>();
-            //        if (collider == null) collider = projectile.GetComponent<CircleCollider>();
-            //        collider.Enabled = false;
-            //        projectile.GetComponent<Sprite>().Enabled = false;
-            //        projectile.GetComponent<Move>().Enabled = false;
-            //        EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
-            //        Console.WriteLine("Sent collision event");
-            //        return true;
-            //    }
-            //    return false;
-            //});
+            collisionController.AddListener(Assets.ColliderTags.ROCK, Assets.ColliderTags.PROJECTILE, (rock, projectile) => {
+                if (projectile.IsLocal) projectile.Delete();
+                return true;
+            });
+
+
+            collisionController.AddListener(Assets.ColliderTags.SHIP, Assets.ColliderTags.PROJECTILE, (ship, projectile) => {
+                if ((ship.IsLocal && !projectile.IsLocal) || (!ship.IsLocal && projectile.IsLocal)) {
+                    Collider collider = projectile.GetComponent<BoxCollider>();
+                    if (collider == null) collider = projectile.GetComponent<CircleCollider>();
+                    collider.Enabled = false;
+                    projectile.GetComponent<Sprite>().Enabled = false;
+                    projectile.GetComponent<Move>().Enabled = false;
+                    EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
+                    Console.WriteLine("Sent collision event");
+                    return true;
+                }
+                return false;
+            });
 
             EventController.Start();
             
@@ -137,10 +157,6 @@ namespace CaptainCombat.Client.GameLayers
             }
 
             Domain.Clean();
-
-            // TODO: Fix this
-            //EventController.HandleEvents();
-
             // Clear domain
 
             // Handles keyboard input 
@@ -148,33 +164,41 @@ namespace CaptainCombat.Client.GameLayers
 
             // Update ship movement
             double seconds = gameTime.ElapsedGameTime.TotalSeconds;
-           
+
+            if (fireCooldownCurrent > 0)
+                fireCooldownCurrent -= seconds;
+
             if (!DisableKeyboard)
             {
+                if (Keyboard.GetState().IsKeyDown(Keys.E)) {
+                    if (fireCooldownCurrent <= 0) {
+                        EntityUtility.FireCannonBall(ship);
+                        fireCooldownCurrent = FIRE_COOLDOWN;
+                    }
+                }
+
+                var move = ship.GetComponent<Move>();
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
-                    var move = ship.GetComponent<Move>();
+                    move.Acceleration = new Vector(30, 0);
+                }
+                else
+                {
+                    move.Acceleration = new Vector(0, 0);
+                }
 
-                    if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                    {
-                        move.Acceleration = new Vector(30, 0);
-                    }
-                    else
-                    {
-                        move.Acceleration = new Vector(0, 0);
-                    }
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                    {
-                        move.RotationAcceleration = 270;
-                    }
-                    else if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                    {
-                        move.RotationAcceleration = -270;
-                    }
-                    else
-                    {
-                        move.RotationAcceleration = 0;
-                    }
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                {
+                    move.RotationAcceleration = 270;
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                {
+                    move.RotationAcceleration = -270;
+                }
+                else
+                {
+                    move.RotationAcceleration = 0;
                 }
             }
 
