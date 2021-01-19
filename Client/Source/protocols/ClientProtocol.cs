@@ -93,7 +93,7 @@ namespace CaptainCombat.Client.protocols
 
         public static bool ListenForMatchBegin()
         {
-            ITuple response = Connection.Instance.Space.Query("start");
+            ITuple response = Connection.Instance.lobbySpace.QueryP("start");
             if (response != null)
             {
                 return true; 
