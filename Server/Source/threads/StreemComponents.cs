@@ -29,14 +29,15 @@ namespace CaptainCombat.Server.Source.threads
             Console.WriteLine("Starting game data upload");
             new Thread(() =>
             {
+                space.Query("start");
+                space.Get("lock");
                 while (true)
                 {
-                    space.Get("lock");
-                    space.Query("start");
+                    //space.Get("lock");
                     collector.BeginCollect();
                     //collector.PrintUpdateComponents();
                 }
-            });
+            }).Start();
            
         }
     }
