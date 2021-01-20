@@ -1,95 +1,62 @@
 ﻿using CaptainCombat.Common;
 using CaptainCombat.Server.Mapmaker;
 using CaptainCombat.Server.Source.threads;
-using CaptainCombat.Server.threads;
 using dotSpace.Interfaces.Space;
-using dotSpace.Objects.Network;
-using dotSpace.Objects.Space;
 using System;
-using System.Text;
-using Tuple = dotSpace.Objects.Space.Tuple;
 
 namespace CaptainCombat.Server.Source.LobbyContent
 {
-    public class Lobby
+
+    class Lobby
     {
+        public string Url { get; set; }
+        public string Id { get; set; }
+        public string CreatorName { get; set; }
+        public uint CreatorId { get; set; }
 
-        private SpaceRepository repository;
-        private SequentialSpace space;
-        public string lobbyUrl { get; set; }
-        public string spaceID { get; set; }
-        public string creator { get; set; }
+        private ISpace space;
 
-        private readonly int MAX_NUM_SUBSCRIBERS = 4;
+        private GameDataStreamer streemComponent;
+        private FinishChecker finishChecker;
 
-        private ClientScores clientScores;
-        private StreemComponents streemComponent;
-
-        public Lobby(SpaceRepository repository)
+        /// <summary>
+        /// Creates a new lobby in the given space
+        /// </summary>
+        public Lobby(ISpace space, string lobbyId, uint creatorId, string creatorName, string url)
         {
-            this.repository = repository;
-        }
+            this.space = space;
+            Id = lobbyId;
+            CreatorName = creatorName;
+            CreatorId = creatorId;
+            Url = url;
 
-        public ITuple CreateLobby(string username, int user_id)
-        {
-            creator = username;
-            CreateUrl(user_id);
-            if(lobbyUrl != null)
-            {
-                AddGameLobby();
-                
-                return new Tuple("lobbyCreationResponse", user_id, username, lobbyUrl);
-            }
-            return new Tuple("lobbyCreationResponse", user_id, username, "You have alreadey created a lobby");
-        }
-
-        private void CreateUrl(int user_id)
-        {
-            //Note: Because remoteSpace are only able to connect to a space, contaning letters we convert the user_id to a char
-            // This only alows us to have 20 players
-            int unicode = user_id + 100;
-            char character = (char)unicode;
-            spaceID = character.ToString();
-            
-            lobbyUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/"+ spaceID+ "?KEEP";
-            
-            if (!LobbyBookKeeping.AddLobby(this))
-                throw new ArgumentException("Lobby Could not be saved in database");
-        }
-
-
-        private void AddGameLobby()
-        {
-            space = new SequentialSpace();
-            ReservePlayersToSpace(space, MAX_NUM_SUBSCRIBERS);
-
+            // Add locks
             space.Put("winner-lock");
-
-            repository.AddSpace(spaceID, space);
-
-            //Initialize streeming components
-            clientScores = new ClientScores(space);
-            streemComponent = new StreemComponents(space);
-        }
-
-
-        private void ReservePlayersToSpace(SequentialSpace space, int players_to_reserve)
-        {
             space.Put("lock");
-            for(int i = 0; i < players_to_reserve; i++)
-            {
+           
+            // Add player slot tuples
+            for (int i = 0; i < Settings.LOBBY_SLOTS; i++)
                 space.Put("player", 0, "No user");
-            } 
+
+            // Create controller
+            streemComponent = new GameDataStreamer(space);
+            finishChecker = new FinishChecker(space, GameFinished);
         }
 
 
-        public void RunProtocol()
+        public void Start()
         {
             Game game = new Game();
             game.Init(space);
-            clientScores.RunProtocol();
-            streemComponent.RunProtocol();
-            
+            streemComponent.Start();
+            finishChecker.Start();
+        }
+
+
+        private void GameFinished()
+        {
+            Console.WriteLine("Game finished");
+            streemComponent.Stop();
         }
     }
 }

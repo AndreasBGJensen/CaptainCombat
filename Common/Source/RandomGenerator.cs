@@ -12,5 +12,10 @@ namespace CaptainCombat.Common {
         {
             return Randoms.NextDouble() * (max - min) + min;
         }
+
+        public static int Integer(int min, int max)
+        {
+            return Randoms.Next(min, max);
+        }
     }
 }

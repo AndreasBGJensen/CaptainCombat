@@ -4,15 +4,16 @@ using CaptainCombat.Common;
 using System;
 using System.Collections.Generic;
 using dotSpace.Objects.Space;
+using dotSpace.Interfaces.Space;
 
 namespace CaptainCombat.Server.Mapmaker.EntityToAdd
 {
     class Rocks : IEntity
     {
         private uint numRocks;
-        private SequentialSpace lobbySpace;
+        private ISpace lobbySpace;
 
-        public Rocks(uint numRocks, SequentialSpace space)
+        public Rocks(uint numRocks, ISpace space)
         {
             this.numRocks = numRocks;
             this.lobbySpace = space;

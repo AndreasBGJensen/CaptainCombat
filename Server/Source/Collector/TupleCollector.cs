@@ -27,21 +27,19 @@ namespace CaptainCombat.Server.Collector
         void ICollector.Collect()
         {
             //Collecting components uploaded from clients
-            IEnumerable<ITuple> results = mySpace.GetAll("components",typeof(string), typeof(string));
-            foreach (Tuple x in results)
-            {
-                string update_id = (string)x[1];
-                JArray jarray = JsonConvert.DeserializeObject<JArray>((string)x[2]);
-               //Fetch client i order to remove all id components from the space
-               var id=  (int)jarray.First.SelectToken("client_id"); 
-                
-               foreach (JToken jToken in jarray)
-               {
-                    UpdatorJToken(jToken, update_id);
-                };
+            var tuple = mySpace.Get("components", typeof(string), typeof(string));
+           
+            string updateId = (string)tuple[1];
+            string jsonData = (string)tuple[2]; 
+            JArray jarray = JsonConvert.DeserializeObject<JArray>(jsonData);
 
-                RemoveExistingClientTuples(id, update_id);
-            }
+            // Fetch client in order to remove all id components from the space
+            var id = (int)jarray.First.SelectToken("client_id"); 
+                
+            foreach (JToken jToken in jarray)
+                UpdatorJToken(jToken, updateId);
+
+            RemoveExistingClientTuples(id, updateId);
         }
 
         /// <summary>
