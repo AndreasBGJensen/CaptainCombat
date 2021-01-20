@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Media;
 using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
 using MGTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
 using CaptainCombat.Common;
+using Microsoft.Xna.Framework.Input;
+using System.Linq;
 
 namespace CaptainCombat.Client
 {
@@ -19,7 +21,8 @@ namespace CaptainCombat.Client
         public static CollisionController collisionController = new CollisionController();
         private StateManager Manager { get; set; }
 
-        
+        private Keys[] lastPressedKeys;
+
         public GameController() {
             Game = this;
             Graphics = new GraphicsDeviceManager(this);
@@ -74,11 +77,23 @@ namespace CaptainCombat.Client
             var effect = track.GetNative<Song>();
 
         }
+        
 
         protected override void Update(GameTime gameTime) {
+            Manager.HandleTransition();
+
+            // Update key presses
+            KeyboardState kbState = Keyboard.GetState();
+            Keys[] pressedKeys = kbState.GetPressedKeys();
+            foreach (Keys key in pressedKeys)
+                if (lastPressedKeys == null || !lastPressedKeys.Contains(key))
+                    Manager._state.OnKeyDown(key);
+            lastPressedKeys = pressedKeys;
+
             Manager._state.update(gameTime); 
             base.Update(gameTime);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {

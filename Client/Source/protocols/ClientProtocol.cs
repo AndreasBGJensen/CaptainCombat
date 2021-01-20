@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using CaptainCombat.Common;
 using System.Net.Sockets;
+using CaptainCombat.Client.Source.Layers;
 
 namespace CaptainCombat.Client.protocols
 {
@@ -60,9 +61,41 @@ namespace CaptainCombat.Client.protocols
             return allUsers; 
         }
 
-        public static IEnumerable<ITuple> GetAllLobbys()
+
+        /// <summary>
+        /// Fetches information about all existing lobbies
+        /// May perform many server calls
+        /// </summary>
+        public static List<LobbyInfo> GetLobbies()
         {
-            return Connection.Instance.Space.QueryAll("existingLobby", typeof(string), typeof(string), typeof(string));
+            var lobbies = new List<LobbyInfo>();
+            var lobbyTuples = Connection.Instance.Space.QueryAll("existingLobby", typeof(string), typeof(string), typeof(string));
+
+            foreach(var lobbyTuple in lobbyTuples)
+            {
+                // Setup basic info
+                LobbyInfo lobby;
+                lobby.Id = (string)lobbyTuple[1];
+                lobby.OwnerName = (string)lobbyTuple[2];
+                lobby.Url = (string)lobbyTuple[3];
+
+                // Connect to lobby space, and fetch players
+                // Note: It's super slow to establish this connection everytime
+                RemoteSpace lobbySpace = new RemoteSpace(lobby.Url);
+
+                lobby.NumPlayers = 0;
+                var playerTuples = lobbySpace.QueryAll("player", typeof(int), typeof(string));
+                foreach (var playerTuple in playerTuples)
+                {
+                    // Check that slot is filled
+                    if ((int)playerTuple[1] > 1 && (string)playerTuple[2] != "No user")
+                        lobby.NumPlayers++;
+                }
+
+                lobbies.Add(lobby);
+            }
+
+            return lobbies;
         }
 
 

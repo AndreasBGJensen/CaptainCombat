@@ -6,29 +6,26 @@ using System.Threading;
 using CaptainCombat.Client.Scenes;
 using CaptainCombat.Common;
 using CaptainCombat.Client.Source.Layers;
+using Microsoft.Xna.Framework.Input;
 
 namespace CaptainCombat.Client.Source.Scenes
 {
     class GameLobbyState : State
     {
         List<Layer> Layers = new List<Layer>();
-
-        private Domain Domain = new Domain();
         Game Game;
+        
         public GameLobbyState(Game game)
         {
             Game = game;
             Layers.Add(new GameLobby(game, this));
         }
 
-        public override void onEnter()
+
+        public override void OnKeyDown(Keys key)
         {
-
-        }
-
-        public override void onExit()
-        {
-
+            foreach (Layer layer in Layers)
+                if (layer.OnKeyDown(key)) break;
         }
 
         public override void update(GameTime gameTime)

@@ -62,16 +62,13 @@ namespace CaptainCombat.Client.MenuLayers
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
 
             // InputBox
-            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", -70, 150, 16);
+            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", 0, 150, 16);
         }
 
         public override void update(GameTime gameTime)
         {
             // Clear domain 
             Domain.Clean();
-
-            // Handles keyboard input
-            GetKeys();
 
             // Displays list of all clients in server
             DisplayPlayerNames();
@@ -91,31 +88,14 @@ namespace CaptainCombat.Client.MenuLayers
             Renderer.RenderInput(Domain, Camera);
         }
 
-        public void GetKeys()
-        {
-            KeyboardState kbState = Keyboard.GetState();
-            Keys[] pressedKeys = kbState.GetPressedKeys();
-
-            foreach (Keys key in pressedKeys)
-            {
-                if (!LastPressedKeys.Contains(key))
-                {
-                    OnKeyDown(key);
-                }
-            }
-            LastPressedKeys = pressedKeys;
-        }
-
-        public void OnKeyDown(Keys key)
+        public override bool OnKeyDown(Keys key)
         {
             if (DisableKeyboard)
             {
-                return; 
+                return false; 
             }
             else if (key == Keys.Enter)
             {
-                
-
                 if (ClientProtocol.Join(PlayerName))
                 {
                     // Disables keyboard
@@ -141,6 +121,7 @@ namespace CaptainCombat.Client.MenuLayers
                     var input = InputBox.GetComponent<Input>();
                     input.Message = "Invalid username";
                 }
+                return true;
             }
             else if (key == Keys.Back)
             {
@@ -150,12 +131,14 @@ namespace CaptainCombat.Client.MenuLayers
                     var input = InputBox.GetComponent<Input>();
                     input.Message = PlayerName;
                 }
+                return true;
             }
             else if (key == Keys.Space)
             {
                 PlayerName += " ";
                 var input = InputBox.GetComponent<Input>();
                 input.Message = PlayerName;
+                return true;
             }
             else
             {
@@ -165,7 +148,9 @@ namespace CaptainCombat.Client.MenuLayers
                     PlayerName = (KeyboardInputValidator.dict.ContainsKey(keyData) ? PlayerName += KeyboardInputValidator.dict[keyData] : PlayerName += keyData);
                     var input = InputBox.GetComponent<Input>();
                     input.Message = PlayerName;
+                    return true;
                 }
+                return false;
             }
         }
 
@@ -174,7 +159,7 @@ namespace CaptainCombat.Client.MenuLayers
             int placement_Y = -180;
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
-                transform.Position.X = -70; 
+                transform.Position.X = 0; 
                 transform.Position.Y = placement_Y;
                 placement_Y += 25;
             });

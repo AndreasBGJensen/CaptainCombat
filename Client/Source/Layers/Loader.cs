@@ -1,17 +1,26 @@
 ﻿using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Input;
 
 namespace CaptainCombat.Client
 {
 
-    class Loader : Layer
+    /// <summary>
+    /// Layer displays a loading window with a given message,
+    /// while it asynchrounously runs the given loading function
+    /// </summary>
+    class Loader<T> : Layer
     {
 
         private Camera camera;
         private Domain domain = new Domain();
 
-        public Loader(string loadingText)
+        public delegate T LoadCallback();
+        public delegate void OnFinish(T result);
+
+        public Loader(string loadingText, LoadCallback loadingCallback, OnFinish finishCallback)
         {
             domain = new Domain();
             camera = new Camera(domain);
@@ -38,6 +47,21 @@ namespace CaptainCombat.Client
                 var move = entity.AddComponent(new Move());
                 move.RotationVelocity = 230;
             }
+
+            // Start loading
+            Task.Factory.StartNew(async () => {
+                // Just to allow the loader to at least show for short amount of time
+                await Task.Delay(500);
+                await Task.Run(() => {
+                    var success = loadingCallback();
+                    finishCallback(success);
+                });
+            });
+        }
+
+        public override bool OnKeyDown(Keys key)
+        {
+            return true;
         }
 
 

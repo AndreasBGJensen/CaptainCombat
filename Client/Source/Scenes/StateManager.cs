@@ -1,11 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace CaptainCombat.Client.Scenes
 {
     class StateManager 
     {
         // A reference to the current state of the Context.
-        public State _state = null; 
+        public State _state = null;
+
+        private State stateToTransitionTo = null;
+
         public StateManager(State gameState)
         {
             TransitionTo(gameState); 
@@ -14,11 +18,19 @@ namespace CaptainCombat.Client.Scenes
         // The Context allows changing the State object at runtime.
         public void TransitionTo(State state)
         {
-            if(_state != null)
-            {
+            stateToTransitionTo = state;
+        }
+
+        public void HandleTransition()
+        {
+            if (stateToTransitionTo == null) return;
+
+            if (_state != null)
                 _state.onExit();
-            }
-            _state = state;
+            
+            _state = stateToTransitionTo;
+            stateToTransitionTo = null;
+            
             _state.SetContext(this);
             _state.onEnter();
         }
@@ -42,6 +54,8 @@ namespace CaptainCombat.Client.Scenes
         public virtual void onEnter() { }
 
         public virtual void onExit() { }
+
+        public virtual void OnKeyDown(Keys key) { }
     }
 
 

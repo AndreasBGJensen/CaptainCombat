@@ -3,6 +3,7 @@ using CaptainCombat.Client.Scenes;
 using CaptainCombat.Client.Source.Layers;
 using CaptainCombat.Common;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
 
@@ -10,24 +11,19 @@ namespace CaptainCombat.Client.Source.Scenes
 {
     class LobbyState : State
     {
-        List<Layer> layers = new List<Layer>();
-
-        private Domain Domain = new Domain();
-        Game Game;
+        private List<Layer> layers = new List<Layer>();
+        private Game game;
+        
         public LobbyState(Game game)
         {
-            Game = game;
+            this.game = game;
             layers.Add(new AllLobbies(game, this));
         }
 
-        public override void onEnter()
+        public override void OnKeyDown(Keys key)
         {
-
-        }
-
-        public override void onExit()
-        {
-
+            foreach (Layer layer in layers)
+                if (layer.OnKeyDown(key)) break;
         }
 
         public override void update(GameTime gameTime)
@@ -40,7 +36,7 @@ namespace CaptainCombat.Client.Source.Scenes
 
         public override void draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+            game.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
             foreach (Layer layer in layers)
             {
                 layer.draw(gameTime);

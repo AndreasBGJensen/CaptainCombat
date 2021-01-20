@@ -21,7 +21,6 @@ namespace CaptainCombat.Client.Source.Layers
         private Domain Domain = new Domain();
 
         private bool DisableKeyboard = false;
-        private bool ChangeState = false;
 
         private Keys[] LastPressedKeys = new Keys[5];
         
@@ -31,8 +30,9 @@ namespace CaptainCombat.Client.Source.Layers
         private List<Entity> menuItems = new List<Entity>();
         private Entity left_pointer;
         private Entity right_pointer;
-        private Entity clientInformation; 
+        private Entity clientInformation;
 
+        private Loader<List<LobbyInfo>> loader;
 
         public Select(Game game, State state)
         {
@@ -48,7 +48,7 @@ namespace CaptainCombat.Client.Source.Layers
             // Static message to client 
             menuItems.Add(EntityUtility.CreateMessage(Domain, "Create new Lobby", 0, 0, 20));
             menuItems.Add(EntityUtility.CreateMessage(Domain, "Join existing lobby", 0, 0, 20));
-            clientInformation = EntityUtility.CreateMessage(Domain, "", -70, 150, 16);
+            clientInformation = EntityUtility.CreateMessage(Domain, "", 0, 150, 16);
 
             // Background
             Entity backGround = new Entity(Domain);
@@ -67,21 +67,14 @@ namespace CaptainCombat.Client.Source.Layers
 
         public override void update(GameTime gameTime)
         {
+
             // Clear domain 
             Domain.Clean();
-
-            // Handles keyboard input
-            GetKeys();
 
             // Displays list of all clients in server
             displayCurrentIndex(); 
 
-
-            // Changes state when condition is true 
-            if (ChangeState)
-            {
-                ParentState._context.TransitionTo(new LobbyState(Game));
-            }
+            loader?.update(gameTime);
         }
 
         public override void draw(GameTime gameTime)
@@ -89,47 +82,38 @@ namespace CaptainCombat.Client.Source.Layers
             Renderer.RenderSprites(Domain, Camera);
             Renderer.RenderText(Domain, Camera);
             Renderer.RenderInput(Domain, Camera);
+            loader?.draw(gameTime);
         }
 
-        public void GetKeys()
-        {
-            KeyboardState kbState = Keyboard.GetState();
-            Keys[] pressedKeys = kbState.GetPressedKeys();
 
-            foreach (Keys key in pressedKeys)
-            {
-                if (!LastPressedKeys.Contains(key))
-                {
-                    OnKeyDown(key);
-                }
-            }
-            LastPressedKeys = pressedKeys;
-        }
-
-        public void OnKeyDown(Keys key)
+        public override bool OnKeyDown(Keys key)
         {
-            if (DisableKeyboard)
+            if (DisableKeyboard) return false;
+
+            if (key == Keys.Enter)
             {
-                return;
+                RunCurrentselected();
+                return true;
             }
-            else if (key == Keys.Enter)
-            {
-                RunCurrentselected(); 
-            }
-            else if (key == Keys.Up)
+            
+            if (key == Keys.Up)
             {
                 if (!(currentIndex == 0))
                 {
                     currentIndex--;
                 }
+                return true;
             }
-            else if (key == Keys.Down)
+
+            if (key == Keys.Down)
             {
                 if (!(currentIndex == menuItems.Count - 1))
                 {
                     currentIndex++;
                 }
+                return true;
             }
+            return false;
         }
 
         public void RunCurrentselected()
@@ -139,39 +123,38 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 case 0:
                     {
+                        // Create new lobby
                         DisableKeyboard = !DisableKeyboard;
-                        var info = clientInformation.GetComponent<Text>();
-                        info.Message = "Creating new lobby";
                         Connection.Instance.Space_owner = true;
-                        ClientProtocol.CreateLobby();
-                        Task.Factory.StartNew(async () =>
-                        {
-                            await Task.Delay(2000);
-                            ParentState._context.TransitionTo(new GameLobbyState(Game));
-                        });
+                        loader = new Loader<List<LobbyInfo>>("Creating lobby",
+                            () => {
+                                ClientProtocol.CreateLobby();
+                                return null;
+                            },
+                            (success) => ParentState._context.TransitionTo(new GameLobbyState(Game))
+                        );
                     }
                     break;
                 case 1:
                     {
-                        IEnumerable<ITuple> allLobies = ClientProtocol.GetAllLobbys();
-                        
-                        if (allLobies.Count() != 0)
-                        {
-                            DisableKeyboard = !DisableKeyboard;
-                            var info = clientInformation.GetComponent<Text>();
-                            info.Message = "Going to lobbies";
-                            Connection.Instance.Space_owner = false;
-                            Task.Factory.StartNew(async () =>
-                            {
-                                await Task.Delay(1000);
-                                ParentState._context.TransitionTo(new LobbyState(Game));
-                            });
-                        }
-                        else
-                        {
-                            var info = clientInformation.GetComponent<Text>();
-                            info.Message = "No existing lobbies";
-                        }
+                        // Join existing lobby
+                        loader = new Loader<List<LobbyInfo>>("Loading lobbies",
+                            () => ClientProtocol.GetLobbies(),
+                            (lobbies) => {
+                                if (lobbies.Count != 0)
+                                {
+                                    DisableKeyboard = !DisableKeyboard;
+                                    Connection.Instance.Space_owner = false;
+                                    ParentState._context.TransitionTo(new LobbyState(Game));
+                                }
+                                else
+                                {
+                                    var info = clientInformation.GetComponent<Text>();
+                                    info.Message = "No existing lobbies";
+                                    loader = null;
+                                }
+                            }
+                        );
                     }
                     break;
                 default:
@@ -188,7 +171,6 @@ namespace CaptainCombat.Client.Source.Layers
                 {
                     var transform = menuItems[i].GetComponent<Transform>();
                     transform.Position.Y = placement_Y;
-                    
                 }
                 if (i == currentIndex)
                 {

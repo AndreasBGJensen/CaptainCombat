@@ -41,14 +41,12 @@ namespace CaptainCombat.Client.Layers {
             Renderer.RenderText(domain, camera);
         }
 
-        public override void init() { }
 
-        public override void update(GameTime gameTime)
+        public override bool OnKeyDown(Keys key)
         {
-            KeyboardState kbState = Keyboard.GetState();
-            
-            if( kbState.IsKeyDown(Keys.Enter) )
+            if (key == Keys.Enter)
                 exitCallback();
+            return true;
         }
     }
 

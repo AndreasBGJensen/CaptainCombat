@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace CaptainCombat.Client
 {
@@ -9,6 +10,10 @@ namespace CaptainCombat.Client
         public virtual void update(GameTime gameTime) { }
 
         public virtual void draw(GameTime gameTime) { }
+
+        public virtual bool OnKeyDown(Keys key) {
+            return false;
+        }
 
     }
 }

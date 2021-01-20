@@ -29,7 +29,6 @@ namespace CaptainCombat.Client.GameLayers
         private Domain Domain = new Domain();
         private Camera Camera;
 
-        private bool DisableKeyboard = false;
         private bool playMusic = true;
         private Keys[] LastPressedKeys = new Keys[5];
 
@@ -38,6 +37,8 @@ namespace CaptainCombat.Client.GameLayers
         private Entity ship;
 
         private bool renderColliders = false;
+
+        private bool keyboardEnabled = true;
 
         private const double FIRE_COOLDOWN = 0.25;
         private static double fireCooldownCurrent = 0.0;
@@ -186,15 +187,13 @@ namespace CaptainCombat.Client.GameLayers
 
             if( gameStarted ) {
 
-                // Handles keyboard input 
-                GetKeys();
 
                 // Update ship movement
 
                 if (fireCooldownCurrent > 0)
                     fireCooldownCurrent -= seconds;
 
-                if (gameStarted && !DisableKeyboard) {
+                if ( gameStarted ) {
                     if (Keyboard.GetState().IsKeyDown(Keys.E)) {
                         if (fireCooldownCurrent <= 0) {
                             EntityUtility.FireCannonBall(ship);
@@ -252,57 +251,20 @@ namespace CaptainCombat.Client.GameLayers
                 Renderer.RenderColliders(Domain, Camera);
         }
 
-        public void GetKeys()
+
+        public override bool OnKeyDown(Keys key)
         {
-            KeyboardState kbState = Keyboard.GetState();
-            Keys[] pressedKeys = kbState.GetPressedKeys();
-
-            foreach (Keys key in pressedKeys)
+            if( key == Keys.Tab)
             {
-                if (!LastPressedKeys.Contains(key))
-                {
-                    OnKeyDown(key);
-                }
+                // Don't consume this, as it's used by chat window
+                keyboardEnabled = !keyboardEnabled;
             }
-            LastPressedKeys = pressedKeys;
-
-        }
-
-        public void OnKeyDown(Keys key)
-        {
-            if (key == Keys.Tab)
-            {
-                DisableKeyboard = !DisableKeyboard;
-            }
-            
-            if (key == Keys.M)
-            {
-                if (playMusic)
-                {
-                    playMusic = !playMusic; 
-                    // Start song 
-                    Track track = Assets.Music.PirateSong;
-                    var song = track.GetNative<Song>();
-                    MediaPlayer.IsRepeating = true;
-                    MediaPlayer.Play(song);
-                }
-                else
-                {
-                    playMusic = !playMusic;
-                    MediaPlayer.Stop();
-                }
-            }
-            
-            if(key == Keys.L)
-            {
-                Sound sound = Assets.Sounds.KanonSound;
-                var effect = sound.GetNative<SoundEffect>();
-                effect.Play(); 
-            }
-
             if (key == Keys.C)
+            {
                 renderColliders = !renderColliders;
-
+                return true;
+            }
+            return false;
         }
 
 

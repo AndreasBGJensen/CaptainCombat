@@ -9,13 +9,14 @@ using CaptainCombat.Client.protocols;
 using CaptainCombat.Common.Singletons;
 using CaptainCombat.Client.NetworkEvent;
 using CaptainCombat.Client.Source.Scenes;
+using Microsoft.Xna.Framework.Input;
 
 namespace CaptainCombat.Client.Scenes
 {
 
     class GameState : State
     {
-        private List<Layer> Layers = new List<Layer>();
+        private List<Layer> layers = new List<Layer>();
         private Game game;
         private Background background;
         private Score score;
@@ -40,15 +41,17 @@ namespace CaptainCombat.Client.Scenes
             new Thread(InitializeGame).Start();     
 
             background = new Background(lifeController, eventController);
-            Layers.Add(background);
+            layers.Add(background);
 
             score = new Score(lifeController);
-            Layers.Add(score);
-            Layers.Add(new Chat(eventController));
+            layers.Add(score);
+            layers.Add(new Chat(eventController));
 
             Console.WriteLine("Initialized game state!");
         }
 
+
+        
 
         public void InitializeGame() {
             // TODO: Make a proper init section
@@ -83,17 +86,6 @@ namespace CaptainCombat.Client.Scenes
 
         }
 
-
-        public override void onEnter()
-        {
-            
-        }
-
-
-        public override void onExit()
-        {
-        }
-
         public override void update(GameTime gameTime)
         {
 
@@ -116,16 +108,24 @@ namespace CaptainCombat.Client.Scenes
             }
 
 
-            foreach (Layer layer in Layers)
+            foreach (Layer layer in layers)
             {
                 layer.update(gameTime);
             }
         }
 
+
+        public override void OnKeyDown(Keys key)
+        {
+            foreach (Layer layer in layers)
+                if (layer.OnKeyDown(key)) break;
+        }
+
+
         public override void draw(GameTime gameTime)
         {
             game.GraphicsDevice.Clear(Color.CornflowerBlue);
-            foreach (Layer layer in Layers)
+            foreach (Layer layer in layers)
             {
                 layer.draw(gameTime);
             }
@@ -137,13 +137,12 @@ namespace CaptainCombat.Client.Scenes
             if (winScreenDisplayed) return;
             winScreenDisplayed = true;
             background.UpdateEnabled = false;
-            Layers.Add(new Finish(winner, ExitGame));
+            layers.Add(new Finish(winner, ExitGame));
         }
 
 
         private void ExitGame()
         {
-            // TODO: Clean up game
             Console.WriteLine("Exitting game");
             eventController.Stop();
             lifeController.Stop();

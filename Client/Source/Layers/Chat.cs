@@ -95,33 +95,12 @@ namespace CaptainCombat.Client.GameLayers
                 }
             }
             
-           
-            
-
-            // Handles keyboard inputs 
-            GetKeys();
-
             // Display chat 
             (DisplayChat ? new Action(Display) : Hide)();
         }
 
-        public void GetKeys()
-        {
-            KeyboardState kbState = Keyboard.GetState();
-            Keys[] pressedKeys = kbState.GetPressedKeys(); 
 
-            foreach (Keys key in pressedKeys)
-            {
-                if (!LastPressedKeys.Contains(key))
-                {
-                    OnKeyDown(key); 
-                }
-            }
-            LastPressedKeys = pressedKeys; 
-        }
-
-
-        public void OnKeyDown(Keys key)
+        public override bool OnKeyDown(Keys key)
         {
             if (key == Keys.Tab)
             {
@@ -129,7 +108,7 @@ namespace CaptainCombat.Client.GameLayers
             }
             else if (!DisplayChat)
             {
-                return; 
+                return false; 
             }
             else if (key == Keys.Enter)
             {
@@ -155,6 +134,7 @@ namespace CaptainCombat.Client.GameLayers
                 }
 
             }
+            return true;
         }
 
         public void Display()

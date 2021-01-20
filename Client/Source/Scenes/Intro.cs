@@ -19,7 +19,7 @@ namespace CaptainCombat.Client.Scenes
         private Domain domain;
         private Camera camera;
 
-        private Loader loader;
+        private Loader<bool> loader;
 
         public Intro(Game game)
         {
@@ -48,7 +48,6 @@ namespace CaptainCombat.Client.Scenes
         public override void update(GameTime gameTime)
         {
             domain.Clean();
-            GetKeys();
             loader?.update(gameTime);
         }
 
@@ -60,20 +59,8 @@ namespace CaptainCombat.Client.Scenes
             loader?.draw(gameTime);
         }
 
-        public void GetKeys()
-        {
-            KeyboardState kbState = Keyboard.GetState();
-            Keys[] pressedKeys = kbState.GetPressedKeys();
 
-            if( LastPressedKeys != null )
-                foreach (Keys key in pressedKeys)
-                    if (!LastPressedKeys.Contains(key))
-                        OnKeyDown(key);
-           
-            LastPressedKeys = pressedKeys;
-        }
-
-        public void OnKeyDown(Keys key)
+        public override void OnKeyDown(Keys key)
         {
             if (key == Keys.Enter)
                 Connect();
@@ -84,14 +71,13 @@ namespace CaptainCombat.Client.Scenes
             if (connecting) return;
             connecting = true;
 
-            loader = new Loader("Connecting to server");
-
-            Task.Factory.StartNew(async () => {
-                ClientProtocol.Connect();
-                // Just to allow the loading screen to actual show
-                await Task.Delay(500);
-                _context.TransitionTo(new JoinState(game));
-            });
+            loader = new Loader<bool>("Connecting to server",
+                () => {
+                    ClientProtocol.Connect();
+                    return true;
+                },
+                (success) => _context.TransitionTo(new JoinState(game))
+            );
         }
     }
 }
