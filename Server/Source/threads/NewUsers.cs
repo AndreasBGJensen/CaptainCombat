@@ -46,12 +46,12 @@ namespace CaptainCombat.Server.threads
                     Connection.Instance.Space.Put("lives", client_id, 2);
                     Connection.Instance.Space.Put("usersInGame", client_id, result[1]);
                     Connection.Instance.Space.Put("users", result[1]);
-                    Connection.Instance.Space.Put("connected", true, client_id, "Joined successfully");
+                    Connection.Instance.Space.Put("connected", true, client_id);
                 }
                 else
                 {
                     Console.WriteLine("Invalid username: " + result[1]);
-                    Connection.Instance.Space.Put("connected",false, 0, "failed");
+                    Connection.Instance.Space.Put("connected",false, 0);
                 }
                
             }
