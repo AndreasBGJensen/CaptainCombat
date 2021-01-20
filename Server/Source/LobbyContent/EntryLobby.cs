@@ -39,7 +39,6 @@ namespace CaptainCombat.Server.Source.LobbyContent
                             //The space will only begin, when the tuple {<start>} is in the space.
                             Thread lobbyThread = new Thread(new ThreadStart(newLobby.RunProtocol));
                             lobbyThread.Start();
-
                         }
                     }  
             }         
