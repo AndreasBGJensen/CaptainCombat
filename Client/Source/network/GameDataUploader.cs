@@ -5,6 +5,20 @@ using System.Threading;
 
 namespace CaptainCombat.network {
 
+
+    /// <summary>
+    /// Class running repeated puts to lobby space, in order to upload
+    /// game data (components in json string format)
+    /// 
+    /// The scheduling of the thread is balanced by using WaitHandles
+    /// (barriers that block, until signaled). The thread will be blocked
+    /// after each successful upload to the space, and has to be woken up
+    /// by some other class (game loop), supplying new data to upload.
+    /// 
+    /// To prevent the caller from dominating the schedule, the caller will
+    /// be blocked if it has requested for data to uploaded more than 100
+    /// times, without the Uploader having uploaded once.
+    /// </summary>
     class GameDataUploader {
 
         // Also known as UpdateId

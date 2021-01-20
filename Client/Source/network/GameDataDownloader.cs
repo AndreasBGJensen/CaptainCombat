@@ -7,22 +7,35 @@ using dotSpace.Interfaces.Space;
 namespace CaptainCombat.network
 {
     
+    /// <summary>
+    /// Class running repeated queries to lobby space in order to get 
+    /// the game data (components).
+    /// 
+    /// The scheduling of the thread is balanced by using WaitHandles
+    /// (barriers that block, until signaled). The thread will be blocked
+    /// after each successful fetch from the space, and has to be woken up
+    /// by some other class (game loop), retrieving the downloaded data.
+    /// 
+    /// To prevent the caller from dominating the schedule, the caller will
+    /// be blocked if it has requested data more than 100 times, without the
+    /// downloader having downloaded once.
+    /// </summary>
     class GameDataDownloader
     {
         
         private readonly object dataLock = new object();
 
-        private IEnumerable<ITuple> downloadData = null;
-
-        private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-        private EventWaitHandle callerWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-        private int blockCountdown = 0;
+        private IEnumerable<ITuple> downloadedData = null;
 
         private Thread thread;
 
         private bool started = false;
 
+        private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        
+        private EventWaitHandle callerWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private int blockCountdown = 0;
+                
         private StopWatch watch = new StopWatch("Downloading: ", 50);
 
 
@@ -37,8 +50,8 @@ namespace CaptainCombat.network
             IEnumerable<ITuple> data;
             lock(dataLock) {
                 blockCountdown--;
-                data = downloadData;
-                downloadData = null;
+                data = downloadedData;
+                downloadedData = null;
             }
             waitHandle.Set();
             if (started &&  blockCountdown <= 0)
@@ -57,21 +70,13 @@ namespace CaptainCombat.network
                 var data = Connection.Instance.LobbySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(string));
                 lock(dataLock) {
                     blockCountdown = 100;
-                    downloadData = data;
+                    downloadedData = data;
                 }
                 watch.Stop();
                 watch.PrintTimer();
 
                 waitHandle.WaitOne();
                 callerWaitHandle.Set();
-
-
-
-                // TODO: Fix chat messages
-                //DomainState.Instance.Messages = Connection.Instance.LobbySpace.QueryAll("chat", typeof(int),typeof(string));
-                //IEnumerable<ITuple> clientsInGame = Connection.Instance.lobbySpace.QueryAll("usersInGame", typeof(int), typeof(string));
-                //DomainState.Instance.Clients = clientsInGame;
-
             }
         }
     }
