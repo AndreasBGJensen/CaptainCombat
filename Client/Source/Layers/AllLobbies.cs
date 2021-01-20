@@ -79,6 +79,7 @@ namespace CaptainCombat.Client.Source.Layers
             foreach (Entity lobby in lobbies)
             {
                 lobby.Delete();
+                allURLs.Clear();
             }
             lobbies.Clear();
 
@@ -88,8 +89,8 @@ namespace CaptainCombat.Client.Source.Layers
                 
                 string url = (string)lobby[3];
                 allURLs.Add(url);
-                //int numberOfPlayers = ClientProtocol.GetNumberOfSubscribersInALobby(url); 
-                lobbies.Add(EntityUtility.CreateMessage(Domain, "Players in lobby: "+1+"-4", 0, 0, 14));
+                int numberOfPlayers = ClientProtocol.GetNumberOfSubscribersInALobby(url); 
+                lobbies.Add(EntityUtility.CreateMessage(Domain, "Players in lobby: "+ numberOfPlayers + "-4", 0, 0, 14));
             }
 
             // Handles keyboard input

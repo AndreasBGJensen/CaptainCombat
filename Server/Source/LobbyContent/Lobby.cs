@@ -77,7 +77,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         private void ReservePlayersToSpace(SequentialSpace space, int players_to_reserve)
         {
-            space.Put("lock");
+            space.Put("lobby_lock");
             for(int i = 0; i < players_to_reserve; i++)
             {
                 space.Put("player", 0, "No user");

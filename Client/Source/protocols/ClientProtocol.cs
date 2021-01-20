@@ -81,10 +81,11 @@ namespace CaptainCombat.Client.protocols
                 return false;
             }
             Connection.Instance.LobbySpace = new RemoteSpace(url);
-            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.Get("lobby_lock");
             Connection.Instance.LobbySpace.GetP("player",typeof(int),typeof(string));
             Connection.Instance.LobbySpace.Put("player", user_id, username);
-            Connection.Instance.LobbySpace.Put("lock");
+            Connection.Instance.lobbyUrl = url;
+            Connection.Instance.LobbySpace.Put("lobby_lock");
 
             return true;
         }
@@ -102,9 +103,11 @@ namespace CaptainCombat.Client.protocols
 
         public static void BeginMatch()
         {
-            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.Get("lobby_lock");
             Connection.Instance.LobbySpace.Put("start");
-            Connection.Instance.LobbySpace.Put("lock");
+            //Removing the lobby from the global space
+            ITuple tuple = Connection.Instance.Space.Get("existingLobby", typeof(string), typeof(string), Connection.Instance.lobbyUrl);
+            Connection.Instance.LobbySpace.Put("lobby_lock");
         }
 
         public static bool SubscribeForLobby(string lobbyUrl)
@@ -113,20 +116,20 @@ namespace CaptainCombat.Client.protocols
             int user_id = Connection.Instance.User_id;
 
             RemoteSpace lobbySpace = new RemoteSpace(lobbyUrl);
-            lobbySpace.Get("lock");
+            lobbySpace.Get("lobby_lock");
             ITuple playerTuple = lobbySpace.GetP("player", 0, "No user");
             
             //Means that that there is no sluts left in the lobby
             if (playerTuple == null)
             {
-                lobbySpace.Put("lock");
+                lobbySpace.Put("lobby_lock");
                 return false;
             }
             Connection.Instance.LobbySpace = lobbySpace;
             lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
             
-            lobbySpace.Put("lock");
+            lobbySpace.Put("lobby_lock");
 
             return true;
         }

@@ -25,6 +25,8 @@ namespace CaptainCombat.Common.Singletons {
 
         public SpaceRepository repository { get; set; }
 
+        public string lobbyUrl { get; set; }
+
         public string User { get => user; set => user = value; }
 
         public int User_id { get => user_id; set => user_id = value; }
