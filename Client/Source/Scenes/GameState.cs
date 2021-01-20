@@ -16,10 +16,13 @@ namespace CaptainCombat.Client.Scenes
         private List<Layer> Layers = new List<Layer>();
         private Game Game;
         private Background background;
+        private Score score;
         private LifeController lifeController = new LifeController();
 
         private bool gameReady = false;
         private bool gameStarted = false;
+
+        private bool winScreenDisplayed = false;
 
         public GameState(Game game)
         {
@@ -30,7 +33,9 @@ namespace CaptainCombat.Client.Scenes
             // TODO: Life controller has not been set at this point
             background = new Background(game, this, lifeController);
             Layers.Add(background);
-            Layers.Add(new Score(game, this, lifeController));
+
+            score = new Score(game, this, lifeController);
+            Layers.Add(score);
             Layers.Add(new Chat(game, this));
 
             Console.WriteLine("Initialized game state!");
@@ -48,6 +53,8 @@ namespace CaptainCombat.Client.Scenes
             }
 
             lifeController.Start();
+
+            score.Start();
 
             background.init();
 
@@ -115,9 +122,11 @@ namespace CaptainCombat.Client.Scenes
             }
         }
 
+
+        // Display the win screen
         private void GameFinished(Player winner) {
-            // TODO: Toggle off winner
-            Console.WriteLine("Winner is " + winner.Name);
+            if (winScreenDisplayed) return;
+            winScreenDisplayed = true;
             background.UpdateEnabled = false;
             Layers.Add(new Finish(winner));
         }

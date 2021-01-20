@@ -115,9 +115,12 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// </summary>
         public static EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
             var eventType = typeof(E);
-            if (!listenerMap.ContainsKey(eventType))
-                listenerMap[eventType] = new List<EventListenerConverter>();
-            listenerMap[eventType].Add((ev) => e((E)ev) );
+            lock (listenerMap)
+            {
+                if (!listenerMap.ContainsKey(eventType))
+                    listenerMap[eventType] = new List<EventListenerConverter>();
+                listenerMap[eventType].Add((ev) => e((E)ev) );
+            }
             return e;
         }
 
