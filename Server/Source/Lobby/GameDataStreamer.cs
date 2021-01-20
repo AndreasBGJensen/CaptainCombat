@@ -42,7 +42,7 @@ namespace CaptainCombat.Server
             collector.SetCollector(new TupleCollector(creator, space));
 
             space.Query("start");
-            space.Get("lock");
+            space.Get("lobby_lock");
 
             Console.WriteLine("Starting game data streaming");
             while (true)

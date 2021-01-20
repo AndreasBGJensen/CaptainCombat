@@ -34,7 +34,7 @@ namespace CaptainCombat.Server
 
             // Add locks
             space.Put("winner-lock");
-            space.Put("lock");
+            space.Put("lobby_lock");
            
             // Add player slot tuples
             for (int i = 0; i < Settings.LOBBY_SLOTS; i++)

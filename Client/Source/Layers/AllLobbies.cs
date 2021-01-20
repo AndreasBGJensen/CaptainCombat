@@ -27,6 +27,7 @@ namespace CaptainCombat.Client.Source.Layers
         private State ParentState;
         private Game Game;
         private int currentIndex = 0;
+        private int numberOfLobbies = 0; 
         private List<Entity> lobbies = new List<Entity>();
         private List<string> allURLs = new List<string>();
 
@@ -79,17 +80,28 @@ namespace CaptainCombat.Client.Source.Layers
             foreach (Entity lobby in lobbies)
             {
                 lobby.Delete();
+                allURLs.Clear();
             }
             lobbies.Clear();
 
+
             IEnumerable<ITuple> serverLobbies = ClientProtocol.GetAllLobbys();
+            
+            numberOfLobbies = serverLobbies.Count();
+            
+            if(currentIndex < numberOfLobbies)
+            {
+                currentIndex = 0; 
+            }
+
+
             foreach (ITuple lobby in serverLobbies)
             {
                 
                 string url = (string)lobby[3];
                 allURLs.Add(url);
-                //int numberOfPlayers = ClientProtocol.GetNumberOfSubscribersInALobby(url); 
-                lobbies.Add(EntityUtility.CreateMessage(Domain, "Players in lobby: "+1+"-4", 0, 0, 14));
+                int numberOfPlayers = ClientProtocol.GetNumberOfSubscribersInALobby(url); 
+                lobbies.Add(EntityUtility.CreateMessage(Domain, "Players in lobby: "+ numberOfPlayers + "-4", 0, 0, 14));
             }
 
             // Handles keyboard input

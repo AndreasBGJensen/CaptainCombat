@@ -176,11 +176,18 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 case 0:
                     {
-                        DisableKeyboard = !DisableKeyboard;
-                        ClientProtocol.BeginMatch(); 
-                        var info = clientInformation.GetComponent<Text>();
-                        info.Message = "Starting game";
-                        ChangeState = true;
+                        if (ClientProtocol.BeginMatch()) {
+                            DisableKeyboard = !DisableKeyboard;
+                            var info = clientInformation.GetComponent<Text>();
+                            info.Message = "Starting game";
+                            ChangeState = true;
+                        }
+                        else
+                        {
+                            var info = clientInformation.GetComponent<Text>();
+                            info.Message = "Not enough players!";
+                        }
+                        
                     }
                     break;
                 default:
