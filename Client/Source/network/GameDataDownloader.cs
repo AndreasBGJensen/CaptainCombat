@@ -67,6 +67,7 @@ namespace CaptainCombat.network
                 System.Console.WriteLine("Download");
 
                 watch.Start();
+                callerWaitHandle.Set();
                 var data = Connection.Instance.LobbySpace.QueryAll(typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(string));
                 lock(dataLock) {
                     blockCountdown = 100;

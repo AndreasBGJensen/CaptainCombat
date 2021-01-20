@@ -3,7 +3,8 @@ using CaptainCombat.Diagnostics;
 using CaptainCombat.Common.Singletons;
 using System.Threading;
 
-namespace CaptainCombat.network {
+namespace CaptainCombat.network
+{
 
 
     /// <summary>
@@ -78,6 +79,9 @@ namespace CaptainCombat.network {
                     // Upload the data
                     UpdateCount++;
                     watch.Start();
+                    // Settting the wait handler here (better once too many
+                    // than once too few)
+                    callerWaitHandle.Set();
                     Connection.Instance.LobbySpace.Put("components", UpdateCount.ToString(), data);
                     watch.Stop();
                     watch.PrintTimer();
