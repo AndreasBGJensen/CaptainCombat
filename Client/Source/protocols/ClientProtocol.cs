@@ -176,7 +176,7 @@ namespace CaptainCombat.Client.protocols
             // Get lock 
             space.Get("newuser_lock"); 
             space.Put("user", username);
-            Tuple result = (Tuple)space.Get("connected", typeof(bool), typeof(int), typeof(string));
+            Tuple result = (Tuple)space.Get("connected", typeof(bool), typeof(int));
 
             if ((bool)result[1])
             {
