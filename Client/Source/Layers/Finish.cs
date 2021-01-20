@@ -13,9 +13,7 @@ namespace CaptainCombat.Client.Layers {
 
         private Camera camera;
 
-
         public Finish(Player winner) {
-
             domain = new Domain();
             camera = new Camera(domain);
 
@@ -30,14 +28,18 @@ namespace CaptainCombat.Client.Layers {
         }
 
 
-        public override void init() { }
-
         public override void draw(GameTime gameTime) {
             Renderer.RenderSprites(domain, camera);
             Renderer.RenderText(domain, camera);
         }
 
-        public override void update(GameTime gameTime) { }
+        public override void init()
+        {
+        }
+
+        public override void update(GameTime gameTime)
+        {
+        }
     }
 
 }
