@@ -101,13 +101,30 @@ namespace CaptainCombat.Client.protocols
         }
 
 
-        public static void BeginMatch()
+        public static bool BeginMatch()
         {
             Connection.Instance.LobbySpace.Get("lobby_lock");
-            Connection.Instance.LobbySpace.Put("start");
-            //Removing the lobby from the global space
-            ITuple tuple = Connection.Instance.Space.Get("existingLobby", typeof(string), typeof(string), Connection.Instance.lobbyUrl);
-            Connection.Instance.LobbySpace.Put("lobby_lock");
+            int subscribernum = GetNumberOfSubscribersInALobby(Connection.Instance.lobbyUrl);
+
+            //Check if enough players in the lobby (at least two is needed)
+            if (subscribernum > 1)
+            {
+                Connection.Instance.LobbySpace.Put("start");
+                //Removing the lobby from the global space
+                ITuple tuple = Connection.Instance.Space.Get("existingLobby", typeof(string), typeof(string), Connection.Instance.lobbyUrl);
+                Console.WriteLine("Match is starting");
+                Connection.Instance.LobbySpace.Put("lobby_lock");
+                return true;
+            }
+            else
+            {
+                Connection.Instance.LobbySpace.Put("lobby_lock");
+                Console.WriteLine("Not enough players in lobby");
+                return false;
+            }
+
+
+            
         }
 
         public static bool SubscribeForLobby(string lobbyUrl)
