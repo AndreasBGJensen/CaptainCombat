@@ -29,8 +29,8 @@ namespace CaptainCombat.Client.Layers {
             scroll.AddComponent(new Transform(0, 0));
             scroll.AddComponent(new Sprite(Assets.Textures.Chat, 300, 250));
 
-            EntityUtility.CreateMessage(domain, $"{winner.Name} wins!", -60, -10, 45);
-            EntityUtility.CreateMessage(domain, $"Press 'enter' to return to lobby", -30, -10, 20);
+            EntityUtility.CreateMessage(domain, $"{winner.Name} wins!", -60, -20, 45);
+            EntityUtility.CreateMessage(domain, $"Press 'enter' to return to lobby", -80, 40, 10);
 
             domain.Clean();
         }
@@ -41,11 +41,7 @@ namespace CaptainCombat.Client.Layers {
             Renderer.RenderText(domain, camera);
         }
 
-        public override void init()
-        {
-        }
-
-
+        public override void init() { }
 
         public override void update(GameTime gameTime)
         {
