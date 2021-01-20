@@ -21,20 +21,26 @@ namespace CaptainCombat.Client.GameLayers
         private List<Entity> playerIcons = new List<Entity>();
         private LifeController lifeController;
 
+        private bool started = false;
+
         public Score(Game game, State state, LifeController lifeController)
         {
             this.lifeController = lifeController;
             Camera = new Camera(Domain);
-            init();
         }
 
         public override void init()
         {
-            ClientProtocol.AddClientScoreToServer(0); 
+        }
+
+        public void Start() {
+            started = true;
         }
 
         public override void update(GameTime gameTime)
         {
+            if (!started) return;
+
             Domain.Clean();
 
             // Updates player names and icons if player is added to remote space on server 
@@ -43,35 +49,30 @@ namespace CaptainCombat.Client.GameLayers
                 clientInDomain++;
             });
 
-            var currentLives = lifeController.GetLives();
+            var currentLives = lifeController.Lives;
 
             //System.Console.WriteLine("Current lives: " + currentLives[(uint)Connection.Instance.User_id]);
+            
+            foreach(Entity icon in playerIcons)   
+                icon.Delete(); 
+            foreach (Entity playerName in playerNames)
+                playerName.Delete();
+            foreach (Entity score in playerScores)
+                score.Delete();
 
-            IEnumerable<ITuple> AllClientsIngame = ClientProtocol.GetAllClients();
-            if (AllClientsIngame != null)
+            playerScores.Clear();
+            playerIcons.Clear();
+            playerNames.Clear();
+
+            var clients = GameInfo.Current.Clients;
+            foreach (var client in clients)
             {
-                foreach(Entity icon in playerIcons)   
-                    icon.Delete(); 
-                foreach (Entity playerName in playerNames)
-                    playerName.Delete();
-                foreach (Entity score in playerScores)
-                    score.Delete();
+                var lives = lifeController.GetClientLives(client.Id);
 
-                playerScores.Clear();
-                playerIcons.Clear();
-                playerNames.Clear(); 
+                playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client.Id)); 
+                playerNames.Add(EntityUtility.CreateMessage(Domain, client.Name, 0, 0, 16));
+                playerScores.Add(EntityUtility.CreateMessage(Domain, lives.ToString(), 0, 0, 16));
 
-                foreach (ITuple client in AllClientsIngame)
-                {
-                    var id = (uint)(int)client[1];
-                    var name = (string)client[2];
-                    var lives = currentLives.ContainsKey(id) ? currentLives[id] : 0;
-
-                    playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client[1])); 
-                    playerNames.Add(EntityUtility.CreateMessage(Domain, (string)client[2], 0, 0, 16));
-                    playerScores.Add(EntityUtility.CreateMessage(Domain, lives.ToString(), 0, 0, 16));
-
-                }
             }
 
             Display(); 

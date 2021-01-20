@@ -27,17 +27,17 @@ namespace CaptainCombat.Server.Source.threads
             collector.SetCollector(new TupleCollector(creator, space));
 
             Console.WriteLine("Starting game data upload");
-            new Thread(() =>
-            {
+            var thread = new Thread(() => {
                 space.Query("start");
                 space.Get("lock");
-                while (true)
-                {
+                while (true) {
                     collector.BeginCollect();
                     //collector.PrintUpdateComponents();
                 }
-            }).Start();
-           
+            });
+            thread.Priority = ThreadPriority.Highest;
+            thread.Start();
+
         }
     }
 }

@@ -64,10 +64,10 @@ namespace CaptainCombat.Server.Mapmaker.EntityToAdd
             Console.WriteLine($"Number of Rocks: {RockElement.all.Count}");
 
             domain.Clean();
-            DomainState.Instance.Upload = JsonBuilder.createJsonString();
+            //DomainState.Instance.Upload = ;
 
             // TODO: Fix this uploading from server side
-            lobbySpace.Put("components", "1", DomainState.Instance.Upload);
+            lobbySpace.Put("components", "1", JsonBuilder.createJsonString());
         }
 
 
