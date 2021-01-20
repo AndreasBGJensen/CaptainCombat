@@ -1,6 +1,4 @@
-﻿using CaptainCombat.Client.protocols;
-using CaptainCombat.Client.Scenes;
-using dotSpace.Interfaces.Space;
+﻿using CaptainCombat.Client.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -9,9 +7,12 @@ using System.Linq;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
+using CaptainCombat.Client.NetworkEvent;
+using CaptainCombat.Client.Layers.Events;
 
 namespace CaptainCombat.Client.GameLayers
 {
+
     class Chat : Layer
     {
         private Domain Domain = new Domain();  
@@ -20,18 +21,25 @@ namespace CaptainCombat.Client.GameLayers
         private Entity ChatBox;
         private Entity InputBox;
 
+        private List<ChatMessage> messages = new List<ChatMessage>();
+
         private bool DisplayChat = false;
         private Keys[] LastPressedKeys = new Keys[5];
-        private string ChatMessage = string.Empty;
-
-        private Game Game;
-        private State ParentState;
+        private string InputMessage = string.Empty;
 
         public Chat(Game game, State state)
         {
-            ParentState = state; 
-            Game = game; 
             Camera = new Camera(Domain);
+
+            // Listen for chat message events 
+            EventController.AddListener<MessageEvent>((e) => {
+                lock(messages)
+                {
+                    messages.Add(new ChatMessage(GameInfo.Current.GetPlayer(e.Sender), e.Message));
+                }
+                return true;
+            });
+
             init();
         }
 
@@ -39,7 +47,7 @@ namespace CaptainCombat.Client.GameLayers
         {
             // Input box 
             InputBox = EntityUtility.CreateInput(Domain, "", 360, 200, 14);
-
+                
             // Chat layout
             ChatBox = new Entity(Domain);
             ChatBox.AddComponent(new Transform());
@@ -58,10 +66,10 @@ namespace CaptainCombat.Client.GameLayers
                 messageInDomain++; 
             });
 
-            IEnumerable<ITuple> AllUsersMessages = ClientProtocol.GetAllUsersMessages();
-            if(AllUsersMessages != null)
+
+            lock (messages)
             {
-                if (messageInDomain < AllUsersMessages.Count())
+                if (messageInDomain < messages.Count)
                 {
                     Domain.ForMatchingEntities<Text, Transform>((entity) => {
                         entity.Delete();
@@ -73,17 +81,19 @@ namespace CaptainCombat.Client.GameLayers
                         {
                             entity.Delete();
                         }
-                    }); 
+                    });
 
                     int maxDisplayedMesseges = 15;
-                    var LastMessages = AllUsersMessages.Skip(Math.Max(0, AllUsersMessages.Count() - maxDisplayedMesseges)).Take(maxDisplayedMesseges);
-                    foreach (ITuple chatMessages in LastMessages)
+                    var LastMessages = messages.Skip(Math.Max(0, messages.Count() - maxDisplayedMesseges)).Take(maxDisplayedMesseges);
+                    foreach (var message in messages)
                     {
-                        EntityUtility.CreateIcon(Domain, (int)chatMessages[1]); 
-                        EntityUtility.CreateMessage(Domain, (string)chatMessages[2], 0, 0, 14);
+                        EntityUtility.CreateIcon(Domain, (int)message.Sender.Id);
+                        EntityUtility.CreateMessage(Domain, (string)message.Message, 0, 0, 14);
                     }
                 }
             }
+            
+           
             
 
             // Handles keyboard inputs 
@@ -121,25 +131,25 @@ namespace CaptainCombat.Client.GameLayers
             }
             else if (key == Keys.Enter)
             {
-                ClientProtocol.AddMessageToServer(ChatMessage); 
-                ChatMessage = string.Empty; 
+                EventController.Broadcast(new MessageEvent(InputMessage), includeLocal: true);
+                InputMessage = string.Empty;
             }
             else if (key == Keys.Back)
             {
-                if (ChatMessage.Length > 0) {
-                    ChatMessage = ChatMessage.Remove(ChatMessage.Length - 1);
+                if (InputMessage.Length > 0) {
+                    InputMessage = InputMessage.Remove(InputMessage.Length - 1);
                 } 
             }
             else if (key == Keys.Space)
             {
-                ChatMessage += " "; 
+                InputMessage += " "; 
             }
             else
             {
                 string keyData = key.ToString();
-                if (KeyboardInputValidator.isValid(keyData) && ChatMessage.Length < 20)
+                if (KeyboardInputValidator.isValid(keyData) && InputMessage.Length < 20)
                 {
-                    ChatMessage = (KeyboardInputValidator.dict.ContainsKey(keyData) ? ChatMessage += KeyboardInputValidator.dict[keyData] : ChatMessage += keyData); 
+                    InputMessage = (KeyboardInputValidator.dict.ContainsKey(keyData) ? InputMessage += KeyboardInputValidator.dict[keyData] : InputMessage += keyData); 
                 }
 
             }
@@ -149,7 +159,7 @@ namespace CaptainCombat.Client.GameLayers
         {
             // Display input box
             var input = InputBox.GetComponent<Input>();
-            input.Message = ChatMessage;
+            input.Message = InputMessage;
 
 
             // Display messages in chat box 
@@ -225,5 +235,21 @@ namespace CaptainCombat.Client.GameLayers
             Renderer.RenderText(Domain, Camera);
             Renderer.RenderInput(Domain, Camera);
         }
+
+
+        // Just represents a message
+        private struct ChatMessage
+        {
+            public Player Sender;
+            public string Message;
+
+            public ChatMessage(Player sender, string message)
+            {
+                Sender = sender;
+                Message = message;
+            }
+        }
+
     }
+       
 }

@@ -90,7 +90,7 @@ namespace CaptainCombat.Client.Source.Layers
             }
             players.Clear();
 
-            IEnumerable<ITuple> users = ClientProtocol.GetAllClientInLobby();
+            IEnumerable<ITuple> users = ClientProtocol.GetClientsInLobby();
             foreach (ITuple user in users)
             {
                 if (((string)user[2]).Contains("No user"))

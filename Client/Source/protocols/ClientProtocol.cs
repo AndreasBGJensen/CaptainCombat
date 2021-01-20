@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using CaptainCombat.Common;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace CaptainCombat.Client.protocols
 {
@@ -37,12 +36,10 @@ namespace CaptainCombat.Client.protocols
             Console.WriteLine("Connection to server succeeded\n");
         }
 
-        public static IEnumerable<ITuple> GetAllClientInLobby()
+
+        public static IEnumerable<ITuple> GetClientsInLobby()
         {
-            Connection connecting = Connection.Instance;
-            ISpace space = connecting.lobbySpace;
-            IEnumerable<ITuple> usersInServer = space.QueryAll("player", typeof(int), typeof(string));
-            return usersInServer; 
+            return Connection.Instance.LobbySpace.QueryAll("player", typeof(int), typeof(string));
         }
 
 
@@ -70,6 +67,7 @@ namespace CaptainCombat.Client.protocols
 
         public static bool CreateLobby()
         {
+            
             string username = Connection.Instance.User;
             int user_id = Connection.Instance.User_id;
 
@@ -82,18 +80,18 @@ namespace CaptainCombat.Client.protocols
             {
                 return false;
             }
-            Connection.Instance.lobbySpace = new RemoteSpace(url);
-            Connection.Instance.lobbySpace.Get("lock");
-            Connection.Instance.lobbySpace.GetP("player",typeof(int),typeof(string));
-            Connection.Instance.lobbySpace.Put("player", user_id, username);
-            Connection.Instance.lobbySpace.Put("lock");
+            Connection.Instance.LobbySpace = new RemoteSpace(url);
+            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.GetP("player",typeof(int),typeof(string));
+            Connection.Instance.LobbySpace.Put("player", user_id, username);
+            Connection.Instance.LobbySpace.Put("lock");
 
             return true;
         }
 
         public static bool ListenForMatchBegin()
         {
-            ITuple response = Connection.Instance.lobbySpace.QueryP("start");
+            ITuple response = Connection.Instance.LobbySpace.QueryP("start");
             if (response != null)
             {
                 return true; 
@@ -104,9 +102,9 @@ namespace CaptainCombat.Client.protocols
 
         public static void BeginMatch()
         {
-            Connection.Instance.lobbySpace.Get("lock");
-            Connection.Instance.lobbySpace.Put("start");
-            Connection.Instance.lobbySpace.Put("lock");
+            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.Put("start");
+            Connection.Instance.LobbySpace.Put("lock");
         }
 
         public static bool SubscribeForLobby(string lobbyUrl)
@@ -124,7 +122,7 @@ namespace CaptainCombat.Client.protocols
                 lobbySpace.Put("lock");
                 return false;
             }
-            Connection.Instance.lobbySpace = lobbySpace;
+            Connection.Instance.LobbySpace = lobbySpace;
             lobbySpace.Put("player", user_id, username);
             //Changing the space to the selected lobbyspace
             
@@ -170,23 +168,6 @@ namespace CaptainCombat.Client.protocols
             return DomainState.Instance.Clients;
         }
 
-        public static IEnumerable<ITuple> GetAllClientScores()
-        {
-            return DomainState.Instance.ClientScores;
-        }
-
-        public static IEnumerable<ITuple> GetAllUsersMessages()
-        {
-            return DomainState.Instance.Messages; 
-        }
-
-        public static void AddMessageToServer(string message)
-        {
-            ISpace space = Connection.Instance.lobbySpace ;
-            space.Put("chat", Connection.Instance.User_id, message);
-        }
-
-
         public static bool Join(string username)
         {
             Console.WriteLine("Validate username");
@@ -214,7 +195,7 @@ namespace CaptainCombat.Client.protocols
 
         public static void AddClientScoreToServer(int clientScore)
         {
-            ISpace space = Connection.Instance.lobbySpace;
+            ISpace space = Connection.Instance.LobbySpace;
             space.Put("score", Connection.Instance.User_id, clientScore);
         }
 

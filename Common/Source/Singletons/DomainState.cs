@@ -28,7 +28,7 @@ namespace CaptainCombat.Common.Singletons
         public IEnumerable<ITuple> Clients { get => clients; set => clients = value; }
         public IEnumerable<ITuple> ClientScores { get => scores; set => scores = value; }
 
-        public string Upload { get => upload; set => upload = value; }
+        //public string Upload { get => upload; set => upload = value; }
         public IEnumerable<ITuple> Download { get; set; }
 
         public Domain Domain { get => domain; set => domain = value; }

@@ -97,6 +97,7 @@ namespace CaptainCombat.Common {
         public Dictionary<uint, ulong> updateIdMap = new Dictionary<uint, ulong>();
 
         public void update(IEnumerable<ITuple> gameData) {
+            if (gameData == null) return;
 
             // TODO: Clean up this method
 

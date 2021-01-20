@@ -1,14 +1,7 @@
-﻿using CaptainCombat.Common;
-using CaptainCombat.Common.Singletons;
+﻿using CaptainCombat.Common.Singletons;
 using dotSpace.Interfaces.Space;
-using dotSpace.Objects.Network;
-using dotSpace.Objects.Space;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CaptainCombat.Server.Source.LobbyContent
 {

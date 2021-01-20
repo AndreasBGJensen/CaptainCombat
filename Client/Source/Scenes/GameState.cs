@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System;
 using CaptainCombat.Client.Layers;
+using CaptainCombat.Client.protocols;
+using CaptainCombat.Common.Singletons;
 
 namespace CaptainCombat.Client.Scenes
 {
@@ -14,48 +16,96 @@ namespace CaptainCombat.Client.Scenes
         private List<Layer> Layers = new List<Layer>();
         private Game Game;
         private Background background;
-        private LifeController lifeController;
+        private Score score;
+        private LifeController lifeController = new LifeController();
 
-        Upload Upload;
-        Thread UploadThread;
-        DownLoad Download;
-        Thread DownloadThread; 
+        private bool gameReady = false;
+        private bool gameStarted = false;
+
+        private bool winScreenDisplayed = false;
 
         public GameState(Game game)
         {
             Game = game;
-            
-            lifeController = new LifeController();
 
+            new Thread(InitializeGame).Start();     
+
+            // TODO: Life controller has not been set at this point
             background = new Background(game, this, lifeController);
             Layers.Add(background);
-            Layers.Add(new Score(game, this, lifeController));
+
+            score = new Score(game, this, lifeController);
+            Layers.Add(score);
             Layers.Add(new Chat(game, this));
 
-            Upload = new Upload();
-            UploadThread = new Thread(new ThreadStart(Upload.RunProtocol));
-
-            Download = new DownLoad();
-            DownloadThread = new Thread(new ThreadStart(Download.RunProtocol));
+            Console.WriteLine("Initialized game state!");
         }
+
+
+        public void InitializeGame() {
+            // TODO: Make a proper init section
+            GameInfo.Current = new GameInfo();
+            foreach (var tuple in ClientProtocol.GetClientsInLobby()) {
+                var clientId = (uint)(int)tuple[1];
+                var clientName = (string)tuple[2];
+                if (clientId != 0)
+                    GameInfo.Current.AddClient(new Player(clientId, clientName));
+            }
+
+            lifeController.Start();
+
+            score.Start();
+
+            background.init();
+
+            Connection.Instance.LobbySpace.Put("ready", Connection.Instance.User_id);
+            Console.WriteLine("Local client is ready");
+            
+            // Get ready signal from other clients
+            foreach(var client in GameInfo.Current.Clients) {
+                if (!client.IsLocal) {
+                    Connection.Instance.LobbySpace.Query("ready", (int)client.Id);
+                    Console.WriteLine(client.Name + " is ready");
+                }
+            }
+
+            gameReady = true;
+            Console.WriteLine("Game started!");
+
+        }
+
 
         public override void onEnter()
         {
-            UploadThread.Start();
-            DownloadThread.Start();
+            
         }
+
 
         public override void onExit()
         {
-            UploadThread.Abort(); 
-            DownloadThread.Abort();
         }
 
         public override void update(GameTime gameTime)
         {
-            var winner = lifeController.GetWinner();
-            if ( winner != 0 )
-                GameFinished(winner);
+
+            Console.WriteLine("Update!");
+
+
+            // Check if game is ready to start
+            if ( gameReady) {
+                if( !gameStarted ) {
+                    background.Start();
+                    gameStarted = true;
+                    Console.WriteLine("Started game state!");
+                }
+            }
+
+            // Run game logic
+            if( gameStarted ) {
+                if (lifeController.WinnerFound)
+                    GameFinished(lifeController.Winner);
+            }
+
 
             foreach (Layer layer in Layers)
             {
@@ -72,10 +122,13 @@ namespace CaptainCombat.Client.Scenes
             }
         }
 
-        private void GameFinished(uint winnerId) {
-            Console.WriteLine("Winner is " + winnerId);
+
+        // Display the win screen
+        private void GameFinished(Player winner) {
+            if (winScreenDisplayed) return;
+            winScreenDisplayed = true;
             background.UpdateEnabled = false;
-            Layers.Add(new Finish(winnerId));
+            Layers.Add(new Finish(winner));
         }
     }
 }

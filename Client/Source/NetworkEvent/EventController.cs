@@ -8,7 +8,7 @@ using System.Data;
 using System.Reflection;
 using System.Threading;
 using dotSpace.Objects.Space;
-using dotSpace.Interfaces.Space;
+using CaptainCombat.Client.Scenes;
 
 namespace CaptainCombat.Client.NetworkEvent {
 
@@ -16,6 +16,7 @@ namespace CaptainCombat.Client.NetworkEvent {
     /// Controller which listens for incoming event tuples in the remote space, and
     /// sends outgoing events
     /// </summary>
+    // TODO: Make event controller to non-static class
     public class EventController {
 
         private static Dictionary<Type, List<EventListenerConverter>> listenerMap = new Dictionary<Type, List<EventListenerConverter>>();
@@ -56,11 +57,11 @@ namespace CaptainCombat.Client.NetworkEvent {
                 
                 { // First get is blocking, and signals that some event exists
                   // which prevents busy waiting
-                    var eventTuple = Connection.Instance.lobbySpace.Get("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                    var eventTuple = Connection.Instance.LobbySpace.Get("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
                     incomingEvents.Put((string)eventTuple[1], (int)eventTuple[2], (string)eventTuple[4]);
                 }
                 { // Second Get(All) is flushes the existing events to receive
-                    var remainingTuples = Connection.Instance.lobbySpace.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
+                    var remainingTuples = Connection.Instance.LobbySpace.GetAll("event", typeof(string), typeof(int), Connection.Instance.User_id, typeof(string));
                     foreach (var eventTuple in remainingTuples)
                         incomingEvents.Put((string)eventTuple[1], (int)eventTuple[2], (string)eventTuple[4]);
                 }
@@ -77,15 +78,16 @@ namespace CaptainCombat.Client.NetworkEvent {
                 var eventTuples = outgoingEvents.GetAll(typeof(string), typeof(int), typeof(string));
 
                 foreach(var eventTuple in eventTuples) {
-                    // TODO: Create some sort of thread pooling
-                    new Thread(() => {
-                        Connection.Instance.lobbySpace.Put("event",
-                            (string)eventTuple[0], // Event type identifier
-                            Connection.Instance.User_id, // Sender (local id)
-                            (int)eventTuple[1], // Receiver
-                            (string)eventTuple[2] // JSON data
-                        );
-                    }).Start();
+                    Connection.Instance.LobbySpace.Put("event",
+                        (string)eventTuple[0], // Event type identifier
+                        Connection.Instance.User_id, // Sender (local id)
+                        (int)eventTuple[1], // Receiver
+                        (string)eventTuple[2] // JSON data
+                    );
+                    //// TODO: Create some sort of thread pooling
+                    //new Thread(() => {
+                        
+                    //}).Start();
                 }
             }
         }
@@ -113,9 +115,12 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// </summary>
         public static EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
             var eventType = typeof(E);
-            if (!listenerMap.ContainsKey(eventType))
-                listenerMap[eventType] = new List<EventListenerConverter>();
-            listenerMap[eventType].Add((ev) => e((E)ev) );
+            lock (listenerMap)
+            {
+                if (!listenerMap.ContainsKey(eventType))
+                    listenerMap[eventType] = new List<EventListenerConverter>();
+                listenerMap[eventType].Add((ev) => e((E)ev) );
+            }
             return e;
         }
 
@@ -133,6 +138,25 @@ namespace CaptainCombat.Client.NetworkEvent {
                 (int)e.Receiver,
                 JsonConvert.SerializeObject(e)
             );
+        }
+
+
+        /// <summary>
+        /// Sends the given event to all Players in the current game/lobby
+        /// </summary>
+        /// <param name="includeLocal">Whether or not to also send the message to self</param>
+        public static void Broadcast(Event e, bool includeLocal = false)
+        {
+            foreach( var player in GameInfo.Current.Clients )
+            {
+                if (!includeLocal && player.IsLocal) continue;
+                e.Receiver = player.Id;
+                outgoingEvents.Put(
+                   e.GetType().FullName,
+                   (int)e.Receiver,
+                   JsonConvert.SerializeObject(e)
+               );
+            }
         }
 
         /// <summary>
