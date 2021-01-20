@@ -80,6 +80,9 @@ namespace CaptainCombat.Common {
             public static readonly Font PIRATE_FONT_16 = new Font(Collections.GLOBAL, "PIRATE_FONT_16", "fonts/Font_16");
             public static readonly Font PIRATE_FONT_18 = new Font(Collections.GLOBAL, "PIRATE_FONT_18", "fonts/Font_18");
             public static readonly Font PIRATE_FONT_20 = new Font(Collections.GLOBAL, "PIRATE_FONT_20", "fonts/Font_20");
+            public static readonly Font PIRATE_FONT_22 = new Font(Collections.GLOBAL, "PIRATE_FONT_22", "fonts/Font_22");
+            public static readonly Font PIRATE_FONT_30 = new Font(Collections.GLOBAL, "PIRATE_FONT_30", "fonts/Font_30");
+            public static readonly Font PIRATE_FONT_40 = new Font(Collections.GLOBAL, "PIRATE_FONT_40", "fonts/Font_40");
         }
 
         public static class Music

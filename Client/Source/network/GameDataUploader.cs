@@ -40,7 +40,7 @@ namespace CaptainCombat.network
         
         public void Start() {
             thread = new Thread(Upload);
-            //thread.Priority = ThreadPriority.Highest;
+            thread.Priority = ThreadPriority.Highest;
             thread.Start();
         }
 

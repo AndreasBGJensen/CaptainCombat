@@ -42,7 +42,7 @@ namespace CaptainCombat.Client
             Graphics.ApplyChanges();
 
             // Set state. 
-            Manager = new StateManager(new Loading(Game));
+            Manager = new StateManager(new Intro(this));
 
             // Set asset loaders
             Asset.SetLoader<Texture, MGTexture>((texture) => {
@@ -82,6 +82,8 @@ namespace CaptainCombat.Client
 
         protected override void Draw(GameTime gameTime)
         {
+            //Graphics.GraphicsDevice.Clear(ClearOptions.Target, Microsoft.Xna.Framework.Color.CornflowerBlue, 0, 0);
+            Graphics.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
             Manager._state.draw(gameTime); 
             base.Draw(gameTime);
         }

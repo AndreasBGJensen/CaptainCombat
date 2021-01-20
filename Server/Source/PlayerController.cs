@@ -4,13 +4,13 @@ using CaptainCombat.Common.Singletons;
 using System;
 using System.Collections.Generic;
 
-namespace CaptainCombat.Server.threads
+namespace CaptainCombat.Server
 {
-    class NewUsers
+    class PlayerController
     {
         static int newId = 2;
 
-        public NewUsers()
+        public PlayerController()
         {
             Connection.Instance.Space.Put("newuser_lock");
         }
@@ -42,8 +42,6 @@ namespace CaptainCombat.Server.threads
                     Console.WriteLine("User joined: " + result[1]);
                     int client_id = newId;
                     newId++;
-                    // TODO: Move this initial life setting
-                    Connection.Instance.Space.Put("lives", client_id, 2);
                     Connection.Instance.Space.Put("usersInGame", client_id, result[1]);
                     Connection.Instance.Space.Put("users", result[1]);
                     Connection.Instance.Space.Put("connected", true, client_id);

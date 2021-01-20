@@ -12,7 +12,6 @@ namespace CaptainCombat.Client.protocols
     public class ClientProtocol
     {
 
-
         public static void Connect()
         {
             string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/" + ConnectionInfo.SPACE_NAME + "?KEEP";
@@ -29,6 +28,7 @@ namespace CaptainCombat.Client.protocols
                 Console.WriteLine("Connection to server failed\n");
                 throw e;
             }
+
 
             Connection connecting = Connection.Instance;
             connecting.globalSpace = space;

@@ -35,13 +35,13 @@ namespace CaptainCombat.Client.Scenes
             _context = context;
         }
 
-        public abstract void update(GameTime gameTime);
+        public virtual void update(GameTime gameTime) { }
 
-        public abstract void draw(GameTime gameTime);
+        public virtual void draw(GameTime gameTime) { }
 
-        public abstract void onEnter();
+        public virtual void onEnter() { }
 
-        public abstract void onExit();
+        public virtual void onExit() { }
     }
 
 

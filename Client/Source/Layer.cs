@@ -4,11 +4,11 @@ namespace CaptainCombat.Client
 {
     abstract class Layer
     {
-        public abstract void init();
+        public virtual void init() { }
 
-        public abstract void update(GameTime gameTime);
+        public virtual void update(GameTime gameTime) { }
 
-        public abstract void draw(GameTime gameTime);
+        public virtual void draw(GameTime gameTime) { }
 
     }
 }

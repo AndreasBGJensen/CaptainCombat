@@ -97,7 +97,7 @@ namespace CaptainCombat.Common {
 
 
 
-        public static Entity CreateMessage(Domain domain, string message, double x, double y, int size)
+        public static Entity CreateMessage(Domain domain, string message, double x, double y, int size, TextOrigin origin = TextOrigin.Center)
         {
             var entity = new Entity(domain);
 
@@ -105,7 +105,7 @@ namespace CaptainCombat.Common {
             transform.Position.X = x;
             transform.Position.Y = y;
 
-            entity.AddComponent(new Text(getFont(size), message));
+            entity.AddComponent(new Text(getFont(size), message, origin));
 
             return entity;
         }
@@ -126,7 +126,7 @@ namespace CaptainCombat.Common {
         
         private static Font getFont(int size)
         {
-            List<int> fontSizes = new List<int> { 12, 14, 16, 18, 20 };
+            List<int> fontSizes = new List<int> { 12, 14, 16, 18, 20, 22, 30, 40 };
             int closest = fontSizes.OrderBy(fontSize => Math.Abs(size - fontSize)).First();
             Font defaultFont = Assets.Fonts.PIRATE_FONT_16; 
             string assetTag = "PIRATE_FONT_"+ closest;

@@ -41,7 +41,7 @@ namespace CaptainCombat.network
 
         public void Start() {
             thread = new Thread(Download);
-            //thread.Priority = ThreadPriority.Highest;
+            thread.Priority = ThreadPriority.Highest;
             thread.Start();
 
         }

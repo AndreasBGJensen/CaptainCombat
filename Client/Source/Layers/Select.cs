@@ -187,7 +187,6 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 {
                     var transform = menuItems[i].GetComponent<Transform>();
-                    transform.Position.X = -80;
                     transform.Position.Y = placement_Y;
                     
                 }
@@ -195,7 +194,7 @@ namespace CaptainCombat.Client.Source.Layers
                 {
                     {
                         var transform = left_pointer.GetComponent<Transform>();
-                        transform.Position.X = -110;
+                        transform.Position.X = -125;
                         transform.Position.Y = placement_Y + 20;
                     }
                     {

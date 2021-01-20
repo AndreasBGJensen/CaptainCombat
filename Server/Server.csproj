@@ -58,7 +58,7 @@
     <Compile Include="Source\Collector\TupleCollectorParallel.cs" />
     <Compile Include="Source\Collector\TupleCollector.cs" />
     <Compile Include="Source\Collector\ICollector.cs" />
-    <Compile Include="Source\Lobby\FinishChecker.cs" />
+    <Compile Include="Source\Lobby\FinishListener.cs" />
     <Compile Include="Source\Lobby\Lobby.cs" />
     <Compile Include="Source\Lobby\LobbyController.cs" />
     <Compile Include="Source\Mapmaker\EntityToAdd\IEntity.cs" />
@@ -67,8 +67,7 @@
     <Compile Include="Source\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Lobby\GameDataStreamer.cs" />
-    <Compile Include="Source\threads\NewUsers.cs" />
-    <Compile Include="Source\threads\Serialization.cs" />
+    <Compile Include="Source\PlayerController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

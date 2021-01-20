@@ -14,18 +14,18 @@ namespace CaptainCombat.Client.Scenes
         public JoinState(Game game)
         {
             Game = game; 
-            layers.Add(new Menu(game, this)); 
+            layers.Add(new Menu(game, this));
+
+            
+            
         }
+
 
         public override void onEnter()
         {
             
         }
 
-        public override void onExit()
-        {
-            
-        }
 
         public override void update(GameTime gameTime)
         {

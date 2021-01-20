@@ -70,19 +70,23 @@ namespace CaptainCombat.Client {
 
         public static void RenderText(Domain domain, Camera camera)
         {
-            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
-            //spriteBatch.Begin();
+            spriteBatch.Begin(blendState: BlendState.NonPremultiplied, transformMatrix: camera.GetMatrix().ToMGMatrix());
 
             // Submit all entities which have a Sprite and Transform component
             // to the sprite batch (for drawing)
             domain.ForMatchingEntities<Text, Transform>((entity) => {
 
-                var text = entity.GetComponent<Text>();
-
-               
-
+                var text = entity.GetComponent<Text>();             
                 var transform = entity.GetComponent<Transform>();
                 var font = text.FONT.GetNative<SpriteFont>();
+
+                var textWidth = font.MeasureString(text.Message).X;
+
+                // Adjust drawing origin
+                float offset = 0;
+                if (text.Origin == TextOrigin.Left)  offset = 0;
+                if (text.Origin == TextOrigin.Right) offset = -textWidth;
+                if (text.Origin == TextOrigin.Center) offset = -textWidth/2.0f;
 
                 spriteBatch.DrawString(
                     // Font 
@@ -90,16 +94,16 @@ namespace CaptainCombat.Client {
                     // Text 
                     text.Message,
                     // Position 
-                    transform.Position.ToMGVector(),
-                    // Color 
-                    MGColor.Black);
+                    transform.Position.ToMGVector() + new Vector2(offset, 0),
+                     // Color 
+                     MGColor.Black);
             });
             spriteBatch.End();
         }
 
         public static void RenderInput(Domain domain, Camera camera)
         {
-            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
+            spriteBatch.Begin(blendState: BlendState.NonPremultiplied, transformMatrix: camera.GetMatrix().ToMGMatrix());
             //spriteBatch.Begin();
 
             // Submit all entities which have a Sprite and Transform component
@@ -118,7 +122,8 @@ namespace CaptainCombat.Client {
                     // Position 
                     transform.Position.ToMGVector(),
                     // Color 
-                    MGColor.Black);
+                    MGColor.Black
+                    );
             });
             spriteBatch.End();
         }
@@ -127,7 +132,9 @@ namespace CaptainCombat.Client {
         /// Renders all Colliders to the screen
         /// </summary>
         public static void RenderColliders(Domain domain, Camera camera) {
-            spriteBatch.Begin(transformMatrix: camera.GetMatrix().ToMGMatrix());
+
+
+            spriteBatch.Begin(blendState: BlendState.NonPremultiplied, transformMatrix: camera.GetMatrix().ToMGMatrix());
 
             // Render box colliders
             domain.ForMatchingEntities<Transform, BoxCollider>((e) => {

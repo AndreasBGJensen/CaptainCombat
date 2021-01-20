@@ -23,7 +23,7 @@ namespace CaptainCombat.Server
         public void Start()
         {
             thread = new Thread(Stream);
-            thread.Priority = ThreadPriority.Highest;
+            thread.Priority = ThreadPriority.AboveNormal;
             thread.Start();
         }
 

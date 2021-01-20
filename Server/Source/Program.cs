@@ -2,7 +2,6 @@
 using System.Threading;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
-using CaptainCombat.Server.threads;
 using CaptainCombat.Common.Singletons;
 using CaptainCombat.Common;
 
@@ -25,7 +24,7 @@ namespace CaptainCombat.Server
             Connection.Instance.Space = space;
             Connection.Instance.repository = repository;
 
-            NewUsers newUserProtocol = new NewUsers();
+            PlayerController newUserProtocol = new PlayerController();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
 

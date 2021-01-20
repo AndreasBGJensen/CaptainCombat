@@ -18,8 +18,8 @@ namespace CaptainCombat.Server
 
         private ISpace space;
 
-        private GameDataStreamer streemComponent;
-        private FinishChecker finishChecker;
+        private GameDataStreamer gameDataStreamer;
+        private FinishListener finishListener;
 
         /// <summary>
         /// Creates a new lobby in the given space
@@ -41,8 +41,8 @@ namespace CaptainCombat.Server
                 space.Put("player", 0, "No user");
 
             // Create controller
-            streemComponent = new GameDataStreamer(space);
-            finishChecker = new FinishChecker(space, GameFinished);
+            gameDataStreamer = new GameDataStreamer(space);
+            finishListener = new FinishListener(space, GameFinished);
         }
 
 
@@ -50,15 +50,18 @@ namespace CaptainCombat.Server
         {
             Game game = new Game();
             game.Init(space);
-            streemComponent.Start();
-            finishChecker.Start();
+            gameDataStreamer.Start();
+            finishListener.Start();
         }
 
 
+        // Clean up the lobby
         private void GameFinished()
         {
             Console.WriteLine("Game finished");
-            streemComponent.Stop();
+            gameDataStreamer.Stop();
+
+            // Could remove lobby from list here 
         }
     }
 }
