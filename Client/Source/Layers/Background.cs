@@ -36,7 +36,6 @@ namespace CaptainCombat.Client.GameLayers
         private bool gameStarted = false;
 
         private Entity ship;
-        private int currentScore = 0;
 
         private bool renderColliders = false;
 

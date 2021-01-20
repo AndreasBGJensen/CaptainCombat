@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Tuple = dotSpace.Objects.Space.Tuple;
 using CaptainCombat.Common;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace CaptainCombat.Client.protocols
 {
@@ -168,23 +167,6 @@ namespace CaptainCombat.Client.protocols
         {
             return DomainState.Instance.Clients;
         }
-
-        public static IEnumerable<ITuple> GetAllClientScores()
-        {
-            return DomainState.Instance.ClientScores;
-        }
-
-        public static IEnumerable<ITuple> GetAllUsersMessages()
-        {
-            return DomainState.Instance.Messages; 
-        }
-
-        public static void AddMessageToServer(string message)
-        {
-            ISpace space = Connection.Instance.LobbySpace ;
-            space.Put("chat", Connection.Instance.User_id, message);
-        }
-
 
         public static bool Join(string username)
         {

@@ -8,6 +8,7 @@ using System.Data;
 using System.Reflection;
 using System.Threading;
 using dotSpace.Objects.Space;
+using CaptainCombat.Client.Scenes;
 
 namespace CaptainCombat.Client.NetworkEvent {
 
@@ -134,6 +135,25 @@ namespace CaptainCombat.Client.NetworkEvent {
                 (int)e.Receiver,
                 JsonConvert.SerializeObject(e)
             );
+        }
+
+
+        /// <summary>
+        /// Sends the given event to all Players in the current game/lobby
+        /// </summary>
+        /// <param name="includeLocal">Whether or not to also send the message to self</param>
+        public static void Broadcast(Event e, bool includeLocal = false)
+        {
+            foreach( var player in GameInfo.Current.Clients )
+            {
+                if (!includeLocal && player.IsLocal) continue;
+                e.Receiver = player.Id;
+                outgoingEvents.Put(
+                   e.GetType().FullName,
+                   (int)e.Receiver,
+                   JsonConvert.SerializeObject(e)
+               );
+            }
         }
 
         /// <summary>
