@@ -27,7 +27,8 @@ namespace CaptainCombat.Client.Scenes
         private bool gameStarted = false;
 
         private bool winScreenDisplayed = false;
-        
+
+        private Loader<bool> loader;
 
         public GameState(Game game)
         {
@@ -35,10 +36,6 @@ namespace CaptainCombat.Client.Scenes
 
             eventController = new EventController();
             lifeController = new LifeController(eventController);
-
-            // Initialize the game on seperate thread
-            // to prevent UI from freezing
-            new Thread(InitializeGame).Start();     
 
             background = new Background(lifeController, eventController);
             layers.Add(background);
@@ -48,13 +45,22 @@ namespace CaptainCombat.Client.Scenes
             layers.Add(new Chat(eventController));
 
             Console.WriteLine("Initialized game state!");
+
+            // Start loader
+            loader = new Loader<bool>("Starting game...",
+                () => {
+                    InitializeGame();
+                    return true;
+                },
+                (_) => {
+                    loader = null;
+                    gameReady = true;
+                }
+            );
         }
 
 
-        
-
-        public void InitializeGame() {
-            // TODO: Make a proper init section
+        private void InitializeGame() {
             GameInfo.Current = new GameInfo();
             foreach (var tuple in ClientProtocol.GetClientsInLobby()) {
                 var clientId = (uint)(int)tuple[1];
@@ -80,11 +86,8 @@ namespace CaptainCombat.Client.Scenes
                     Console.WriteLine(client.Name + " is ready");
                 }
             }
-
-            gameReady = true;
-            Console.WriteLine("Game started!");
-
         }
+
 
         public override void update(GameTime gameTime)
         {
@@ -112,13 +115,15 @@ namespace CaptainCombat.Client.Scenes
             {
                 layer.update(gameTime);
             }
+
+            loader?.update(gameTime);
         }
 
 
         public override void OnKeyDown(Keys key)
         {
-            foreach (Layer layer in layers)
-                if (layer.OnKeyDown(key)) break;
+            for( int i=layers.Count-1; i>=0; i-- )
+                if (layers[i].OnKeyDown(key)) break;
         }
 
 
@@ -129,6 +134,7 @@ namespace CaptainCombat.Client.Scenes
             {
                 layer.draw(gameTime);
             }
+            loader?.draw(gameTime);
         }
 
 

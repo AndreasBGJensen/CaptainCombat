@@ -22,8 +22,6 @@ namespace CaptainCombat.Client.Source.Layers
         private bool DisableKeyboard = false;
         private bool ChangeState = false;
 
-        private Keys[] LastPressedKeys = new Keys[5];
-
         private State ParentState;
         private Game Game;
 
@@ -65,6 +63,7 @@ namespace CaptainCombat.Client.Source.Layers
             Menu.AddComponent(new Transform());
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
         }
+
 
         public override void update(GameTime gameTime)
         {

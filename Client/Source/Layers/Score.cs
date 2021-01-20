@@ -50,8 +50,6 @@ namespace CaptainCombat.Client.GameLayers
             });
 
             var currentLives = lifeController.Lives;
-
-            //System.Console.WriteLine("Current lives: " + currentLives[(uint)Connection.Instance.User_id]);
             
             foreach(Entity icon in playerIcons)   
                 icon.Delete(); 
@@ -70,8 +68,8 @@ namespace CaptainCombat.Client.GameLayers
                 var lives = lifeController.GetClientLives(client.Id);
 
                 playerIcons.Add(EntityUtility.CreateIcon(Domain, (int)client.Id)); 
-                playerNames.Add(EntityUtility.CreateMessage(Domain, client.Name, 0, 0, 16));
-                playerScores.Add(EntityUtility.CreateMessage(Domain, lives.ToString(), 0, 0, 16));
+                playerNames.Add(EntityUtility.CreateMessage(Domain, client.Name, 0, 0, 16, origin: TextOrigin.Left));
+                playerScores.Add(EntityUtility.CreateMessage(Domain, lives.ToString(), 0, 0, 16, origin: TextOrigin.Left));
 
             }
 

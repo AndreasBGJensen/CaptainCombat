@@ -29,9 +29,6 @@ namespace CaptainCombat.Client.GameLayers
         private Domain Domain = new Domain();
         private Camera Camera;
 
-        private bool playMusic = true;
-        private Keys[] LastPressedKeys = new Keys[5];
-
         private bool gameStarted = false;
 
         private Entity ship;
@@ -80,7 +77,6 @@ namespace CaptainCombat.Client.GameLayers
                 ship.GetComponent<Sprite>().Enabled = false;                
                 ship.GetComponent<BoxCollider>().Enabled = false;
                 ship.GetComponent<Move>().Enabled = false;
-
 
                 var numLives = lifeController.DecrementLocalLives();
                 if (numLives > 0)

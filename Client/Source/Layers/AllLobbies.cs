@@ -25,7 +25,6 @@ namespace CaptainCombat.Client.Source.Layers
         private State ParentState;
         private Game Game;
         private int selectionIndex = 0;
-        private int numberOfLobbies = 0; 
         private List<Entity> lobbyEntities = new List<Entity>();
         private List<string> allURLs = new List<string>();
 

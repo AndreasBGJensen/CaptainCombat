@@ -25,7 +25,6 @@ namespace CaptainCombat.Client.GameLayers
         private List<ChatMessage> messages = new List<ChatMessage>();
 
         private bool DisplayChat = false;
-        private Keys[] LastPressedKeys = new Keys[5];
         private string InputMessage = string.Empty;
 
         public Chat(EventController eventController)
@@ -90,7 +89,7 @@ namespace CaptainCombat.Client.GameLayers
                     foreach (var message in messages)
                     {
                         EntityUtility.CreateIcon(Domain, (int)message.Sender.Id);
-                        EntityUtility.CreateMessage(Domain, (string)message.Message, 0, 0, 14);
+                        EntityUtility.CreateMessage(Domain, (string)message.Message, 0, 0, 14, origin: TextOrigin.Left);
                     }
                 }
             }
@@ -132,7 +131,7 @@ namespace CaptainCombat.Client.GameLayers
                 {
                     InputMessage = (KeyboardInputValidator.dict.ContainsKey(keyData) ? InputMessage += KeyboardInputValidator.dict[keyData] : InputMessage += keyData); 
                 }
-
+                return true;
             }
             return true;
         }

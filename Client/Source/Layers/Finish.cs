@@ -2,8 +2,6 @@
 using CaptainCombat.Client.Scenes;
 using CaptainCombat.Common;
 using CaptainCombat.Common.Components;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using static CaptainCombat.Common.Domain;
 
 namespace CaptainCombat.Client.Layers {
@@ -24,27 +22,33 @@ namespace CaptainCombat.Client.Layers {
             domain = new Domain();
             camera = new Camera(domain);
 
+            { // Fade
+                var entity = new Entity(domain);
+                entity.AddComponent(new Transform());
+                entity.AddComponent(new Sprite(Assets.Textures.SQUARE, 1280, 720, new Color(0.0f, 0.0f, 0.0f, 0.5f)));
+            }
+
             // Chat layout
             var scroll = new Entity(domain);
             scroll.AddComponent(new Transform(0, 0));
             scroll.AddComponent(new Sprite(Assets.Textures.Chat, 300, 250));
 
-            EntityUtility.CreateMessage(domain, $"{winner.Name} wins!", -60, -20, 45);
-            EntityUtility.CreateMessage(domain, $"Press 'enter' to return to lobby", -80, 40, 10);
+            EntityUtility.CreateMessage(domain, $"{winner.Name} wins!", 0, -40, 30);
+            EntityUtility.CreateMessage(domain, $"Press 'enter' to return to lobby", 0, 10, 14);
 
             domain.Clean();
         }
 
 
-        public override void draw(GameTime gameTime) {
+        public override void draw(Microsoft.Xna.Framework.GameTime gameTime) {
             Renderer.RenderSprites(domain, camera);
             Renderer.RenderText(domain, camera);
         }
 
 
-        public override bool OnKeyDown(Keys key)
+        public override bool OnKeyDown(Microsoft.Xna.Framework.Input.Keys key)
         {
-            if (key == Keys.Enter)
+            if (key == Microsoft.Xna.Framework.Input.Keys.Enter)
                 exitCallback();
             return true;
         }

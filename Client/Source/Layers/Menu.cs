@@ -62,7 +62,7 @@ namespace CaptainCombat.Client.MenuLayers
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
 
             // InputBox
-            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", 0, 150, 16);
+            InputBox = EntityUtility.CreateInput(Domain, "Enter Name", -70, 100, 18);
         }
 
         public override void update(GameTime gameTime)
@@ -156,7 +156,7 @@ namespace CaptainCombat.Client.MenuLayers
 
         public void DisplayPlayerNames()
         {
-            int placement_Y = -180;
+            int placement_Y = -150;
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
                 transform.Position.X = 0; 
