@@ -14,7 +14,6 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         public void InitEntry()
         {
-            
             ListenForLobbyRequests();
         }
 

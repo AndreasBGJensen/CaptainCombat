@@ -45,8 +45,8 @@ namespace CaptainCombat.Server.Source.LobbyContent
 
         private void CreateUrl(int user_id)
         {
-            //TODO: Because remoteSpace are only able to connect to a spase, contaning letters we converet the user_id to a char.
-            //This only alows us to have 20 players
+            //Note: Because remoteSpace are only able to connect to a space, contaning letters we convert the user_id to a char
+            // This only alows us to have 20 players
             int unicode = user_id + 100;
             char character = (char)unicode;
             spaceID = character.ToString();
@@ -54,9 +54,7 @@ namespace CaptainCombat.Server.Source.LobbyContent
             lobbyUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/"+ spaceID+ "?KEEP";
             
             if (!LobbyBookKeeping.AddLobby(this))
-            {
                 throw new ArgumentException("Lobby Could not be saved in database");
-            }  
         }
 
 

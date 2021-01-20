@@ -43,6 +43,14 @@ namespace CaptainCombat.network
             thread = new Thread(Download);
             //thread.Priority = ThreadPriority.Highest;
             thread.Start();
+
+        }
+
+        public void Stop()
+        {
+            // Aborting is the easy way out, but it's unsafe
+            thread.Abort();
+            callerWaitHandle.Set();
         }
 
         

@@ -11,8 +11,8 @@ namespace CaptainCombat.Client.Source.Scenes
     {
         List<Layer> layers = new List<Layer>();
 
-        private Domain Domain = new Domain();
-        Game Game;
+        private Game Game;
+        
         public SelectLobbyState(Game game)
         {
             Game = game;

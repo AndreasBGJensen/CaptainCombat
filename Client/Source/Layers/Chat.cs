@@ -16,7 +16,8 @@ namespace CaptainCombat.Client.GameLayers
     class Chat : Layer
     {
         private Domain Domain = new Domain();  
-        private Camera Camera;
+        private Camera camera;
+        private EventController eventController;
 
         private Entity ChatBox;
         private Entity InputBox;
@@ -27,12 +28,13 @@ namespace CaptainCombat.Client.GameLayers
         private Keys[] LastPressedKeys = new Keys[5];
         private string InputMessage = string.Empty;
 
-        public Chat(Game game, State state)
+        public Chat(EventController eventController)
         {
-            Camera = new Camera(Domain);
-
+            camera = new Camera(Domain);
+            this.eventController = eventController;
+            
             // Listen for chat message events 
-            EventController.AddListener<MessageEvent>((e) => {
+            eventController.AddListener<MessageEvent>((e) => {
                 lock(messages)
                 {
                     messages.Add(new ChatMessage(GameInfo.Current.GetPlayer(e.Sender), e.Message));
@@ -131,7 +133,7 @@ namespace CaptainCombat.Client.GameLayers
             }
             else if (key == Keys.Enter)
             {
-                EventController.Broadcast(new MessageEvent(InputMessage), includeLocal: true);
+                eventController.Broadcast(new MessageEvent(InputMessage), includeLocal: true);
                 InputMessage = string.Empty;
             }
             else if (key == Keys.Back)
@@ -231,9 +233,9 @@ namespace CaptainCombat.Client.GameLayers
 
         public override void draw(GameTime gameTime)
         {
-            Renderer.RenderSprites(Domain, Camera);
-            Renderer.RenderText(Domain, Camera);
-            Renderer.RenderInput(Domain, Camera);
+            Renderer.RenderSprites(Domain, camera);
+            Renderer.RenderText(Domain, camera);
+            Renderer.RenderInput(Domain, camera);
         }
 
 

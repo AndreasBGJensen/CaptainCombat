@@ -44,6 +44,13 @@ namespace CaptainCombat.network
             thread.Start();
         }
 
+        
+        public void Stop()
+        {
+            thread.Abort();
+            callerWaitHandle.Set();
+        }
+
 
         public void UploadData(string data) {
             lock(updateLock) {

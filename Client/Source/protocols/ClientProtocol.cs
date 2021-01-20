@@ -12,6 +12,7 @@ namespace CaptainCombat.Client.protocols
     public class ClientProtocol
     {
 
+
         public static void Connect()
         {
             string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/" + ConnectionInfo.SPACE_NAME + "?KEEP";
@@ -102,7 +103,7 @@ namespace CaptainCombat.Client.protocols
 
         public static void BeginMatch()
         {
-            Connection.Instance.LobbySpace.Get("lock");
+            Connection.Instance.LobbySpace.Get("lock"); 
             Connection.Instance.LobbySpace.Put("start");
             Connection.Instance.LobbySpace.Put("lock");
         }

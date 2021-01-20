@@ -3,6 +3,7 @@ using CaptainCombat.Client.Scenes;
 using CaptainCombat.Common;
 using CaptainCombat.Common.Components;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using static CaptainCombat.Common.Domain;
 
 namespace CaptainCombat.Client.Layers {
@@ -13,7 +14,13 @@ namespace CaptainCombat.Client.Layers {
 
         private Camera camera;
 
-        public Finish(Player winner) {
+        private OnExitCallback exitCallback;
+        public delegate void OnExitCallback();
+
+        public object LastPressedKeys { get; private set; }
+
+        public Finish(Player winner, OnExitCallback exitCallback) {
+            this.exitCallback = exitCallback;
             domain = new Domain();
             camera = new Camera(domain);
 
@@ -23,6 +30,7 @@ namespace CaptainCombat.Client.Layers {
             scroll.AddComponent(new Sprite(Assets.Textures.Chat, 300, 250));
 
             EntityUtility.CreateMessage(domain, $"{winner.Name} wins!", -60, -10, 45);
+            EntityUtility.CreateMessage(domain, $"Press 'enter' to return to lobby", -30, -10, 20);
 
             domain.Clean();
         }
@@ -37,8 +45,14 @@ namespace CaptainCombat.Client.Layers {
         {
         }
 
+
+
         public override void update(GameTime gameTime)
         {
+            KeyboardState kbState = Keyboard.GetState();
+            
+            if( kbState.IsKeyDown(Keys.Enter) )
+                exitCallback();
         }
     }
 
