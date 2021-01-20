@@ -58,16 +58,15 @@
     <Compile Include="Source\Collector\TupleCollectorParallel.cs" />
     <Compile Include="Source\Collector\TupleCollector.cs" />
     <Compile Include="Source\Collector\ICollector.cs" />
-    <Compile Include="Source\LobbyContent\FinishChecker.cs" />
-    <Compile Include="Source\LobbyContent\Lobby.cs" />
-    <Compile Include="Source\LobbyContent\LobbyController.cs" />
+    <Compile Include="Source\Lobby\FinishChecker.cs" />
+    <Compile Include="Source\Lobby\Lobby.cs" />
+    <Compile Include="Source\Lobby\LobbyController.cs" />
     <Compile Include="Source\Mapmaker\EntityToAdd\IEntity.cs" />
     <Compile Include="Source\Mapmaker\EntityToAdd\Rocks.cs" />
     <Compile Include="Source\Mapmaker\Game.cs" />
     <Compile Include="Source\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\LobbyContent\GameDataStreamer.cs" />
-    <Compile Include="Source\threads\ClientScores.cs" />
+    <Compile Include="Source\Lobby\GameDataStreamer.cs" />
     <Compile Include="Source\threads\NewUsers.cs" />
     <Compile Include="Source\threads\Serialization.cs" />
   </ItemGroup>

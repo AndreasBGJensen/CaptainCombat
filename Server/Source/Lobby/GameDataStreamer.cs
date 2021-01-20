@@ -1,16 +1,15 @@
 ﻿using CaptainCombat.Server.Collector;
 using CaptainCombat.Server.Collector.Helpers;
 using dotSpace.Interfaces.Space;
-using dotSpace.Objects.Space;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace CaptainCombat.Server.Source.threads
+namespace CaptainCombat.Server
 {
+    /// <summary>
+    /// Reads the list of Component tuples to upload to the Lobby space
+    /// from the Lobby's Players
+    /// </summary>
     class GameDataStreamer
     {
         private ISpace space;

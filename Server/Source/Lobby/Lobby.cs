@@ -1,12 +1,14 @@
 ﻿using CaptainCombat.Common;
 using CaptainCombat.Server.Mapmaker;
-using CaptainCombat.Server.Source.threads;
 using dotSpace.Interfaces.Space;
 using System;
 
-namespace CaptainCombat.Server.Source.LobbyContent
+namespace CaptainCombat.Server
 {
 
+    /// <summary>
+    /// Represents a Lobby's data and controllers that manages the lobby "flow"
+    /// </summary>
     class Lobby
     {
         public string Url { get; set; }

@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 
 
-namespace CaptainCombat.Server.Source.LobbyContent
+namespace CaptainCombat.Server
 {
 
     class LobbyController

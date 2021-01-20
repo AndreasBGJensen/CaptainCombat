@@ -2,7 +2,7 @@
 using dotSpace.Interfaces.Space;
 using System.Threading;
 
-namespace CaptainCombat.Server.Source.LobbyContent
+namespace CaptainCombat.Server
 {
 
     // Checks that the game has finished
