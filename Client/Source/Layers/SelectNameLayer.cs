@@ -12,9 +12,9 @@ using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.MenuLayers
 {
+
     class SelectNameLayer : Layer
     {
-        
         private Camera Camera;
         private Domain Domain = new Domain();
 
@@ -160,7 +160,7 @@ namespace CaptainCombat.Client.MenuLayers
                 var transform = entity.GetComponent<Transform>();
                 transform.Position.X = 0; 
                 transform.Position.Y = placement_Y;
-                placement_Y += 40;
+                placement_Y += 35;
             });
         }
 
