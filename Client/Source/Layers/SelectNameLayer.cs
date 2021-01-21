@@ -12,7 +12,7 @@ using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.MenuLayers
 {
-    class Menu : Layer
+    class SelectNameLayer : Layer
     {
         
         private Camera Camera;
@@ -29,7 +29,7 @@ namespace CaptainCombat.Client.MenuLayers
         private Game Game; 
 
 
-        public Menu(Game game, State state)
+        public SelectNameLayer(Game game, State state)
         {
             ParentState = state;
             Game = game; 

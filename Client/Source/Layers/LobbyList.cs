@@ -9,10 +9,11 @@ using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace CaptainCombat.Client.Source.Layers
 {
-    class AllLobbies : Layer
+    class LobbyList : Layer
     {
 
         private Camera Camera;
@@ -40,7 +41,7 @@ namespace CaptainCombat.Client.Source.Layers
         private List<LobbyInfo> menuList = new List<LobbyInfo>();
 
 
-        public AllLobbies(Game game, State state)
+        public LobbyList(Game game, State state)
         {
             ParentState = state;
             Game = game;
@@ -97,6 +98,7 @@ namespace CaptainCombat.Client.Source.Layers
                                 currentLobies[lobby.Id] = lobby;
                             lobbiesWereUpdated = true;
                         }
+                        Thread.Sleep(500);
                     }
                 }
             });
@@ -197,6 +199,7 @@ namespace CaptainCombat.Client.Source.Layers
                         }
                         else
                         {
+                            updateLobbies = false;
                             ParentState._context.TransitionTo(new LobbyState(Game));
                         }
                     }

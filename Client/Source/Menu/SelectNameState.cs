@@ -14,7 +14,7 @@ namespace CaptainCombat.Client.Scenes
         public SelectNameState(Game game)
         {
             Game = game; 
-            layers.Add(new Menu(game, this));
+            layers.Add(new SelectNameLayer(game, this));
         }
 
         public override void OnKeyDown(Keys key)

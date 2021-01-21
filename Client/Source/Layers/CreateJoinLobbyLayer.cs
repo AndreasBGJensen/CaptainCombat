@@ -12,7 +12,7 @@ using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.Source.Layers
 {
-    class Select : Layer
+    class CreateJoinLobbyLayer : Layer
     {
         private Camera Camera;
         private Domain Domain = new Domain();
@@ -29,7 +29,7 @@ namespace CaptainCombat.Client.Source.Layers
 
         private Loader<List<LobbyInfo>> loader;
 
-        public Select(Game game, State state)
+        public CreateJoinLobbyLayer(Game game, State state)
         {
             ParentState = state;
             Game = game;

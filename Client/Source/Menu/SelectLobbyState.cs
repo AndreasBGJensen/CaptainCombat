@@ -17,7 +17,7 @@ namespace CaptainCombat.Client.Source.Scenes
         public SelectLobbyState(Game game)
         {
             this.game = game;
-            layers.Add(new AllLobbies(game, this));
+            layers.Add(new LobbyList(game, this));
         }
 
         public override void OnKeyDown(Keys key)

@@ -16,7 +16,7 @@ namespace CaptainCombat.Client.Source.Scenes
         public CreateJoinLobbyState(Game game)
         {
             Game = game;
-            layers.Add(new Select(game, this));
+            layers.Add(new CreateJoinLobbyLayer(game, this));
         }
 
         public override void OnKeyDown(Keys key)
