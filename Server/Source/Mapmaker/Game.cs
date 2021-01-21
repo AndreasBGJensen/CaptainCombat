@@ -15,9 +15,9 @@ namespace CaptainCombat.Server.Mapmaker
         Domain domain = new Domain();
         public delegate void InitCmponent(object source, EventArgs e);
         public event InitCmponent ComputerInit;
-        private SequentialSpace lobbySpace;
 
-        public void Init(SequentialSpace lobbySpace)
+
+        public void Init(ISpace lobbySpace)
         {
 
             DomainState.Instance.Domain = domain;
@@ -26,9 +26,6 @@ namespace CaptainCombat.Server.Mapmaker
             IEntity entity = new Rocks(Settings.NUM_ROCKS, lobbySpace);
             entity.OnComputerInit();
             //game.ComputerInit += entity.OnComputerInit;
-
-
-
 
         }
 

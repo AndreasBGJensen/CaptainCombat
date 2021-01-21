@@ -51,7 +51,7 @@ namespace CaptainCombat.Server.threads
                 else
                 {
                     Console.WriteLine("Invalid username: " + result[1]);
-                    Connection.Instance.Space.Put("connected",false, 0);
+                    Connection.Instance.Space.Put("connected", false, 0);
                 }
                
             }

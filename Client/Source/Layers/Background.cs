@@ -46,14 +46,22 @@ namespace CaptainCombat.Client.GameLayers
         private GameDataUploader gameDataUploader = new GameDataUploader();
         private GameDataDownloader gameDataDownloader = new GameDataDownloader();
 
-        CollisionController collisionController = new CollisionController();
+        private CollisionController collisionController = new CollisionController();
+        private EventController eventController;
 
 
-        public Background(Game game, State state, LifeController lifeController)
+        public Background(LifeController lifeController, EventController eventController)
         {
             Camera = new Camera(Domain);
             this.lifeController = lifeController;
+            this.eventController = eventController;
             DomainState.Instance.Domain = Domain;
+        }
+
+        public void Terminate()
+        {
+            gameDataUploader.Stop();
+            gameDataDownloader.Stop();
         }
 
 
@@ -81,7 +89,7 @@ namespace CaptainCombat.Client.GameLayers
             });
 
 
-            EventController.AddListener<ProjectileCollisionEvent>((e) => {
+            eventController.AddListener<ProjectileCollisionEvent>((e) => {
                 Console.WriteLine($"Collision event from Client {e.Sender}");
 
                 var projectile = Domain.GetEntity(e.ProjectileId);
@@ -96,13 +104,13 @@ namespace CaptainCombat.Client.GameLayers
                 collider.Enabled = false;
 
                 projectile.Delete();
-                EventController.Send(new ProjectileEffectEvent(e.TargetId.clientId, e.TargetId, 34));
+                eventController.Send(new ProjectileEffectEvent(e.TargetId.clientId, e.TargetId, 34));
 
                 return true;
             });
 
 
-            EventController.AddListener<ProjectileEffectEvent>((e) => {
+            eventController.AddListener<ProjectileEffectEvent>((e) => {
                 Console.WriteLine($"Damage event from client {e.Sender}: {e.Damage} damage on Entity {e.TargetId.objectId}");
                 var health = ship.GetComponent<ShipHealth>();
                 if (health.Current <= 0) return false;
@@ -136,7 +144,7 @@ namespace CaptainCombat.Client.GameLayers
                     collider.Enabled = false;
                     projectile.GetComponent<Sprite>().Enabled = false;
                     projectile.GetComponent<Move>().Enabled = false;
-                    EventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
+                    eventController.Send(new ProjectileCollisionEvent(projectile.ClientId, projectile.Id, ship.Id));
                     Console.WriteLine("Sent collision event");
                     return true;
                 }
@@ -153,7 +161,6 @@ namespace CaptainCombat.Client.GameLayers
             gameStarted = true;
             gameDataUploader.Start();
             gameDataDownloader.Start();
-            EventController.Start();
         }
 
 
@@ -171,7 +178,7 @@ namespace CaptainCombat.Client.GameLayers
 
             if( gameStarted)
             {
-                EventController.Flush();
+                eventController.Flush();
             }
 
             Domain.Clean();
@@ -305,12 +312,11 @@ namespace CaptainCombat.Client.GameLayers
             SpawnShip();
         }
 
+
         /// <summary>
         /// Spawns the Player's ship at some location (center for now)
         /// </summary>
         private void SpawnShip() {
-            // TODO: Change ship spawn position
-
             var health = ship.GetComponent<ShipHealth>();
             health.Current = health.Max;
             health.DeathHandled = false;    

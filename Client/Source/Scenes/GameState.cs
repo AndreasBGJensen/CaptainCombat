@@ -7,6 +7,8 @@ using System;
 using CaptainCombat.Client.Layers;
 using CaptainCombat.Client.protocols;
 using CaptainCombat.Common.Singletons;
+using CaptainCombat.Client.NetworkEvent;
+using CaptainCombat.Client.Source.Scenes;
 
 namespace CaptainCombat.Client.Scenes
 {
@@ -14,29 +16,35 @@ namespace CaptainCombat.Client.Scenes
     class GameState : State
     {
         private List<Layer> Layers = new List<Layer>();
-        private Game Game;
+        private Game game;
         private Background background;
         private Score score;
-        private LifeController lifeController = new LifeController();
+        private EventController eventController;
+        private LifeController lifeController;
 
         private bool gameReady = false;
         private bool gameStarted = false;
 
         private bool winScreenDisplayed = false;
+        
 
         public GameState(Game game)
         {
-            Game = game;
+            this.game = game;
 
+            eventController = new EventController();
+            lifeController = new LifeController(eventController);
+
+            // Initialize the game on seperate thread
+            // to prevent UI from freezing
             new Thread(InitializeGame).Start();     
 
-            // TODO: Life controller has not been set at this point
-            background = new Background(game, this, lifeController);
+            background = new Background(lifeController, eventController);
             Layers.Add(background);
 
-            score = new Score(game, this, lifeController);
+            score = new Score(lifeController);
             Layers.Add(score);
-            Layers.Add(new Chat(game, this));
+            Layers.Add(new Chat(eventController));
 
             Console.WriteLine("Initialized game state!");
         }
@@ -53,6 +61,7 @@ namespace CaptainCombat.Client.Scenes
             }
 
             lifeController.Start();
+            eventController.Start();
 
             score.Start();
 
@@ -115,7 +124,7 @@ namespace CaptainCombat.Client.Scenes
 
         public override void draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(Color.CornflowerBlue);
+            game.GraphicsDevice.Clear(Color.CornflowerBlue);
             foreach (Layer layer in Layers)
             {
                 layer.draw(gameTime);
@@ -128,7 +137,19 @@ namespace CaptainCombat.Client.Scenes
             if (winScreenDisplayed) return;
             winScreenDisplayed = true;
             background.UpdateEnabled = false;
-            Layers.Add(new Finish(winner));
+            Layers.Add(new Finish(winner, ExitGame));
+        }
+
+
+        private void ExitGame()
+        {
+            // TODO: Clean up game
+            Console.WriteLine("Exitting game");
+            eventController.Stop();
+            lifeController.Stop();
+            background.Terminate();
+            _context.TransitionTo(new SelectLobbyState(game));
+            
         }
     }
 }

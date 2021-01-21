@@ -26,13 +26,26 @@ namespace CaptainCombat.Client.Layers {
         public Player Winner { get; set; } = null;
         public bool WinnerFound { get => Winner != null; }
 
+        private Thread uploadWinnerThread;
+        private Thread downloadWinnerThread;
+
+        private EventController eventController;
+
+
+        public LifeController(EventController eventController)
+        {
+            this.eventController = eventController;
+        }
             
+
         public void Start(){
 
+            // Set initial lives
             foreach (var client in GameInfo.Current.Clients)
                 lives[client.Id] = Settings.LIVES;
 
-            EventController.AddListener<LifeLostEvent>((e) => {
+            // Listen for life lost events
+            eventController.AddListener<LifeLostEvent>((e) => {
                 lives[e.Sender]--;
                 
                 // Check if client is winner
@@ -48,14 +61,14 @@ namespace CaptainCombat.Client.Layers {
                 return true;
             });
             
-            // TODO: Revert this
-            //lifeUpdateThread = new Thread(UpdateLives);
-            //lifeUpdateThread.Priority = ThreadPriority.Highest; 
-            //lifeUpdateThread.Start();
-
-            //localSpace.Put("lock");
-
+            // Start listening for winners
             ListenForWinner();
+        }
+
+        
+        public void Stop() {
+            downloadWinnerThread?.Abort();
+            uploadWinnerThread?.Abort();
         }
 
 
@@ -65,22 +78,22 @@ namespace CaptainCombat.Client.Layers {
             if (settingWinner) return;
             settingWinner = true;
 
-            var t = new Thread((e) => {
+            uploadWinnerThread = new Thread((e) => {
                 Connection.Instance.LobbySpace.Get("winner-lock");
                 Connection.Instance.LobbySpace.Put("winner", (int)winnerId);
             });
-            t.Priority = ThreadPriority.Highest;
-            t.Start();
+            uploadWinnerThread.Priority = ThreadPriority.Highest;
+            uploadWinnerThread.Start();
         }
 
 
         private void ListenForWinner() {
-            var t = new Thread((e) => {
+            downloadWinnerThread = new Thread((e) => {
                 var tuple = Connection.Instance.LobbySpace.Query("winner", typeof(int));
                 Winner = GameInfo.Current.GetPlayer((uint)(int)tuple[1]);
             });
-            t.Priority = ThreadPriority.Highest;
-            t.Start();
+            downloadWinnerThread.Priority = ThreadPriority.Highest;
+            downloadWinnerThread.Start();
         }
 
 
@@ -95,7 +108,7 @@ namespace CaptainCombat.Client.Layers {
             // Send life lost event
             foreach (var client in GameInfo.Current.Clients)
                 if (!client.IsLocal)
-                    EventController.Send(new LifeLostEvent(client.Id));
+                    eventController.Send(new LifeLostEvent(client.Id));
 
             return lives[clientId];
         }
@@ -109,102 +122,6 @@ namespace CaptainCombat.Client.Layers {
         public int GetLocalClientLives() {
             return GetClientLives((uint)Connection.Instance.User_id);
         }
-
-
-        //private void UpdateLives() {
-        //    Console.Error.WriteLine("Thread is " + Thread.CurrentThread.Name);
-        //    while (true) {
-        //        Thread.Sleep(100);
-        //        Console.WriteLine("Get life-lock");
-        //        Connection.Instance.lobbySpace.Get("life-lock");
-
-        //        var livesTuples = Connection.Instance.lobbySpace.QueryAll("lives", typeof(int), typeof(int));
-        //        System.Console.WriteLine("Get lock");
-        //        localSpace.Get("lock");
-
-
-        //        // Update opponents' lives
-        //        localSpace.GetAll("lives", typeof(int), typeof(int));
-        //        var ownLives = 0;
-        //        var clientsAlive = new Dictionary<uint, int>();
-        //        foreach (var livesTuple in livesTuples)
-        //            if ((uint)(int)livesTuple[1] != Connection.Instance.User_id) {
-        //                localSpace.Put(livesTuple);
-        //                if ((int)livesTuple[2] > 1)
-        //                    clientsAlive[(uint)(int)livesTuple[1]] = (int)livesTuple[1];
-        //            }
-        //            else {
-        //                ownLives = (int)livesTuple[2];
-        //            }
-
-        //        // Update own lives
-        //        var livesLost = 0;
-        //        foreach (var t in localSpace.GetAll("decrement"))
-        //            livesLost++;
-
-        //        uint winner = 0;
-        //        if (ownLives > 0) {
-        //            ownLives -= livesLost;
-        //            if (ownLives <= 0) {
-        //                ownLives = 0;
-        //                if (clientsAlive.Count == 1) {
-        //                    winner = clientsAlive.First().Key;
-        //                }
-        //            }
-        //        }
-
-        //        localSpace.Put("lives", Connection.Instance.User_id, ownLives);
-        //        localSpace.Put("lock");
-
-        //        if (livesLost > 0) {
-        //            // Update remote (only if lives were updated)
-        //            Connection.Instance.lobbySpace.Get("lives", Connection.Instance.User_id, typeof(int));
-        //            Connection.Instance.lobbySpace.Put("lives", Connection.Instance.User_id, ownLives);
-        //        }
-
-        //        if ( winner == 0 ) {
-        //            System.Console.WriteLine("Releasing lock");
-        //            // Don't unlock scores if a winner was found
-        //            Connection.Instance.lobbySpace.Put("life-lock");
-        //            System.Console.WriteLine("Released lock");
-        //        }
-        //        else {
-        //            Connection.Instance.lobbySpace.Put("winner", (int)winner);
-        //        }
-
-        //    }
-
-        //}
-
-
-        //public void DecrementLife() {
-        //    localSpace.Put("decrement");
-        //}
-
-
-        //public int GetOwnLives() {
-        //    // TODO: Revert this
-        //    return 10;
-        //    //var lives = GetLives();
-        //    //return lives[(uint)Connection.Instance.User_id];    
-        //}
-
-        //public Dictionary<uint, int> GetLives() {
-
-
-
-        //    localSpace.Get("lock");
-        //    //System.Console.WriteLine("Got lock");
-        //    var tuples = localSpace.QueryAll("lives", typeof(int), typeof(int));
-        //    localSpace.Put("lock");
-
-        //    currentLives.Clear();
-        //    foreach (var tuple in tuples)
-        //        currentLives[(uint)(int)tuple[1]] = (int)tuple[2];
-
-        //    return currentLives;
-        //}
-
 
     }
 }

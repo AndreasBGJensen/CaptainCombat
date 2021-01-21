@@ -2,12 +2,9 @@
 using System.Threading;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
-using CaptainCombat.Server.Mapmaker;
 using CaptainCombat.Server.threads;
 using CaptainCombat.Common.Singletons;
 using CaptainCombat.Common;
-
-using CaptainCombat.Server.Source.LobbyContent;
 
 namespace CaptainCombat.Server
 {
@@ -28,14 +25,14 @@ namespace CaptainCombat.Server
             Connection.Instance.Space = space;
             Connection.Instance.repository = repository;
 
-            Console.WriteLine("Server started");
-
             NewUsers newUserProtocol = new NewUsers();
             Thread newUserThread = new Thread(new ThreadStart(newUserProtocol.RunProtocol));
             newUserThread.Start();
 
-            EntryLobby entry = new EntryLobby();
+            LobbyController lobbyController = new LobbyController(repository);
+            lobbyController.Start();
 
+            Console.WriteLine("Server started");
         }
     }
 }

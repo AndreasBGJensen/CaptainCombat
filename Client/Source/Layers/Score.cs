@@ -23,7 +23,7 @@ namespace CaptainCombat.Client.GameLayers
 
         private bool started = false;
 
-        public Score(Game game, State state, LifeController lifeController)
+        public Score(LifeController lifeController)
         {
             this.lifeController = lifeController;
             Camera = new Camera(Domain);

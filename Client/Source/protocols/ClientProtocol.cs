@@ -12,6 +12,7 @@ namespace CaptainCombat.Client.protocols
     public class ClientProtocol
     {
 
+
         public static void Connect()
         {
             string serverUrl = "tcp://" + ConnectionInfo.SERVER_ADDRESS + "/" + ConnectionInfo.SPACE_NAME + "?KEEP";
@@ -67,10 +68,8 @@ namespace CaptainCombat.Client.protocols
 
         public static bool CreateLobby()
         {
-            
             string username = Connection.Instance.User;
             int user_id = Connection.Instance.User_id;
-
             
             Connection.Instance.Space.Put("createLobby", username, user_id);
             //Blocking because we want to know if the lobby have been created
@@ -104,10 +103,10 @@ namespace CaptainCombat.Client.protocols
         public static bool BeginMatch()
         {
             Connection.Instance.LobbySpace.Get("lobby_lock");
-            int subscribernum = GetNumberOfSubscribersInALobby(Connection.Instance.lobbyUrl);
+            int playerCount = GetNumberOfSubscribersInALobby(Connection.Instance.lobbyUrl);
 
             //Check if enough players in the lobby (at least two is needed)
-            if (subscribernum > 1)
+            if (playerCount > 1)
             {
                 Connection.Instance.LobbySpace.Put("start");
                 //Removing the lobby from the global space
@@ -119,7 +118,6 @@ namespace CaptainCombat.Client.protocols
             else
             {
                 Connection.Instance.LobbySpace.Put("lobby_lock");
-                Console.WriteLine("Not enough players in lobby");
                 return false;
             }
 

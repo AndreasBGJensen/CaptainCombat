@@ -16,44 +16,39 @@ namespace CaptainCombat.Client.NetworkEvent {
     /// Controller which listens for incoming event tuples in the remote space, and
     /// sends outgoing events
     /// </summary>
-    // TODO: Make event controller to non-static class
     public class EventController {
 
-        private static Dictionary<Type, List<EventListenerConverter>> listenerMap = new Dictionary<Type, List<EventListenerConverter>>();
+        private Dictionary<Type, List<EventListenerConverter>> listenerMap = new Dictionary<Type, List<EventListenerConverter>>();
 
-        // private static List<Event> outgoingEvents = new List<Event>();
-        private static SequentialSpace outgoingEvents = new SequentialSpace();
+        private SequentialSpace outgoingEvents = new SequentialSpace();
+        private SequentialSpace incomingEvents = new SequentialSpace();
 
-        private static bool sendEvents = false;
-        private static AutoResetEvent senderWaitHandle = new AutoResetEvent(false);
-        
-        //private static List<Event> incomingEvents = new List<Event>();
-        private static bool receiveEvents = false;
-
-        private static SequentialSpace incomingEvents = new SequentialSpace();
+        private Thread sendThread;
+        private Thread receiveThread;
 
         /// <summary>
         /// Starts the EventController by starting the receiver
         /// and sender threads
         /// </summary>
-        public static void Start() {
-            new Thread(ReceiveEvents).Start();
-            new Thread(SendEvents).Start();
+        public void Start() {
+            receiveThread = new Thread(ReceiveEvents);
+            receiveThread.Start();
+
+            sendThread = new Thread(SendEvents);
+            sendThread.Start();
         }
 
         /// <summary>
         /// Stops the EventController, by stopping the sender
         /// and receiver threads
         /// </summary>
-        public static void Stop() {
-            receiveEvents = false;
-            sendEvents = false;
-            senderWaitHandle.Set(); // Wake up sender thread to close it
+        public void Stop() {
+            sendThread?.Abort();
+            receiveThread?.Abort();
         }
 
-        private static void ReceiveEvents() {
-            receiveEvents = true;
-            while (receiveEvents) {
+        private void ReceiveEvents() {
+            while (true) {
                 
                 { // First get is blocking, and signals that some event exists
                   // which prevents busy waiting
@@ -69,9 +64,8 @@ namespace CaptainCombat.Client.NetworkEvent {
         }
 
 
-        private static void SendEvents() {
-            sendEvents = true;
-            while (sendEvents) {
+        private void SendEvents() {
+            while (true) {
                 // Wait for send signal
                 outgoingEvents.Get("send-signal");
                 // Get the batch of events to send
@@ -84,10 +78,6 @@ namespace CaptainCombat.Client.NetworkEvent {
                         (int)eventTuple[1], // Receiver
                         (string)eventTuple[2] // JSON data
                     );
-                    //// TODO: Create some sort of thread pooling
-                    //new Thread(() => {
-                        
-                    //}).Start();
                 }
             }
         }
@@ -113,7 +103,7 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// Multiple listeners may be added, and will be fired sequentially
         /// in the order they have been added
         /// </summary>
-        public static EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
+        public EventListener<E> AddListener<E>(EventListener<E> e) where E : Event {
             var eventType = typeof(E);
             lock (listenerMap)
             {
@@ -129,7 +119,7 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// with a receiver and sender client id.
         /// The event is sent asynchronously
         /// </summary>
-        public static void Send(Event e) {
+        public void Send(Event e) {
             if (e.Receiver == 0)
                 throw new ArgumentException("Receiver was not set for event");
 
@@ -145,7 +135,7 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// Sends the given event to all Players in the current game/lobby
         /// </summary>
         /// <param name="includeLocal">Whether or not to also send the message to self</param>
-        public static void Broadcast(Event e, bool includeLocal = false)
+        public void Broadcast(Event e, bool includeLocal = false)
         {
             foreach( var player in GameInfo.Current.Clients )
             {
@@ -163,7 +153,7 @@ namespace CaptainCombat.Client.NetworkEvent {
         /// Tells the controller to "dispatch" all Events,
         /// causing added listenes to be fired approriately
         /// </summary>
-        public static void Flush() {
+        public void Flush() {
 
             // Signal events to be sent --------------
             outgoingEvents.Put("send-signal");

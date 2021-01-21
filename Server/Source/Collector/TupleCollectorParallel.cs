@@ -20,13 +20,13 @@ namespace CaptainCombat.Server.Collector
            mySpace = space;
            this.creator = creator;
 
-            //Initializing a lock so that we get atomic transactions when we update the components.
-            //Locks are not really nesseasery in this case because we at just updating and using pattern matching, 
-            //but i thought i would be a good practice
+           //Initializing a lock so that we get atomic transactions when we update the components.
+           //Locks are not really nesseasery in this case because we at just updating and using pattern matching, 
+           //but i thought i would be a good practice
            if (mySpace.QueryP("lock") == null)
-            {
+           {
                 mySpace.Put("lock");
-            }
+           }
         }
 
         public void Collect()
