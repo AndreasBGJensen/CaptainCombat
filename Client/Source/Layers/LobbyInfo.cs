@@ -1,7 +1,4 @@
-﻿
-using CaptainCombat.Client.Scenes;
-
-namespace CaptainCombat.Client.Source.Layers
+﻿namespace CaptainCombat.Client.Source.Layers
 {
     // Just small struct to hold data about lobby
     public struct LobbyInfo

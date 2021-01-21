@@ -98,6 +98,10 @@ namespace CaptainCombat.Client.Source.Layers
                                 currentLobies[lobby.Id] = lobby;
                             lobbiesWereUpdated = true;
                         }
+
+                        // Since the GetLobbies() function creates a new connection to the server for
+                        // each lobby that exists, it may overload the server. Reducing the frequency
+                        // of the connections fixes the problem as of now.
                         Thread.Sleep(500);
                     }
                 }

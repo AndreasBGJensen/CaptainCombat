@@ -47,7 +47,7 @@ namespace CaptainCombat.Client.MenuLayers
             List<string> users = ClientProtocol.GetAllUsers();
             for(int i = 0; i < users.Count(); i++)
             {
-                EntityUtility.CreateMessage(Domain, users[i], 0, 0, 14);
+                EntityUtility.CreateMessage(Domain, users[i], 0, 0, 18);
             }
 
             // Background
@@ -155,12 +155,12 @@ namespace CaptainCombat.Client.MenuLayers
 
         public void DisplayPlayerNames()
         {
-            int placement_Y = -150;
+            int placement_Y = -140;
             Domain.ForMatchingEntities<Text, Transform>((entity) => {
                 var transform = entity.GetComponent<Transform>();
                 transform.Position.X = 0; 
                 transform.Position.Y = placement_Y;
-                placement_Y += 25;
+                placement_Y += 40;
             });
         }
 

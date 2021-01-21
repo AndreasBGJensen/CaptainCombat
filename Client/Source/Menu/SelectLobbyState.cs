@@ -1,7 +1,5 @@
-﻿using CaptainCombat.Client.MenuLayers;
-using CaptainCombat.Client.Scenes;
+﻿using CaptainCombat.Client.Scenes;
 using CaptainCombat.Client.Source.Layers;
-using CaptainCombat.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;

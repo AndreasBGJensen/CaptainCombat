@@ -79,11 +79,11 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 if (((string)user[2]).Contains("No user"))
                 {
-                    players.Add(EntityUtility.CreateMessage(Domain, "- - - - -", 0, 0, 16));
+                    players.Add(EntityUtility.CreateMessage(Domain, "- - - - -", 0, 0, 20));
                 }
                 else
                 {
-                    players.Add(EntityUtility.CreateMessage(Domain, (string)user[2], 0, 0, 16));
+                    players.Add(EntityUtility.CreateMessage(Domain, (string)user[2], 0, 0, 20));
                 }
                
             }
@@ -146,13 +146,13 @@ namespace CaptainCombat.Client.Source.Layers
         private void SetPlayerNamesPosition()
         {
             // Display client names
-            int placement_Y = -100;
+            int placement_Y = -130;
             foreach (Entity playerName in players)
             {
                 var transform = playerName.GetComponent<Transform>();
                 transform.Position.X = 0;
                 transform.Position.Y = placement_Y;
-                placement_Y += 30;
+                placement_Y += 50;
             }
         }
     }

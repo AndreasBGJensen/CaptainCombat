@@ -181,7 +181,7 @@ namespace CaptainCombat.Client.GameLayers
 
                 if ( gameStarted ) {
                     if (Keyboard.GetState().IsKeyDown(Keys.E)) {
-                        if (fireCooldownCurrent <= 0) {
+                        if (fireCooldownCurrent <= 0 && ship.GetComponent<ShipHealth>().Current > 0) {
                             EntityUtility.FireCannonBall(ship);
                             fireCooldownCurrent = FIRE_COOLDOWN;
                         }
