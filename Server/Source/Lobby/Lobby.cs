@@ -48,8 +48,8 @@ namespace CaptainCombat.Server
 
         public void Start()
         {
-            Game game = new Game();
-            game.Init(space);
+            Game game = new Game(space);
+            game.Start();
             gameDataStreamer.Start();
             finishListener.Start();
         }

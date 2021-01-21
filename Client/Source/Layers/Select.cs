@@ -4,25 +4,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
-using CaptainCombat.Common.Singletons;
-using dotSpace.Interfaces.Space;
+
 
 namespace CaptainCombat.Client.Source.Layers
 {
     class Select : Layer
     {
-
         private Camera Camera;
         private Domain Domain = new Domain();
 
         private bool DisableKeyboard = false;
-
-        private Keys[] LastPressedKeys = new Keys[5];
         
         private State ParentState;
         private Game Game;
@@ -125,13 +120,12 @@ namespace CaptainCombat.Client.Source.Layers
                     {
                         // Create new lobby
                         DisableKeyboard = !DisableKeyboard;
-                        Connection.Instance.Space_owner = true;
                         loader = new Loader<List<LobbyInfo>>("Creating lobby",
                             () => {
                                 ClientProtocol.CreateLobby();
                                 return null;
                             },
-                            (success) => ParentState._context.TransitionTo(new GameLobbyState(Game))
+                            (success) => ParentState._context.TransitionTo(new LobbyState(Game))
                         );
                     }
                     break;
@@ -144,8 +138,7 @@ namespace CaptainCombat.Client.Source.Layers
                                 if (lobbies.Count != 0)
                                 {
                                     DisableKeyboard = !DisableKeyboard;
-                                    Connection.Instance.Space_owner = false;
-                                    ParentState._context.TransitionTo(new LobbyState(Game));
+                                    ParentState._context.TransitionTo(new SelectLobbyState(Game));
                                 }
                                 else
                                 {

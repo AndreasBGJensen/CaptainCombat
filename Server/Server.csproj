@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>CaptainCombat.Server.Program</StartupObject>
+    <StartupObject>CaptainCombat.Server.Start</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="dotSpace, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
@@ -53,20 +53,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Collector\Helpers\ArrayCreator.cs" />
-    <Compile Include="Source\Collector\CollectorClass.cs" />
-    <Compile Include="Source\Collector\TupleCollectorParallel.cs" />
-    <Compile Include="Source\Collector\TupleCollector.cs" />
-    <Compile Include="Source\Collector\ICollector.cs" />
+    <Compile Include="Source\Connection.cs" />
+    <Compile Include="Source\Lobby\GameDataStreamer\ArrayCreator.cs" />
+    <Compile Include="Source\Lobby\GameDataStreamer\TupleCollector.cs" />
     <Compile Include="Source\Lobby\FinishListener.cs" />
     <Compile Include="Source\Lobby\Lobby.cs" />
     <Compile Include="Source\Lobby\LobbyController.cs" />
-    <Compile Include="Source\Mapmaker\EntityToAdd\IEntity.cs" />
-    <Compile Include="Source\Mapmaker\EntityToAdd\Rocks.cs" />
-    <Compile Include="Source\Mapmaker\Game.cs" />
-    <Compile Include="Source\Program.cs" />
+    <Compile Include="Source\Lobby\Game\RockGenerator.cs" />
+    <Compile Include="Source\Lobby\Game\Game.cs" />
+    <Compile Include="Source\Start.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Lobby\GameDataStreamer.cs" />
+    <Compile Include="Source\Lobby\GameDataStreamer\GameDataStreamer.cs" />
     <Compile Include="Source\PlayerController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,5 +76,6 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

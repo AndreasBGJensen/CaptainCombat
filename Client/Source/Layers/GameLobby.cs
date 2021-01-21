@@ -3,16 +3,14 @@ using CaptainCombat.Client.Scenes;
 using dotSpace.Interfaces.Space;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using Microsoft.Xna.Framework.Input;
-using CaptainCombat.Common.Singletons;
-
 
 namespace CaptainCombat.Client.Source.Layers
 {
+
     class GameLobby : Layer
     {
 
@@ -43,7 +41,7 @@ namespace CaptainCombat.Client.Source.Layers
             // Static message to client 
 
             EntityUtility.CreateMessage(Domain, "Players in lobby", 0, -180, 16);
-            if (Connection.Instance.Space_owner)
+            if (Connection.Lobby.Owner == Connection.LocalPlayer)
             {
                 clientInformation = EntityUtility.CreateMessage(Domain, "Press 'enter' to start game", 0, 100, 16);
             }
@@ -94,16 +92,14 @@ namespace CaptainCombat.Client.Source.Layers
             SetPlayerNamesPosition();
 
             // No host
-           
-            if (!Connection.Instance.Space_owner)
+            if (Connection.LocalPlayer != Connection.Lobby.Owner)
             {
-                if (ClientProtocol.ListenForMatchBegin())
+                if (ClientProtocol.IsGameStarted())
                 {
                     ChangeState = true; 
                 }
             }
        
-
             // Changes state when condition is true 
             if (ChangeState)
             {
@@ -125,10 +121,10 @@ namespace CaptainCombat.Client.Source.Layers
             
             if (key == Keys.Enter)
             {
-                if (Connection.Instance.Space_owner)
+                if (Connection.LocalPlayer == Connection.Lobby.Owner)
                 {
                     // Start the game
-                    if (ClientProtocol.BeginMatch())
+                    if (ClientProtocol.StartGame())
                     {
                         DisableKeyboard = !DisableKeyboard;
                         var info = clientInformation.GetComponent<Text>();

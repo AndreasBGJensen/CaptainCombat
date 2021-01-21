@@ -8,8 +8,6 @@ using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using CaptainCombat.Client.Source.Scenes;
-using dotSpace.Interfaces.Space;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace CaptainCombat.Client.Source.Layers
@@ -199,7 +197,7 @@ namespace CaptainCombat.Client.Source.Layers
                         }
                         else
                         {
-                            ParentState._context.TransitionTo(new GameLobbyState(Game));
+                            ParentState._context.TransitionTo(new LobbyState(Game));
                         }
                     }
                 );

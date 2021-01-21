@@ -1,6 +1,5 @@
 ﻿
 using dotSpace.Interfaces.Space;
-using CaptainCombat.Common.Singletons;
 using System;
 using System.Collections.Generic;
 
@@ -12,16 +11,16 @@ namespace CaptainCombat.Server
 
         public PlayerController()
         {
-            Connection.Instance.Space.Put("newuser_lock");
+            Connection.Space.Put("newuser_lock");
         }
 
         public void RunProtocol()
         {
             while (true)
             {
-                ITuple result = Connection.Instance.Space.Get("user", typeof(string));
+                ITuple result = Connection.Space.Get("user", typeof(string));
 
-                IEnumerable<ITuple> usersInServer = Connection.Instance.Space.QueryAll("users", typeof(string));
+                IEnumerable<ITuple> usersInServer = Connection.Space.QueryAll("users", typeof(string));
                 bool validUsername = true; 
 
                 foreach (ITuple user in usersInServer)
@@ -42,14 +41,14 @@ namespace CaptainCombat.Server
                     Console.WriteLine("User joined: " + result[1]);
                     int client_id = newId;
                     newId++;
-                    Connection.Instance.Space.Put("usersInGame", client_id, result[1]);
-                    Connection.Instance.Space.Put("users", result[1]);
-                    Connection.Instance.Space.Put("connected", true, client_id);
+                    Connection.Space.Put("usersInGame", client_id, result[1]);
+                    Connection.Space.Put("users", result[1]);
+                    Connection.Space.Put("connected", true, client_id);
                 }
                 else
                 {
                     Console.WriteLine("Invalid username: " + result[1]);
-                    Connection.Instance.Space.Put("connected", false, 0);
+                    Connection.Space.Put("connected", false, 0);
                 }
                
             }

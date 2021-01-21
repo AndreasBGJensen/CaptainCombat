@@ -50,33 +50,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\ECS\ECS.cs" />
+    <Compile Include="Source\ECS\EntityUtility.cs" />
     <Compile Include="Source\Primitives\Color.cs" />
     <Compile Include="Source\Primitives\Matrix.cs" />
+    <Compile Include="Source\Primitives\Player.cs" />
     <Compile Include="Source\Settings.cs" />
-    <Compile Include="Source\Components\ShipHealth.cs" />
+    <Compile Include="Source\ECS\Components\ShipHealth.cs" />
     <Compile Include="Source\ConnectionInfo.cs" />
-    <Compile Include="Source\Game\DataObject.cs" />
-    <Compile Include="Source\Singletons\Connection.cs" />
-    <Compile Include="Source\Singletons\DomainState.cs" />
     <Compile Include="Source\Assets.cs" />
     <Compile Include="Source\Asset\Asset.cs" />
     <Compile Include="Source\Asset\Font.cs" />
     <Compile Include="Source\Asset\Sound.cs" />
     <Compile Include="Source\Asset\Texture.cs" />
     <Compile Include="Source\Asset\Track.cs" />
-    <Compile Include="Source\Components\Collider.cs" />
-    <Compile Include="Source\Components\Input.cs" />
-    <Compile Include="Source\Components\Move.cs" />
-    <Compile Include="Source\Components\Projectile.cs" />
-    <Compile Include="Source\Components\Sprite.cs" />
-    <Compile Include="Source\Components\Text.cs" />
-    <Compile Include="Source\Components\Transform.cs" />
-    <Compile Include="Source\ECS.cs" />
-    <Compile Include="Source\JsonBuilder\JsonBuilder.cs" />
+    <Compile Include="Source\ECS\Components\Collider.cs" />
+    <Compile Include="Source\ECS\Components\Input.cs" />
+    <Compile Include="Source\ECS\Components\Move.cs" />
+    <Compile Include="Source\ECS\Components\Projectile.cs" />
+    <Compile Include="Source\ECS\Components\Sprite.cs" />
+    <Compile Include="Source\ECS\Components\Text.cs" />
+    <Compile Include="Source\ECS\Components\Transform.cs" />
+    <Compile Include="Source\ECS\JsonBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\EntityUtility.cs" />
     <Compile Include="Source\RandomGenerator.cs" />
-    <Compile Include="Source\IdGenerator.cs" />
+    <Compile Include="Source\Primitives\GlobalId.cs" />
     <Compile Include="Source\Primitives\Vector.cs" />
   </ItemGroup>
   <ItemGroup>

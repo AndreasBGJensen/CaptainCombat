@@ -21,7 +21,6 @@ namespace CaptainCombat.Client.MenuLayers
         private bool DisableKeyboard = false;
         private bool ChangeState = false; 
 
-        private Keys[] LastPressedKeys = new Keys[5];
         private string PlayerName = string.Empty;
 
         private Entity InputBox;
@@ -77,7 +76,7 @@ namespace CaptainCombat.Client.MenuLayers
             // Changes state when condition is true 
             if (ChangeState)
             {
-                ParentState._context.TransitionTo(new SelectLobbyState(Game));
+                ParentState._context.TransitionTo(new CreateJoinLobbyState(Game));
             }
         }
 

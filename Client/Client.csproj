@@ -8,7 +8,7 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
-    <StartupObject>CaptainCombat.Client.Program</StartupObject>
+    <StartupObject>CaptainCombat.Client.Start</StartupObject>
     <AssemblyName>CaptainCombat</AssemblyName>
     <RootNamespace>CaptainCombat.Client</RootNamespace>
   </PropertyGroup>
