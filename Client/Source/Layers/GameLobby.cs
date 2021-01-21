@@ -3,16 +3,14 @@ using CaptainCombat.Client.Scenes;
 using dotSpace.Interfaces.Space;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
 using CaptainCombat.Common.Components;
 using CaptainCombat.Common;
 using static CaptainCombat.Common.Domain;
 using Microsoft.Xna.Framework.Input;
-using CaptainCombat.Common.Singletons;
-
 
 namespace CaptainCombat.Client.Source.Layers
 {
+
     class GameLobby : Layer
     {
 
@@ -22,15 +20,10 @@ namespace CaptainCombat.Client.Source.Layers
         private bool DisableKeyboard = false;
         private bool ChangeState = false;
 
-        private Keys[] LastPressedKeys = new Keys[5];
-
         private State ParentState;
         private Game Game;
-        private int currentIndex = 0;
-        private List<Entity> menuItems = new List<Entity>();
+
         private List<Entity> players = new List<Entity>();
-        private Entity left_pointer;
-        private Entity right_pointer;
         private Entity clientInformation;
         
 
@@ -47,15 +40,14 @@ namespace CaptainCombat.Client.Source.Layers
 
             // Static message to client 
 
-            EntityUtility.CreateMessage(Domain, "Players in current lobby", -70, -180, 16);
-            if (Connection.Instance.Space_owner)
+            EntityUtility.CreateMessage(Domain, "Players in lobby", 0, -180, 16);
+            if (Connection.Lobby.Owner == Connection.LocalPlayer)
             {
-                menuItems.Add(EntityUtility.CreateMessage(Domain, "Start game", 0, 0, 20));
-                clientInformation = EntityUtility.CreateMessage(Domain, "", -70, 150, 16);
+                clientInformation = EntityUtility.CreateMessage(Domain, "Press 'enter' to start game", 0, 100, 16);
             }
             else
             {
-                clientInformation = EntityUtility.CreateMessage(Domain, "Waiting for host to start game", -70, 150, 16);
+                clientInformation = EntityUtility.CreateMessage(Domain, "Waiting for host to start game", 0, 100, 16);
             }
             
             
@@ -68,16 +60,8 @@ namespace CaptainCombat.Client.Source.Layers
             Entity Menu = new Entity(Domain);
             Menu.AddComponent(new Transform());
             Menu.AddComponent(new Sprite(Assets.Textures.Menu, 600, 600));
-
-
-            // pointer
-            if (Connection.Instance.Space_owner)
-            {
-                left_pointer = EntityUtility.MenuArrow(Domain, false);
-                right_pointer = EntityUtility.MenuArrow(Domain, true);
-            }
-               
         }
+
 
         public override void update(GameTime gameTime)
         {
@@ -95,37 +79,27 @@ namespace CaptainCombat.Client.Source.Layers
             {
                 if (((string)user[2]).Contains("No user"))
                 {
-                    players.Add(EntityUtility.CreateMessage(Domain, "---------------", 0, 0, 14));
+                    players.Add(EntityUtility.CreateMessage(Domain, "- - - - -", 0, 0, 16));
                 }
                 else
                 {
-                    players.Add(EntityUtility.CreateMessage(Domain, (string)user[2], 0, 0, 14));
+                    players.Add(EntityUtility.CreateMessage(Domain, (string)user[2], 0, 0, 16));
                 }
                
             }
+            players.Reverse();
 
-            // Handles keyboard input
-            GetKeys();
-
-            // Displays list of all clients in server
-            if (Connection.Instance.Space_owner)
-            {
-                displayCurrentIndex();
-            }
-            
-            Display();
+            SetPlayerNamesPosition();
 
             // No host
-           
-            if (!Connection.Instance.Space_owner)
+            if (Connection.LocalPlayer != Connection.Lobby.Owner)
             {
-                if (ClientProtocol.ListenForMatchBegin())
+                if (ClientProtocol.IsGameStarted())
                 {
                     ChangeState = true; 
                 }
             }
        
-
             // Changes state when condition is true 
             if (ChangeState)
             {
@@ -140,105 +114,46 @@ namespace CaptainCombat.Client.Source.Layers
             Renderer.RenderInput(Domain, Camera);
         }
 
-        public void GetKeys()
-        {
-            KeyboardState kbState = Keyboard.GetState();
-            Keys[] pressedKeys = kbState.GetPressedKeys();
 
-            foreach (Keys key in pressedKeys)
+        public override bool OnKeyDown(Keys key)
+        {
+            if (DisableKeyboard) return false;
+            
+            if (key == Keys.Enter)
             {
-                if (!LastPressedKeys.Contains(key))
+                if (Connection.LocalPlayer == Connection.Lobby.Owner)
                 {
-                    OnKeyDown(key);
-                }
-            }
-            LastPressedKeys = pressedKeys;
-        }
-
-        public void OnKeyDown(Keys key)
-        {
-            if (DisableKeyboard)
-            {
-                return;
-            }
-            else if (key == Keys.Enter)
-            {
-                if (Connection.Instance.Space_owner)
-                {
-                    RunCurrentselected();
-                }
-            }
-        }
-
-        public void RunCurrentselected()
-        {
-            switch (currentIndex)
-            {
-                case 0:
+                    // Start the game
+                    if (ClientProtocol.StartGame())
                     {
-                        if (ClientProtocol.BeginMatch()) {
-                            DisableKeyboard = !DisableKeyboard;
-                            var info = clientInformation.GetComponent<Text>();
-                            info.Message = "Starting game";
-                            ChangeState = true;
-                        }
-                        else
-                        {
-                            var info = clientInformation.GetComponent<Text>();
-                            info.Message = "Not enough players!";
-                        }
-                        
+                        DisableKeyboard = !DisableKeyboard;
+                        var info = clientInformation.GetComponent<Text>();
+                        info.Message = "Starting game";
+                        ChangeState = true;
                     }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public void displayCurrentIndex()
-        {
-
-            int placement_Y = 100;
-            for (int i = 0; i < menuItems.Count(); i++)
-            {
-                {
-                    var transform = menuItems[i].GetComponent<Transform>();
-                    transform.Position.X = -70;
-                    transform.Position.Y = placement_Y;
-
-                }
-                if (i == currentIndex)
-                {
+                    else
                     {
-                        var transform = left_pointer.GetComponent<Transform>();
-                        transform.Position.X = -100;
-                        transform.Position.Y = placement_Y + 20;
-                    }
-                    {
-                        var transform = right_pointer.GetComponent<Transform>();
-                        transform.Position.X = 100;
-                        transform.Position.Y = placement_Y + 20;
+                        var info = clientInformation.GetComponent<Text>();
+                        info.Message = "Not enough players!";
                     }
                 }
-                placement_Y += 70;
+                return true;
             }
+            return false;
         }
 
-        public void Display()
-        {
 
+        private void SetPlayerNamesPosition()
+        {
             // Display client names
+            int placement_Y = -100;
+            foreach (Entity playerName in players)
             {
-                int placement_Y = -160;
-                foreach (Entity playerName in players)
-                {
-                    var transform = playerName.GetComponent<Transform>();
-                    transform.Position.X = -70;
-                    transform.Position.Y = placement_Y;
-                    placement_Y += 30;
-                }
+                var transform = playerName.GetComponent<Transform>();
+                transform.Position.X = 0;
+                transform.Position.Y = placement_Y;
+                placement_Y += 30;
             }
-
         }
     }
 }

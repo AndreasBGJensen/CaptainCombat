@@ -1,5 +1,4 @@
 ﻿using CaptainCombat.Common;
-using CaptainCombat.Common.Singletons;
 using dotSpace.Objects.Network;
 using dotSpace.Objects.Space;
 using System;
@@ -37,7 +36,7 @@ namespace CaptainCombat.Server
         {
             while (true)
             {
-                var request = Connection.Instance.Space.Get("createLobby", typeof(string), typeof(int));
+                var request = Connection.Space.Get("createLobby", typeof(string), typeof(int));
 
                 var userName = (string)request[1];
                 var userId = (uint)(int)request[2];
@@ -63,13 +62,13 @@ namespace CaptainCombat.Server
             lobbies.TryAdd(lobbyId, lobby);
 
             // Create lobby tuple
-            Connection.Instance.Space.Put("existingLobby", lobbyId, playerName, lobbyUrl);
+            Connection.Space.Put("existingLobby", lobbyId, playerName, lobbyUrl);
             lobby.Start();
 
             Console.WriteLine($"Lobby created: '{lobbyUrl}' (creator: {playerName})");
 
             // Returning space information to the global space so that users can connect to the space.
-            Connection.Instance.Space.Put("lobbyCreationResponse", (int)playerId, playerName, lobbyUrl);
+            Connection.Space.Put("lobbyCreationResponse", (int)playerId, playerName, lobbyUrl);
         }
 
 

@@ -62,6 +62,20 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/Font_22.spritefont
 
+#begin fonts/Font_30.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/Font_30.spritefont
+
+#begin fonts/Font_40.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/Font_40.spritefont
+
 #begin fonts/PirateFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
