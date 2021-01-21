@@ -35,7 +35,8 @@ namespace CaptainCombat.Common {
             transform.ScaleY = scale;
             transform.Rotation = rotation;
 
-            entity.AddComponent(new Sprite(Assets.Textures.ROCK, 100, 100));
+            var sprite = entity.AddComponent(new Sprite(Assets.Textures.ROCK, 100, 100));
+            sprite.Depth = 0.75f;
 
             var collider = entity.AddComponent(new BoxCollider());
             collider.Width = 60 * scale;
@@ -67,7 +68,9 @@ namespace CaptainCombat.Common {
 
             var projectile = cannonBall.AddComponent(new Projectile());
 
-            cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
+            var sprite = cannonBall.AddComponent(new Sprite(Assets.Textures.CANNON_BALL, 15, 15));
+            sprite.Depth = 0.20f;
+
 
             cannonBall.AddComponent(new CircleCollider(Assets.ColliderTags.PROJECTILE, 10));
 
@@ -188,13 +191,15 @@ namespace CaptainCombat.Common {
             collider.Height = 80;
             collider.Tag = Assets.ColliderTags.SHIP;
 
-            AddSpriteToShip(entity, clientId, damageLevel); 
+            var sprite = AddSpriteToShip(entity, clientId, damageLevel);
+            sprite.Depth = 0.25f;
+            
 
             return entity;
         }
 
 
-        public static void AddSpriteToShip(Entity entity, int clientId, int damageLevel)
+        public static Sprite AddSpriteToShip(Entity entity, int clientId, int damageLevel)
         {
             int shipWidth = 66;
             int shipHeight = 113;
@@ -204,39 +209,33 @@ namespace CaptainCombat.Common {
                 case 1:
                     {
                         string assetTag = "blue_ship_" + damageLevel;
-                        entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
+                        return entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
                     }
-                    break;
                 case 2:
                     {
                         string assetTag = "yellow_ship_" + damageLevel;
-                        entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
+                        return entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
                     }
-                    break;
                 case 3:
                     {
                         string assetTag = "green_ship_" + damageLevel;
-                        entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
+                        return entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
                     }
-                    break;
                 case 4:
                     {
                         string assetTag = "red_ship_" + damageLevel;
-                        entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
+                        return entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
                     }
-                    break;
                 case 5:
                     {
                         string assetTag = "white_ship_" + damageLevel;
-                        entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
+                        return entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
                     }
-                    break;
                 default:
                     {
                         string assetTag = "black_ship_" + damageLevel;
-                        entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
+                        return entity.AddComponent(new Sprite((Texture)Asset.GetAsset(assetTag), shipWidth, shipHeight));
                     }
-                    break;
             }
 
         }
