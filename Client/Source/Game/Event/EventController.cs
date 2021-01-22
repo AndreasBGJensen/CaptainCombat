@@ -5,7 +5,7 @@ using System.Data;
 using System.Reflection;
 using System.Threading;
 using dotSpace.Objects.Space;
-using CaptainCombat.Client.Scenes;
+    
 
 namespace CaptainCombat.Client.NetworkEvent {
 

@@ -20,7 +20,7 @@ namespace CaptainCombat.Server
             {
                 ITuple result = Connection.Space.Get("user", typeof(string));
 
-                IEnumerable<ITuple> usersInServer = Connection.Space.QueryAll("users", typeof(string));
+                IEnumerable<ITuple> usersInServer =  Connection.Space.QueryAll("users", typeof(string));
                 bool validUsername = true; 
 
                 foreach (ITuple user in usersInServer)

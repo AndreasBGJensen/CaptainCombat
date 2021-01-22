@@ -116,6 +116,7 @@ namespace CaptainCombat.Client.Source.Layers
 
             if( lobbiesWereUpdated )
             {
+                // Update the menu with updated lobbies
                 lock(currentLobies)
                 {
                     // Clear current lobby entities (menu)
