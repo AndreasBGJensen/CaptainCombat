@@ -16,7 +16,6 @@ namespace CaptainCombat.Common.Components {
         public string Tag { get; }
 
         public ColliderTag(string tag) {
-            // TODO: Fix this
             //if (all.ContainsKey(tag))
             //    throw new ArgumentException($"ColliderType with tag '{tag} already exists");
             Tag = tag;
