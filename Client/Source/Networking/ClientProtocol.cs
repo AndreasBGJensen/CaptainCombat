@@ -119,7 +119,7 @@ namespace CaptainCombat.Client.protocols
             Connection.Lobby.Id = (string)lobbyTuple[1];
 
             Connection.Lobby.Space.Get("lobby_lock");
-            Connection.Lobby.Space.GetP("player",typeof(int),typeof(string));
+            Connection.Lobby.Space.Get("player",0,"No user");
             Connection.Lobby.Space.Put("player", playerId, playerName);
             Connection.Lobby.Space.Put("lobby_lock");
 

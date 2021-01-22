@@ -39,7 +39,6 @@ namespace CaptainCombat.Common {
 
     }
 
-    // TODO: Remove this
     public class IdGenerator {
 
         // 0 is reserved for unknown id
@@ -50,7 +49,6 @@ namespace CaptainCombat.Common {
 
 
         public uint Get() {
-            // TODO: Either remove this or come up with better solution
             //if (readyIds.Count > 0)
                 //return readyIds.Dequeue();
             return nextId++;
